@@ -47,7 +47,6 @@
     return self;
 }
 
-
 #pragma mark - Transformer
 
 + (BOOL)allowsReverseTransformation {

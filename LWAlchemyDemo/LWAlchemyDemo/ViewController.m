@@ -57,8 +57,7 @@
         NSDictionary* dict = @{@"statusId":@(index + i),
                                @"text":text,
                                @"c_user" : @{@"c_name" :[NSString stringWithFormat:@"这是ID为%ld 的第二级Model",index + i],
-                                             @"test":@{@"content":@"第三级映射。。。"}}
-                               };
+                                             @"test":@{@"content":@"第三级映射。。。"}}};
         [fakeData addObject:dict];
     }
     __weak typeof(self) wself = self;
