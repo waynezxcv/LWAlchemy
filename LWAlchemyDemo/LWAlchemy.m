@@ -48,16 +48,18 @@
 
 
 - (void)_enumeratePropertiesUsingBlock:(void (^)(objc_property_t property, BOOL *stop))block {
-    Class cls = [self class];
-    BOOL stop = NO;
-    while (!stop && ![cls isEqual:[LWAlchemy class]]) {
-        unsigned count = 0;
-        objc_property_t* properties = class_copyPropertyList(cls, &count);
-        cls = cls.superclass;
-        if (properties == NULL) continue;
-        for (unsigned i = 0; i < count; i++) {
-            block(properties[i], &stop);
-            if (stop) break;
+    @autoreleasepool {
+        Class cls = [self class];
+        BOOL stop = NO;
+        while (!stop && ![cls isEqual:[LWAlchemy class]]) {
+            unsigned count = 0;
+            objc_property_t* properties = class_copyPropertyList(cls, &count);
+            cls = cls.superclass;
+            if (properties == NULL) continue;
+            for (unsigned i = 0; i < count; i++) {
+                block(properties[i], &stop);
+                if (stop) break;
+            }
         }
     }
 }
@@ -70,12 +72,6 @@
         NSString* mapKey = self.mapDict[propertyInfo.propertyName];
         id object = dictionary[mapKey];
         _SetPropertyValue(self,propertyInfo,object);
-
-        //释放内存
-        if (property) {
-            free(property);
-            property = NULL;
-        }
     }];
     return self;
 }
