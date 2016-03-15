@@ -70,6 +70,12 @@
         NSString* mapKey = self.mapDict[propertyInfo.propertyName];
         id object = dictionary[mapKey];
         _SetPropertyValue(self,propertyInfo,object);
+
+        //释放内存
+        if (property) {
+            free(property);
+            property = NULL;
+        }
     }];
     return self;
 }
