@@ -14,20 +14,22 @@
 @property (nonatomic, assign) objc_property_t property;//属性
 @property (nonatomic, strong) NSString* propertyName;//属性名称
 @property (nonatomic, strong) NSString* ivarName;//实例对象名称
-@property (nonatomic,assign) Ivar ivar;//实例对象
 @property (nonatomic, assign) LWType type;//类型
 @property (nonatomic, assign) Class cls;//如果是LWTypeObject类型，用来表示该对象所属的类,否则为nil
 @property (nonatomic, strong) NSString* getter;//getter方法
 @property (nonatomic, strong) NSString* setter;//setter方法
+@property (nonatomic,assign,getter=isReadonly) BOOL readonly;//是否是只读属性
+@property (nonatomic,assign,getter=isDynamic) BOOL dynamic;
 
 @end
-
 
 @implementation LWAlchemyPropertyInfo
 
 - (id)initWithProperty:(objc_property_t)property {
     self = [super init];
     if (self) {
+        self.readonly = NO;
+        self.dynamic = NO;
         self.property = property;
         unsigned int attrCount;
         objc_property_attribute_t* attributes = property_copyAttributeList(property, &attrCount);
@@ -65,6 +67,13 @@
                         self.setter = [NSString stringWithUTF8String:attributes[i].value];
                     }
                 }break;
+                    //是否是只读属性
+                case 'R': {
+                    self.readonly = YES;
+                } break;
+                case 'D': {
+                    self.dynamic = YES;
+                } break;
                 default:break;
             }
         }
@@ -88,8 +97,6 @@
     }
     return self;
 }
-
-
 
 static LWType _GetPropertyInfoType(const char* value) {
     size_t len = strlen(value);

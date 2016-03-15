@@ -26,9 +26,9 @@ typedef NS_ENUM(NSUInteger, LWType) {
     LWTypeLongDouble    = 13,//长双精度浮点型
     LWTypeClass         = 14,//Class类型（类）
     LWTypeSEL           = 15,//SEL类型（方法）
-    LWTypeCFString      = 16,//CFStringRef类型 const char*
-    LWTypePointer       = 17,//Pointer类型
-    LWTypeCFArray       = 18,//CFArrayRef类型
+    LWTypeCFString      = 16,//CFStringRef const char*
+    LWTypePointer       = 17,//Pointer
+    LWTypeCFArray       = 18,//CFArrayRef
     LWTypeUnion         = 19,//联合体类型
     LWTypeStruct        = 20,//结构体类型
     LWTypeObject        = 21,//对象类型（类的实例对象）
@@ -48,6 +48,8 @@ typedef NS_ENUM(NSUInteger, LWType) {
 @property (nonatomic,assign,readonly) Class cls;//如果是LWTypeObject类型，用来表示该对象所属的类,否则为nil
 @property (nonatomic,strong,readonly) NSString* getter;//getter方法
 @property (nonatomic,strong,readonly) NSString* setter;//setter方法
+@property (nonatomic,assign,readonly,getter=isReadonly) BOOL readonly;//是否是只读属性
+@property (nonatomic,assign,readonly,getter=isDynamic) BOOL dynamic;
 
 - (id)initWithProperty:(objc_property_t)property;
 

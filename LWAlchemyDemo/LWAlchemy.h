@@ -12,5 +12,4 @@
 
 - (id)initWithJSON:(id)JSON JSONKeyPathsByPropertyKey:(NSDictionary *)mapDict;
 
-
 @end
