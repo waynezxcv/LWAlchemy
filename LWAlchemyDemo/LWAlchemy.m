@@ -48,21 +48,23 @@
 
 
 - (void)_enumeratePropertiesUsingBlock:(void (^)(objc_property_t property, BOOL *stop))block {
-    @autoreleasepool {
-        Class cls = [self class];
-        BOOL stop = NO;
-        while (!stop && ![cls isEqual:[LWAlchemy class]]) {
-            unsigned count = 0;
-            objc_property_t* properties = class_copyPropertyList(cls, &count);
+    Class cls = [self class];
+    BOOL stop = NO;
+    while (!stop && ![cls isEqual:[LWAlchemy class]]) {
+        unsigned count = 0;
+        objc_property_t* properties = class_copyPropertyList(cls, &count);
+        if (properties) {
             cls = cls.superclass;
             if (properties == NULL) continue;
             for (unsigned i = 0; i < count; i++) {
                 block(properties[i], &stop);
                 if (stop) break;
             }
+            free(properties);
         }
     }
 }
+
 
 - (instancetype)_modelWithDictionary:(NSDictionary *)dictionary {
     if (!dictionary || dictionary == (id)kCFNull) return nil;
