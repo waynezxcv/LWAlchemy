@@ -128,10 +128,17 @@ static void _SetPropertyValue(__unsafe_unretained id model,
     }
     SEL setter = NSSelectorFromString(propertyInfo.setter);
     BOOL isNull = (value == (id)kCFNull);
+    
     switch (propertyInfo.type) {
         case LWTypeBool: {
             NSNumber* num = (NSNumber *)value;
-            ((void (*)(id, SEL, bool))(void *) objc_msgSend)((id)model, setter, num.boolValue);
+            //定义一个函数指针
+            void (*setterFunc)(id, SEL, BOOL);
+            setterFunc = (void (*)(id m, SEL s, BOOL b))(objc_msgSend(m,s,b));
+            setterFunc((id)model,setter,num.boolValue);
+
+            
+//            ((void (*)(id, SEL, bool)) (void *) objc_msgSend)((id)model, setter, num.boolValue);
         }break;
         case LWTypeInt8:{
             NSNumber* num = (NSNumber *)value;
@@ -250,6 +257,96 @@ static void _SetPropertyValue(__unsafe_unretained id model,
         }break;
         default:break;
     }
+}
+
+static void _setNumberPropertyValue(__unsafe_unretained id model,
+                                    __unsafe_unretained LWAlchemyPropertyInfo* propertyInfo,
+                                    __unsafe_unretained id value) {
+    if (!propertyInfo.setter) {
+        return;
+    }
+    NSNumber* num = (NSNumber *)value;
+    SEL setterSelector = NSSelectorFromString(propertyInfo.setter);
+    switch (propertyInfo.type) {
+        case LWTypeBool: {
+            void (* setterFunc)(id, SEL, BOOL) = (void (*)(id m,SEL s,bool b))(objc_msgSend(m,s,b));
+            setterFunc((id)model,setterSelector,num.boolValue);
+            
+            
+            void (*objc_msgSendWithBool)(id,SEL,bool) = (void *)objc_msgSend;
+            objc_msgSendWithBool((id)model,setterSelector,num.boolValue);
+            
+            
+        }break;
+        case LWTypeInt8:{
+            NSNumber* num = (NSNumber *)value;
+            ((void (*)(id, SEL, uint8_t))(void *) objc_msgSend)((id)model,setter, (int8_t)num.charValue);
+        }break;
+        case LWTypeUInt8: {
+            NSNumber* num = (NSNumber *)value;
+            ((void (*)(id, SEL, uint8_t))(void *) objc_msgSend)((id)model,setter, (uint8_t)num.unsignedCharValue);
+        }break;
+        case LWTypeInt16: {
+            NSNumber* num = (NSNumber *)value;
+            ((void (*)(id, SEL, int16_t))(void *) objc_msgSend)((id)model,setter, (int16_t)num.shortValue);
+        }break;
+        case LWTypeUInt16: {
+            NSNumber* num = (NSNumber *)value;
+            ((void (*)(id, SEL, uint16_t))(void *) objc_msgSend)((id)model,setter, (uint16_t)num.unsignedShortValue);
+        }break;
+        case LWTypeInt32: {
+            NSNumber* num = (NSNumber *)value;
+            ((void (*)(id, SEL, int32_t))(void *) objc_msgSend)((id)model,setter, (int32_t)num.intValue);
+        }break;
+        case LWTypeUInt32: {
+            NSNumber* num = (NSNumber *)value;
+            ((void (*)(id, SEL, uint32_t))(void *) objc_msgSend)((id)model,setter, (uint32_t)num.unsignedIntValue);
+        }break;
+        case LWTypeInt64: {
+            if ([value isKindOfClass:[NSDecimalNumber class]]) {
+                NSDecimalNumber* num = (NSDecimalNumber *)value;
+                ((void (*)(id, SEL, int64_t))(void *) objc_msgSend)((id)model,setter, (int64_t)num.stringValue.longLongValue);
+            } else {
+                NSNumber* num = (NSNumber *)value;
+                ((void (*)(id, SEL, uint64_t))(void *) objc_msgSend)((id)model,setter, (uint64_t)num.longLongValue);
+            }
+        }break;
+        case LWTypeUInt64:{
+            if ([value isKindOfClass:[NSDecimalNumber class]]) {
+                NSDecimalNumber* num = (NSDecimalNumber *)value;
+                ((void (*)(id, SEL, int64_t))(void *) objc_msgSend)((id)model,setter, (int64_t)num.stringValue.longLongValue);
+            } else {
+                NSNumber* num = (NSNumber *)value;
+                ((void (*)(id, SEL, uint64_t))(void *) objc_msgSend)((id)model,setter, (uint64_t)num.longLongValue);
+            }
+        }break;
+        case LWTypeFloat: {
+            NSNumber* num = (NSNumber *)value;
+            float f = num.floatValue;
+            if (isnan(f) || isinf(f)) f = 0;
+            ((void (*)(id, SEL, float))(void *) objc_msgSend)((id)model,setter, f);
+        }break;
+            
+        case LWTypeDouble:{
+            NSNumber* num = (NSNumber *)value;
+            double d = num.doubleValue;
+            if (isnan(d) || isinf(d)) d = 0;
+            ((void (*)(id, SEL, double))(void *) objc_msgSend)((id)model,setter, d);
+        }break;
+        case LWTypeLongDouble: {
+            NSNumber* num = (NSNumber *)value;
+            long double d = num.doubleValue;
+            if (isnan(d) || isinf(d)) d = 0;
+            ((void (*)(id, SEL, long double))(void *) objc_msgSend)((id)model,setter, (long double)d);
+        }break;
+        case LWTypeSEL: {
+            if (isNull) {
+                ((void (*)(id, SEL, SEL))(void *) objc_msgSend)((id)model,setter, (SEL)NULL);
+            } else if ([value isKindOfClass:[NSString class]]) {
+                SEL sel = NSSelectorFromString(value);
+                if (sel) ((void (*)(id, SEL, SEL))(void *) objc_msgSend)((id)model,setter, (SEL)sel);
+            }
+        }break;
 }
 
 
