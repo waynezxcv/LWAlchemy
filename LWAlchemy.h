@@ -7,11 +7,24 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <CoreData/CoreData.h>
+
+
 
 @interface NSObject(LWAlchemy)
 
 @property (nonatomic,copy) NSDictionary* mapper;
 
+/**
+ *  普通模型
+ */
 + (id)modelWithJSON:(id)json JSONKeyPathsByPropertyKey:(NSDictionary *)mapper;
 
+/**
+ *  CoreData模型
+ *
+ */
++ (id)coreDataModelWithJSON:(id)json
+  JSONKeyPathsByPropertyKey:(NSDictionary *)mapper
+                    context:(NSManagedObjectContext *)context;
 @end

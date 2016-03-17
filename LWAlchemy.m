@@ -13,7 +13,6 @@
 
 
 
-
 static const void* kJsonMapperKey;
 
 @implementation NSObject(LWAlchemy)
@@ -31,10 +30,23 @@ static const void* kJsonMapperKey;
     NSObject* model = [[self alloc] init];
     if (model) {
         model.mapper = [mapper copy];
-        NSDictionary* dic = [model _dictionaryWithJSON:model.mapper];
+        NSDictionary* dic = [model _dictionaryWithJSON:json];
         model = [model _modelWithDictionary:dic];
     }
     return model;
+}
+
++ (id)coreDataModelWithJSON:(id)json
+  JSONKeyPathsByPropertyKey:(NSDictionary *)mapper
+                    context:(NSManagedObjectContext *)context {
+    if ([self isSubclassOfClass:[NSManagedObject class]] && context) {
+        NSManagedObject* model = [NSEntityDescription insertNewObjectForEntityForName:NSStringFromClass(self) inManagedObjectContext:context];
+        model.mapper = [mapper copy];
+        NSDictionary* dic = [model _dictionaryWithJSON:json];
+        model = [model _coreDataModelWithDictionary:dic];
+        return model;
+    }
+    return [self modelWithJSON:json JSONKeyPathsByPropertyKey:mapper];
 }
 
 - (NSDictionary *)_dictionaryWithJSON:(id)json {
@@ -58,12 +70,12 @@ static const void* kJsonMapperKey;
 - (void)_enumeratePropertiesUsingBlock:(void (^)(objc_property_t property, BOOL *stop))block {
     Class cls = [self class];
     BOOL stop = NO;
-    while (!stop && ![cls isEqual:[self class]]) {
+    while (!stop && ![cls isEqual:[NSObject class]]) {
         unsigned count = 0;
         objc_property_t* properties = class_copyPropertyList(cls, &count);
         if (properties) {
             cls = cls.superclass;
-            if (properties == NULL) continue;
+            if (properties == NULL) return;
             for (unsigned i = 0; i < count; i++) {
                 block(properties[i], &stop);
                 if (stop) break;
@@ -72,6 +84,24 @@ static const void* kJsonMapperKey;
         }
     }
 }
+
+- (instancetype)_coreDataModelWithDictionary:(NSDictionary *)dictionary {
+    if (!dictionary || dictionary == (id)kCFNull) return nil;
+    if (![dictionary isKindOfClass:[NSDictionary class]]) return nil;
+    [self _enumeratePropertiesUsingBlock:^(objc_property_t property, BOOL *stop) {
+        LWAlchemyPropertyInfo* propertyInfo = [[LWAlchemyPropertyInfo alloc] initWithProperty:property];
+        NSString* mapKey = self.mapper[propertyInfo.propertyName];
+        id object = dictionary[mapKey];
+        
+        
+        NSLog(@"setValue:%@...forKey:%@",object,propertyInfo.propertyName);
+//        if (![propertyInfo.propertyName isEqualToString:@"forKey:managedObjectContext"]) {
+//            [self setValue:object forKey:propertyInfo.propertyName];
+//        }
+    }];
+    return self;
+}
+
 
 - (instancetype)_modelWithDictionary:(NSDictionary *)dictionary {
     if (!dictionary || dictionary == (id)kCFNull) return nil;
@@ -90,6 +120,10 @@ static void _SetPropertyValue(__unsafe_unretained id model,
                               __unsafe_unretained LWAlchemyPropertyInfo* propertyInfo,
                               __unsafe_unretained id value) {
     if (propertyInfo.isReadonly) {
+        return;
+    }
+    if (propertyInfo.isDynamic) {
+        _setDynamicPropertyValue(model,propertyInfo,value);
         return;
     }
     SEL setter = NSSelectorFromString(propertyInfo.setter);
@@ -147,7 +181,7 @@ static void _SetPropertyValue(__unsafe_unretained id model,
             if (isnan(f) || isinf(f)) f = 0;
             ((void (*)(id, SEL, float))(void *) objc_msgSend)((id)model,setter, f);
         }break;
-
+            
         case LWTypeDouble:{
             NSNumber* num = (NSNumber *)value;
             double d = num.doubleValue;
@@ -218,9 +252,16 @@ static void _SetPropertyValue(__unsafe_unretained id model,
     }
 }
 
+
+static void _setDynamicPropertyValue(__unsafe_unretained id model,
+                                     __unsafe_unretained LWAlchemyPropertyInfo* propertyInfo,
+                                     __unsafe_unretained id value) {
+    
+}
+
 static void _setObjectTypePropertyValue(__unsafe_unretained id model,
-                                    __unsafe_unretained LWAlchemyPropertyInfo* propertyInfo,
-                                    __unsafe_unretained id value) {
+                                        __unsafe_unretained LWAlchemyPropertyInfo* propertyInfo,
+                                        __unsafe_unretained id value) {
     SEL setter = NSSelectorFromString(propertyInfo.setter);
     BOOL isNull = (value == (id)kCFNull);
     if ([propertyInfo.cls class] == [NSString class]) {
@@ -236,6 +277,8 @@ static void _setObjectTypePropertyValue(__unsafe_unretained id model,
             ((void (*)(id, SEL, id))(void *) objc_msgSend)((id)model,setter, value);
         }
     }
+    
+    
     else if ([propertyInfo.cls class] == [NSNumber class]) {
         if ([value isKindOfClass:[NSNumber class]]) {
             NSNumber* num = (NSNumber *)value;

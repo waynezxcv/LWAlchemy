@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		013827481C9B02F6005374CA /* UserModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 013827471C9B02F6005374CA /* UserModel.m */; };
 		B0A87CAB1C9A5669004FD0D7 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = B0A87CAA1C9A5669004FD0D7 /* main.m */; };
 		B0A87CAE1C9A5669004FD0D7 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = B0A87CAD1C9A5669004FD0D7 /* AppDelegate.m */; };
 		B0A87CB11C9A5669004FD0D7 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B0A87CB01C9A5669004FD0D7 /* ViewController.m */; };
@@ -41,6 +42,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		013827461C9B02F6005374CA /* UserModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UserModel.h; sourceTree = "<group>"; };
+		013827471C9B02F6005374CA /* UserModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UserModel.m; sourceTree = "<group>"; };
 		B0A87CA61C9A5669004FD0D7 /* LWAlchemyDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LWAlchemyDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B0A87CAA1C9A5669004FD0D7 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		B0A87CAC1C9A5669004FD0D7 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -127,12 +130,10 @@
 				B0A87CAD1C9A5669004FD0D7 /* AppDelegate.m */,
 				B0A87CAF1C9A5669004FD0D7 /* ViewController.h */,
 				B0A87CB01C9A5669004FD0D7 /* ViewController.m */,
-				B0A87CB21C9A5669004FD0D7 /* Main.storyboard */,
-				B0A87CB81C9A5669004FD0D7 /* Assets.xcassets */,
-				B0A87CBA1C9A5669004FD0D7 /* LaunchScreen.storyboard */,
-				B0A87CBD1C9A5669004FD0D7 /* Info.plist */,
 				B0A87CB51C9A5669004FD0D7 /* LWAlchemyDemo.xcdatamodeld */,
 				B0A87CA91C9A5669004FD0D7 /* Supporting Files */,
+				013827461C9B02F6005374CA /* UserModel.h */,
+				013827471C9B02F6005374CA /* UserModel.m */,
 			);
 			path = LWAlchemyDemo;
 			sourceTree = "<group>";
@@ -140,6 +141,10 @@
 		B0A87CA91C9A5669004FD0D7 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				B0A87CB21C9A5669004FD0D7 /* Main.storyboard */,
+				B0A87CB81C9A5669004FD0D7 /* Assets.xcassets */,
+				B0A87CBA1C9A5669004FD0D7 /* LaunchScreen.storyboard */,
+				B0A87CBD1C9A5669004FD0D7 /* Info.plist */,
 				B0A87CAA1C9A5669004FD0D7 /* main.m */,
 			);
 			name = "Supporting Files";
@@ -243,6 +248,7 @@
 				TargetAttributes = {
 					B0A87CA51C9A5669004FD0D7 = {
 						CreatedOnToolsVersion = 7.2;
+						DevelopmentTeam = N29J3PPND9;
 					};
 					B0A87CC11C9A5669004FD0D7 = {
 						CreatedOnToolsVersion = 7.2;
@@ -312,6 +318,7 @@
 				B0A87CB11C9A5669004FD0D7 /* ViewController.m in Sources */,
 				B0A87CB71C9A5669004FD0D7 /* LWAlchemyDemo.xcdatamodeld in Sources */,
 				B0A87CAE1C9A5669004FD0D7 /* AppDelegate.m in Sources */,
+				013827481C9B02F6005374CA /* UserModel.m in Sources */,
 				B0A87CAB1C9A5669004FD0D7 /* main.m in Sources */,
 				B0A87CF11C9A5889004FD0D7 /* TestModel.m in Sources */,
 				B0A87CFD1C9A5B4A004FD0D7 /* NSManagedObject+LWAlchemy.m in Sources */,
@@ -453,6 +460,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				INFOPLIST_FILE = LWAlchemyDemo/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.warmjar.LWAlchemyDemo;
@@ -464,6 +472,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				INFOPLIST_FILE = LWAlchemyDemo/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.warmjar.LWAlchemyDemo;
@@ -538,6 +547,7 @@
 				B0A87CD81C9A5669004FD0D7 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		B0A87CD91C9A5669004FD0D7 /* Build configuration list for PBXNativeTarget "LWAlchemyDemoTests" */ = {
 			isa = XCConfigurationList;
@@ -546,6 +556,7 @@
 				B0A87CDB1C9A5669004FD0D7 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		B0A87CDC1C9A5669004FD0D7 /* Build configuration list for PBXNativeTarget "LWAlchemyDemoUITests" */ = {
 			isa = XCConfigurationList;
@@ -554,6 +565,7 @@
 				B0A87CDE1C9A5669004FD0D7 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 

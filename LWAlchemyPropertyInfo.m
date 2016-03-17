@@ -59,7 +59,6 @@
                     if (attributes[i].value) {
                         self.getter = [NSString stringWithUTF8String:attributes[i].value];
                     }
-
                 } break;
                     //自定义的Setter方法
                 case 'S': {
