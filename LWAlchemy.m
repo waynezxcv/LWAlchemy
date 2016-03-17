@@ -17,7 +17,6 @@
 
 @end
 
-
 @implementation LWAlchemy:NSObject
 
 - (id)initWithJSON:(id)JSON JSONKeyPathsByPropertyKey:(NSDictionary *)mapDict{

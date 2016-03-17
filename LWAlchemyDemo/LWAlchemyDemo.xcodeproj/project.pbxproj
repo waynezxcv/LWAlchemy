@@ -20,7 +20,7 @@
 		B0A87CF11C9A5889004FD0D7 /* TestModel.m in Sources */ = {isa = PBXBuildFile; fileRef = B0A87CEF1C9A5889004FD0D7 /* TestModel.m */; };
 		B0A87CF61C9A58B0004FD0D7 /* LWAlchemy.m in Sources */ = {isa = PBXBuildFile; fileRef = B0A87CF31C9A58B0004FD0D7 /* LWAlchemy.m */; };
 		B0A87CF71C9A58B0004FD0D7 /* LWAlchemyPropertyInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = B0A87CF51C9A58B0004FD0D7 /* LWAlchemyPropertyInfo.m */; };
-		B0A87CFA1C9A5916004FD0D7 /* NSManagedObject+LWAlchemy.m in Sources */ = {isa = PBXBuildFile; fileRef = B0A87CF91C9A5916004FD0D7 /* NSManagedObject+LWAlchemy.m */; };
+		B0A87CFD1C9A5B4A004FD0D7 /* NSManagedObject+LWAlchemy.m in Sources */ = {isa = PBXBuildFile; fileRef = B0A87CFC1C9A5B4A004FD0D7 /* NSManagedObject+LWAlchemy.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -66,8 +66,8 @@
 		B0A87CF31C9A58B0004FD0D7 /* LWAlchemy.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = LWAlchemy.m; path = ../LWAlchemy.m; sourceTree = "<group>"; };
 		B0A87CF41C9A58B0004FD0D7 /* LWAlchemyPropertyInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LWAlchemyPropertyInfo.h; path = ../LWAlchemyPropertyInfo.h; sourceTree = "<group>"; };
 		B0A87CF51C9A58B0004FD0D7 /* LWAlchemyPropertyInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = LWAlchemyPropertyInfo.m; path = ../LWAlchemyPropertyInfo.m; sourceTree = "<group>"; };
-		B0A87CF81C9A5916004FD0D7 /* NSManagedObject+LWAlchemy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSManagedObject+LWAlchemy.h"; sourceTree = "<group>"; };
-		B0A87CF91C9A5916004FD0D7 /* NSManagedObject+LWAlchemy.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSManagedObject+LWAlchemy.m"; sourceTree = "<group>"; };
+		B0A87CFB1C9A5B4A004FD0D7 /* NSManagedObject+LWAlchemy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSManagedObject+LWAlchemy.h"; path = "../NSManagedObject+LWAlchemy.h"; sourceTree = "<group>"; };
+		B0A87CFC1C9A5B4A004FD0D7 /* NSManagedObject+LWAlchemy.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NSManagedObject+LWAlchemy.m"; path = "../NSManagedObject+LWAlchemy.m"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -170,8 +170,8 @@
 				B0A87CF31C9A58B0004FD0D7 /* LWAlchemy.m */,
 				B0A87CF41C9A58B0004FD0D7 /* LWAlchemyPropertyInfo.h */,
 				B0A87CF51C9A58B0004FD0D7 /* LWAlchemyPropertyInfo.m */,
-				B0A87CF81C9A5916004FD0D7 /* NSManagedObject+LWAlchemy.h */,
-				B0A87CF91C9A5916004FD0D7 /* NSManagedObject+LWAlchemy.m */,
+				B0A87CFB1C9A5B4A004FD0D7 /* NSManagedObject+LWAlchemy.h */,
+				B0A87CFC1C9A5B4A004FD0D7 /* NSManagedObject+LWAlchemy.m */,
 			);
 			name = LWAlchemy;
 			sourceTree = "<group>";
@@ -314,7 +314,7 @@
 				B0A87CAE1C9A5669004FD0D7 /* AppDelegate.m in Sources */,
 				B0A87CAB1C9A5669004FD0D7 /* main.m in Sources */,
 				B0A87CF11C9A5889004FD0D7 /* TestModel.m in Sources */,
-				B0A87CFA1C9A5916004FD0D7 /* NSManagedObject+LWAlchemy.m in Sources */,
+				B0A87CFD1C9A5B4A004FD0D7 /* NSManagedObject+LWAlchemy.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
