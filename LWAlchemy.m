@@ -11,22 +11,30 @@
 #import <objc/message.h>
 #import "LWAlchemyPropertyInfo.h"
 
-@interface LWAlchemy ()
 
-@property (nonatomic,strong) NSDictionary* mapDict;
 
-@end
 
-@implementation LWAlchemy:NSObject
+static const void* kJsonMapperKey;
 
-- (id)initWithJSON:(id)JSON JSONKeyPathsByPropertyKey:(NSDictionary *)mapDict{
-    self = [super init];
-    if (self) {
-        self.mapDict = mapDict;
-        NSDictionary* dic = [self _dictionaryWithJSON:JSON];
-        self = [self _modelWithDictionary:dic];
+@implementation NSObject(LWAlchemy)
+
+
+- (NSDictionary *)mapper {
+    return objc_getAssociatedObject(self, kJsonMapperKey);
+}
+
+- (void)setMapper:(NSDictionary *)mapper {
+    objc_setAssociatedObject(self, kJsonMapperKey, mapper, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
++ (id)modelWithJSON:(id)json JSONKeyPathsByPropertyKey:(NSDictionary *)mapper {
+    NSObject* model = [[self alloc] init];
+    if (model) {
+        model.mapper = [mapper copy];
+        NSDictionary* dic = [model _dictionaryWithJSON:model.mapper];
+        model = [model _modelWithDictionary:dic];
     }
-    return self;
+    return model;
 }
 
 - (NSDictionary *)_dictionaryWithJSON:(id)json {
@@ -47,11 +55,10 @@
     return dic;
 }
 
-
 - (void)_enumeratePropertiesUsingBlock:(void (^)(objc_property_t property, BOOL *stop))block {
     Class cls = [self class];
     BOOL stop = NO;
-    while (!stop && ![cls isEqual:[LWAlchemy class]]) {
+    while (!stop && ![cls isEqual:[self class]]) {
         unsigned count = 0;
         objc_property_t* properties = class_copyPropertyList(cls, &count);
         if (properties) {
@@ -71,7 +78,7 @@
     if (![dictionary isKindOfClass:[NSDictionary class]]) return nil;
     [self _enumeratePropertiesUsingBlock:^(objc_property_t property, BOOL *stop) {
         LWAlchemyPropertyInfo* propertyInfo = [[LWAlchemyPropertyInfo alloc] initWithProperty:property];
-        NSString* mapKey = self.mapDict[propertyInfo.propertyName];
+        NSString* mapKey = self.mapper[propertyInfo.propertyName];
         id object = dictionary[mapKey];
         _SetPropertyValue(self,propertyInfo,object);
     }];
@@ -324,5 +331,6 @@ static  Class LWNSBlockClass() {
     });
     return cls;
 }
+
 
 @end

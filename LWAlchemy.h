@@ -8,8 +8,10 @@
 
 #import <Foundation/Foundation.h>
 
-@interface LWAlchemy:NSObject
+@interface NSObject(LWAlchemy)
 
-- (id)initWithJSON:(id)JSON JSONKeyPathsByPropertyKey:(NSDictionary *)mapDict;
+@property (nonatomic,copy) NSDictionary* mapper;
+
++ (id)modelWithJSON:(id)json JSONKeyPathsByPropertyKey:(NSDictionary *)mapper;
 
 @end

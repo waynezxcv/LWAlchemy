@@ -7,6 +7,9 @@
 //
 
 #import <CoreData/CoreData.h>
+#import "LWAlchemy.h"
+
+
 
 @interface NSManagedObject(LWAlchemy)
 
