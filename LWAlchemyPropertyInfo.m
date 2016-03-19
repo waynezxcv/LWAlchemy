@@ -20,6 +20,10 @@
 @property (nonatomic, strong) NSString* setter;//setter方法
 @property (nonatomic,assign,getter=isReadonly) BOOL readonly;//是否是只读属性
 @property (nonatomic,assign,getter=isDynamic) BOOL dynamic;
+@property (nonatomic,assign,getter=isIdType) BOOL idType;
+@property (nonatomic,assign,getter=isNumberType) BOOL numberType;
+@property (nonatomic,assign,getter=isObjectType) BOOL objectType;
+@property (nonatomic,assign,getter=isFoundationType) BOOL foundationType;
 
 @end
 
@@ -30,6 +34,11 @@
     if (self) {
         self.readonly = NO;
         self.dynamic = NO;
+        self.idType = NO;
+        self.numberType = NO;
+        self.objectType = NO;
+        self.foundationType = NO;
+        
         self.property = property;
         unsigned int attrCount;
         objc_property_attribute_t* attributes = property_copyAttributeList(property, &attrCount);
@@ -38,12 +47,12 @@
                     //类型属性
                 case 'T': {
                     if (attributes[i].value) {
-                        LWType type = _GetPropertyInfoType(attributes[i].value);
+                        LWType type = _GetPropertyInfoType(self, attributes[i].value);
                         self.type = type;
                         if (self.type == LWTypeObject) {
                             self.cls = _GetPropertyInfoClass(attributes[i].value);
-                        }
-                        else {
+                            _IsObjectFoundationType(self.cls);
+                        } else {
                             self.cls = nil;
                         }
                     }
@@ -97,7 +106,59 @@
     return self;
 }
 
-static LWType _GetPropertyInfoType(const char* value) {
+- (void)setType:(LWType)type {
+    _type = type;
+    switch (_type) {
+        case LWTypeBool:
+        case LWTypeInt8:
+        case LWTypeUInt8:
+        case LWTypeInt16:
+        case LWTypeUInt16:
+        case LWTypeInt32:
+        case LWTypeUInt32:
+        case LWTypeInt64:
+        case LWTypeUInt64:
+        case LWTypeFloat:
+        case LWTypeDouble:
+        case LWTypeLongDouble:self.numberType = YES;break;
+        case LWTypeObject:self.objectType = YES;break;
+        case LWTypeBlock:break;
+        case LWTypeClass:break;
+        case LWTypeUnkonw:break;
+        case LWTypeVoid:break;
+        case LWTypeCFString:break;
+        case LWTypePointer:break;
+        case LWTypeUnion:break;
+        case LWTypeStruct:break;
+        case LWTypeCFArray:break;
+        case LWTypeSEL:break;
+        default:break;
+    }
+}
+
+
+static inline bool _IsObjectFoundationType(Class cls) {
+    if (!cls) return NO;
+    if ([cls isSubclassOfClass:[NSMutableString class]]) return YES;
+    if ([cls isSubclassOfClass:[NSString class]]) return YES;
+    if ([cls isSubclassOfClass:[NSDecimalNumber class]]) return YES;
+    if ([cls isSubclassOfClass:[NSNumber class]]) return YES;
+    if ([cls isSubclassOfClass:[NSValue class]]) return YES;
+    if ([cls isSubclassOfClass:[NSMutableData class]]) return YES;
+    if ([cls isSubclassOfClass:[NSData class]]) return YES;
+    if ([cls isSubclassOfClass:[NSDate class]]) return YES;
+    if ([cls isSubclassOfClass:[NSURL class]]) return YES;
+    if ([cls isSubclassOfClass:[NSMutableArray class]]) return YES;
+    if ([cls isSubclassOfClass:[NSArray class]]) return YES;
+    if ([cls isSubclassOfClass:[NSMutableDictionary class]]) return YES;
+    if ([cls isSubclassOfClass:[NSDictionary class]]) return YES;
+    if ([cls isSubclassOfClass:[NSMutableSet class]]) return YES;
+    if ([cls isSubclassOfClass:[NSSet class]]) return YES;
+    return NO;
+}
+
+
+static LWType _GetPropertyInfoType(LWAlchemyPropertyInfo* propertyInfo, const char* value) {
     size_t len = strlen(value);
     if (len == 0) return LWTypeUnkonw;
     switch (* value) {
@@ -127,6 +188,12 @@ static LWType _GetPropertyInfoType(const char* value) {
             if (len == 2 && *(value + 1) == '?'){
                 return LWTypeBlock;
             } else {
+                if (len == 1) {
+                    propertyInfo.idType = YES;
+                }
+                else {
+                    propertyInfo.idType = NO;
+                }
                 return LWTypeObject;
             }
         }

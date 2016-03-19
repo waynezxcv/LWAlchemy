@@ -10,46 +10,48 @@
 #import <objc/runtime.h>
 
 typedef NS_ENUM(NSUInteger, LWType) {
-    LWTypeUnkonw        = 0,//未知类型
-    LWTypeVoid          = 1,//void类型
-    LWTypeBool          = 2,//布尔类型
-    LWTypeInt8          = 3,//Int8类型
-    LWTypeUInt8         = 4,//无符号Int8类型
-    LWTypeInt16         = 5,//Int16类型
-    LWTypeUInt16        = 6,//无符号Int16类型
-    LWTypeInt32         = 7,//Int32类型
-    LWTypeUInt32        = 8,//无符号Int32类型
-    LWTypeInt64         = 9,//Int64类型
-    LWTypeUInt64        = 10,//无符号Int64类型
-    LWTypeFloat         = 11,//浮点型
-    LWTypeDouble        = 12,//双精度浮点型
-    LWTypeLongDouble    = 13,//长双精度浮点型
-    LWTypeClass         = 14,//Class类型（类）
-    LWTypeSEL           = 15,//SEL类型（方法）
-    LWTypeCFString      = 16,//CFStringRef const char*
-    LWTypePointer       = 17,//Pointer
-    LWTypeCFArray       = 18,//CFArrayRef
-    LWTypeUnion         = 19,//联合体类型
-    LWTypeStruct        = 20,//结构体类型
-    LWTypeObject        = 21,//对象类型（类的实例对象）
-    LWTypeBlock         = 22,//Block类型
+    LWTypeUnkonw        = 0,
+    LWTypeVoid          = 1,
+    LWTypeBool          = 2,
+    LWTypeInt8          = 3,
+    LWTypeUInt8         = 4,
+    LWTypeInt16         = 5,
+    LWTypeUInt16        = 6,
+    LWTypeInt32         = 7,
+    LWTypeUInt32        = 8,
+    LWTypeInt64         = 9,
+    LWTypeUInt64        = 10,
+    LWTypeFloat         = 11,
+    LWTypeDouble        = 12,
+    LWTypeLongDouble    = 13,
+    LWTypeClass         = 14,
+    LWTypeSEL           = 15,
+    LWTypeCFString      = 16,
+    LWTypePointer       = 17,
+    LWTypeCFArray       = 18,
+    LWTypeUnion         = 19,
+    LWTypeStruct        = 20,
+    LWTypeObject        = 21,
+    LWTypeBlock         = 22,
 };
 
-/**
- *  一个Property的抽象
- */
+
 @interface LWAlchemyPropertyInfo : NSObject
 
-@property (nonatomic,assign,readonly) objc_property_t property;//属性
-@property (nonatomic,strong,readonly) NSString* propertyName;//属性名称
-@property (nonatomic,strong,readonly) NSString* ivarName;//实例对象名称
-@property (nonatomic,assign,readonly) Ivar ivar;//实例对象
-@property (nonatomic,assign,readonly) LWType type;//类型
-@property (nonatomic,assign,readonly) Class cls;//如果是LWTypeObject类型，用来表示该对象所属的类,否则为nil
-@property (nonatomic,strong,readonly) NSString* getter;//getter方法
-@property (nonatomic,strong,readonly) NSString* setter;//setter方法
-@property (nonatomic,assign,readonly,getter=isReadonly) BOOL readonly;//是否是只读属性
+@property (nonatomic,assign,readonly) objc_property_t property;
+@property (nonatomic,strong,readonly) NSString* propertyName;
+@property (nonatomic,strong,readonly) NSString* ivarName;
+@property (nonatomic,assign,readonly) Ivar ivar;
+@property (nonatomic,assign,readonly) LWType type;
+@property (nonatomic,assign,readonly) Class cls;
+@property (nonatomic,strong,readonly) NSString* getter;
+@property (nonatomic,strong,readonly) NSString* setter;
+@property (nonatomic,assign,readonly,getter=isReadonly) BOOL readonly;
 @property (nonatomic,assign,readonly,getter=isDynamic) BOOL dynamic;
+@property (nonatomic,assign,readonly,getter=isNumberType) BOOL numberType;
+@property (nonatomic,assign,readonly,getter=isObjectType) BOOL objectType;
+@property (nonatomic,assign,readonly,getter=isIdType) BOOL idType;
+@property (nonatomic,assign,readonly,getter=isFoundationType) BOOL foundationType;
 
 - (id)initWithProperty:(objc_property_t)property;
 

@@ -13,7 +13,6 @@
 
 @interface NSObject(LWAlchemy)
 
-@property (nonatomic,copy) NSDictionary* mapper;
 
 /**
  *  普通模型
