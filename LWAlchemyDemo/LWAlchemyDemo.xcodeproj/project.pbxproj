@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		013827481C9B02F6005374CA /* UserModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 013827471C9B02F6005374CA /* UserModel.m */; };
+		0171C7A51C9F12C3000F2D14 /* LWAlchemyCoreDataManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 0171C7A41C9F12C3000F2D14 /* LWAlchemyCoreDataManager.m */; };
 		B002FA5A1C9EF37600A21ACC /* CDUserModel+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = B002FA571C9EF37600A21ACC /* CDUserModel+CoreDataProperties.m */; };
 		B002FA5B1C9EF37600A21ACC /* CDUserModel.m in Sources */ = {isa = PBXBuildFile; fileRef = B002FA591C9EF37600A21ACC /* CDUserModel.m */; };
 		B002FA601C9EF62B00A21ACC /* CDStatusModel+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = B002FA5D1C9EF62B00A21ACC /* CDStatusModel+CoreDataProperties.m */; };
@@ -21,7 +22,7 @@
 		B0A87CBC1C9A5669004FD0D7 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B0A87CBA1C9A5669004FD0D7 /* LaunchScreen.storyboard */; };
 		B0A87CC71C9A5669004FD0D7 /* LWAlchemyDemoTests.m in Sources */ = {isa = PBXBuildFile; fileRef = B0A87CC61C9A5669004FD0D7 /* LWAlchemyDemoTests.m */; };
 		B0A87CD21C9A5669004FD0D7 /* LWAlchemyDemoUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = B0A87CD11C9A5669004FD0D7 /* LWAlchemyDemoUITests.m */; };
-		B0A87CF61C9A58B0004FD0D7 /* LWAlchemy.m in Sources */ = {isa = PBXBuildFile; fileRef = B0A87CF31C9A58B0004FD0D7 /* LWAlchemy.m */; };
+		B0A87CF61C9A58B0004FD0D7 /* NSObject+LWAlchemy.m in Sources */ = {isa = PBXBuildFile; fileRef = B0A87CF31C9A58B0004FD0D7 /* NSObject+LWAlchemy.m */; };
 		B0A87CF71C9A58B0004FD0D7 /* LWAlchemyPropertyInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = B0A87CF51C9A58B0004FD0D7 /* LWAlchemyPropertyInfo.m */; };
 		B0F508FC1C9ECD160001D2ED /* StatusModel.m in Sources */ = {isa = PBXBuildFile; fileRef = B0F508FB1C9ECD160001D2ED /* StatusModel.m */; };
 /* End PBXBuildFile section */
@@ -46,6 +47,9 @@
 /* Begin PBXFileReference section */
 		013827461C9B02F6005374CA /* UserModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UserModel.h; sourceTree = "<group>"; };
 		013827471C9B02F6005374CA /* UserModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UserModel.m; sourceTree = "<group>"; };
+		0171C7A31C9F12C3000F2D14 /* LWAlchemyCoreDataManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LWAlchemyCoreDataManager.h; sourceTree = "<group>"; };
+		0171C7A41C9F12C3000F2D14 /* LWAlchemyCoreDataManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LWAlchemyCoreDataManager.m; sourceTree = "<group>"; };
+		0171C7A61C9F13AB000F2D14 /* LWAlchemy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LWAlchemy.h; sourceTree = "<group>"; };
 		B002FA561C9EF37600A21ACC /* CDUserModel+CoreDataProperties.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "CDUserModel+CoreDataProperties.h"; path = "../CDUserModel+CoreDataProperties.h"; sourceTree = "<group>"; };
 		B002FA571C9EF37600A21ACC /* CDUserModel+CoreDataProperties.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "CDUserModel+CoreDataProperties.m"; path = "../CDUserModel+CoreDataProperties.m"; sourceTree = "<group>"; };
 		B002FA581C9EF37600A21ACC /* CDUserModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CDUserModel.h; path = ../CDUserModel.h; sourceTree = "<group>"; };
@@ -71,8 +75,8 @@
 		B0A87CCD1C9A5669004FD0D7 /* LWAlchemyDemoUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = LWAlchemyDemoUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		B0A87CD11C9A5669004FD0D7 /* LWAlchemyDemoUITests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = LWAlchemyDemoUITests.m; sourceTree = "<group>"; };
 		B0A87CD31C9A5669004FD0D7 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		B0A87CF21C9A58B0004FD0D7 /* LWAlchemy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LWAlchemy.h; path = ../LWAlchemy.h; sourceTree = "<group>"; };
-		B0A87CF31C9A58B0004FD0D7 /* LWAlchemy.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = LWAlchemy.m; path = ../LWAlchemy.m; sourceTree = "<group>"; };
+		B0A87CF21C9A58B0004FD0D7 /* NSObject+LWAlchemy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSObject+LWAlchemy.h"; path = "../NSObject+LWAlchemy.h"; sourceTree = "<group>"; };
+		B0A87CF31C9A58B0004FD0D7 /* NSObject+LWAlchemy.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NSObject+LWAlchemy.m"; path = "../NSObject+LWAlchemy.m"; sourceTree = "<group>"; };
 		B0A87CF41C9A58B0004FD0D7 /* LWAlchemyPropertyInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LWAlchemyPropertyInfo.h; path = ../LWAlchemyPropertyInfo.h; sourceTree = "<group>"; };
 		B0A87CF51C9A58B0004FD0D7 /* LWAlchemyPropertyInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = LWAlchemyPropertyInfo.m; path = ../LWAlchemyPropertyInfo.m; sourceTree = "<group>"; };
 		B0F508FA1C9ECD160001D2ED /* StatusModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StatusModel.h; sourceTree = "<group>"; };
@@ -107,10 +111,17 @@
 		0171C79A1C9EFD78000F2D14 /* Models */ = {
 			isa = PBXGroup;
 			children = (
-				B0F508FA1C9ECD160001D2ED /* StatusModel.h */,
-				B0F508FB1C9ECD160001D2ED /* StatusModel.m */,
-				013827461C9B02F6005374CA /* UserModel.h */,
-				013827471C9B02F6005374CA /* UserModel.m */,
+				0171C7A21C9F1231000F2D14 /* NSObject */,
+				0171C7A11C9F120B000F2D14 /* NSManagedObject */,
+			);
+			name = Models;
+			sourceTree = "<group>";
+		};
+		0171C7A11C9F120B000F2D14 /* NSManagedObject */ = {
+			isa = PBXGroup;
+			children = (
+				B002FA5E1C9EF62B00A21ACC /* CDStatusModel.h */,
+				B002FA5F1C9EF62B00A21ACC /* CDStatusModel.m */,
 				B0A87CB51C9A5669004FD0D7 /* LWAlchemyDemo.xcdatamodeld */,
 				B002FA561C9EF37600A21ACC /* CDUserModel+CoreDataProperties.h */,
 				B002FA571C9EF37600A21ACC /* CDUserModel+CoreDataProperties.m */,
@@ -118,10 +129,19 @@
 				B002FA591C9EF37600A21ACC /* CDUserModel.m */,
 				B002FA5C1C9EF62B00A21ACC /* CDStatusModel+CoreDataProperties.h */,
 				B002FA5D1C9EF62B00A21ACC /* CDStatusModel+CoreDataProperties.m */,
-				B002FA5E1C9EF62B00A21ACC /* CDStatusModel.h */,
-				B002FA5F1C9EF62B00A21ACC /* CDStatusModel.m */,
 			);
-			name = Models;
+			name = NSManagedObject;
+			sourceTree = "<group>";
+		};
+		0171C7A21C9F1231000F2D14 /* NSObject */ = {
+			isa = PBXGroup;
+			children = (
+				B0F508FA1C9ECD160001D2ED /* StatusModel.h */,
+				B0F508FB1C9ECD160001D2ED /* StatusModel.m */,
+				013827461C9B02F6005374CA /* UserModel.h */,
+				013827471C9B02F6005374CA /* UserModel.m */,
+			);
+			name = NSObject;
 			sourceTree = "<group>";
 		};
 		B0A87C9D1C9A5669004FD0D7 = {
@@ -191,8 +211,11 @@
 		B0A87CDF1C9A5679004FD0D7 /* LWAlchemy */ = {
 			isa = PBXGroup;
 			children = (
-				B0A87CF21C9A58B0004FD0D7 /* LWAlchemy.h */,
-				B0A87CF31C9A58B0004FD0D7 /* LWAlchemy.m */,
+				0171C7A61C9F13AB000F2D14 /* LWAlchemy.h */,
+				0171C7A31C9F12C3000F2D14 /* LWAlchemyCoreDataManager.h */,
+				0171C7A41C9F12C3000F2D14 /* LWAlchemyCoreDataManager.m */,
+				B0A87CF21C9A58B0004FD0D7 /* NSObject+LWAlchemy.h */,
+				B0A87CF31C9A58B0004FD0D7 /* NSObject+LWAlchemy.m */,
 				B0A87CF41C9A58B0004FD0D7 /* LWAlchemyPropertyInfo.h */,
 				B0A87CF51C9A58B0004FD0D7 /* LWAlchemyPropertyInfo.m */,
 			);
@@ -331,7 +354,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				B0A87CF71C9A58B0004FD0D7 /* LWAlchemyPropertyInfo.m in Sources */,
-				B0A87CF61C9A58B0004FD0D7 /* LWAlchemy.m in Sources */,
+				B0A87CF61C9A58B0004FD0D7 /* NSObject+LWAlchemy.m in Sources */,
 				B0A87CB11C9A5669004FD0D7 /* ViewController.m in Sources */,
 				B0A87CB71C9A5669004FD0D7 /* LWAlchemyDemo.xcdatamodeld in Sources */,
 				B0A87CAE1C9A5669004FD0D7 /* AppDelegate.m in Sources */,
@@ -339,6 +362,7 @@
 				B002FA5B1C9EF37600A21ACC /* CDUserModel.m in Sources */,
 				B0F508FC1C9ECD160001D2ED /* StatusModel.m in Sources */,
 				013827481C9B02F6005374CA /* UserModel.m in Sources */,
+				0171C7A51C9F12C3000F2D14 /* LWAlchemyCoreDataManager.m in Sources */,
 				B002FA5A1C9EF37600A21ACC /* CDUserModel+CoreDataProperties.m in Sources */,
 				B002FA611C9EF62B00A21ACC /* CDStatusModel.m in Sources */,
 				B0A87CAB1C9A5669004FD0D7 /* main.m in Sources */,
