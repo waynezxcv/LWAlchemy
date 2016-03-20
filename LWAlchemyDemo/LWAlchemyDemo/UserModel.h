@@ -12,5 +12,7 @@
 
 @property (nonatomic,copy) NSString* name;
 @property (nonatomic,copy) NSString* sign;
+@property (nonatomic,assign) NSInteger age;
+@property (nonatomic,strong) NSURL* website;
 
 @end

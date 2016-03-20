@@ -11,7 +11,7 @@
 
 @interface StatusModel : NSObject
 
-
+@property (nonatomic,strong) id test;
 @property (nonatomic,copy) NSString* text;
 @property (nonatomic,strong) UserModel* user;
 @property (nonatomic,strong) StatusModel* retweetedStatus;

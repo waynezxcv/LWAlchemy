@@ -73,7 +73,6 @@ static const void* kPropertySetKey;
 
 + (id)coreDataModelWithJSON:(id)json
                     context:(NSManagedObjectContext *)context {
-
     if ([self isSubclassOfClass:[NSManagedObject class]] && context) {
         NSManagedObject* model = [NSEntityDescription insertNewObjectForEntityForName:NSStringFromClass(self)
                                                                inManagedObjectContext:context];
@@ -85,7 +84,7 @@ static const void* kPropertySetKey;
                 [mapper setObject:key forKey:key];
             }
             model.mapper = [mapper copy];
-            model = [model coreDataModelWithDictionary:dic];
+            model = [model coreDataModelWithDictionary:dic context:context];
         }
         return model;
     }
@@ -133,7 +132,7 @@ static const void* kPropertySetKey;
                 }
                 model.mapper = [mapper copy];
             }
-            model = [model coreDataModelWithDictionary:dic];
+            model = [model coreDataModelWithDictionary:dic context:context];
         }
         return model;
     }
@@ -160,9 +159,7 @@ static const void* kPropertySetKey;
     return self;
 }
 
-
-
-- (instancetype)coreDataModelWithDictionary:(NSDictionary *)dictionary {
+- (instancetype)coreDataModelWithDictionary:(NSDictionary *)dictionary context:(NSManagedObjectContext *)contxt {
     if (!dictionary || dictionary == (id)kCFNull) return nil;
     if (![dictionary isKindOfClass:[NSDictionary class]]) return nil;
     if (!self.mapper) {
@@ -174,18 +171,28 @@ static const void* kPropertySetKey;
         self.mapper = [mapper copy];
     }
 
-
     [self.propertysSet enumerateObjectsUsingBlock:^(LWAlchemyPropertyInfo* propertyInfo, BOOL * _Nonnull stop) {
         NSString* mapKey = self.mapper[propertyInfo.propertyName];
         id object = dictionary[mapKey];
         if (!propertyInfo.isReadonly) {
-            [self setValue:object forKey:propertyInfo.propertyName];
-            //多级
+            if (propertyInfo.isFoundationType) {
+                [self setValue:object forKey:propertyInfo.propertyName];
+            }
+            else {
+                if (propertyInfo.isIdType) {
+                    [self setValue:object forKey:propertyInfo.propertyName];
+                } else {
+                    Class cls = propertyInfo.cls;
+                    NSManagedObject* model = [NSEntityDescription insertNewObjectForEntityForName:NSStringFromClass(cls)
+                                                                           inManagedObjectContext:contxt];
+                    [model coreDataModelWithDictionary:object context:contxt];
+                    [self setValue:model forKey:propertyInfo.propertyName];
+                }
+            }
         }
     }];
     return self;
 }
-
 
 #pragma mark - Private Methods
 
@@ -234,6 +241,7 @@ static const void* kPropertySetKey;
     }
 }
 
+
 /**
  *  设置Property的值
  *
@@ -257,7 +265,6 @@ static void _SetPropertyValue(__unsafe_unretained id model,
         _SetOtherTypePropertyValue(model,propertyInfo,value);
     }
 }
-
 
 /**
  *  设置LWTypeNumber类型Property的值
@@ -612,6 +619,25 @@ static inline Class LWNSBlockClass() {
     return cls;
 }
 
-#pragma mark - Override
+#pragma mark - Description
 
+- (NSString *)lwAlchemyDescription {
+    return  _ModelDescription(self);
+}
+
+static NSString* _ModelDescription(NSObject *model) {
+    if (!model) return @"<nil>";
+    if (model == (id)kCFNull) return @"<null>";
+    if (![model isKindOfClass:[NSObject class]]) return [NSString stringWithFormat:@"%@",model];
+    __block NSMutableString* des = [[NSMutableString alloc] init];
+    [model.propertysSet enumerateObjectsUsingBlock:^(LWAlchemyPropertyInfo* propertyInfo, BOOL * _Nonnull stop) {
+        if (propertyInfo.getter) {
+            SEL getter = NSSelectorFromString(propertyInfo.getter);
+            id value = ((id (*)(id, SEL))(void *) objc_msgSend)((id)model,getter);
+            NSString* propertyDes = [NSString stringWithFormat:@"propertyName:%@,value:%@\n",propertyInfo.propertyName,value];
+            [des appendFormat:propertyDes];
+        }
+    }];
+    return des;
+}
 @end

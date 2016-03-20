@@ -53,7 +53,8 @@
                         self.type = type;
                         if (self.type == LWTypeObject) {
                             self.cls = _GetPropertyInfoClass(attributes[i].value);
-                            _IsObjectFoundationType(self.cls);
+                            if (_IsObjectFoundationType(self.cls)) self.foundationType = YES;
+                            else self.foundationType = NO;
                         } else {
                             self.cls = nil;
                         }
