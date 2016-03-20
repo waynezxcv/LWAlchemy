@@ -11,14 +11,11 @@
 #import <objc/message.h>
 #import "LWAlchemyPropertyInfo.h"
 
+static void* LWAlechmyCachedPropertyKeysKey = &LWAlechmyCachedPropertyKeysKey;
 
-static const void* kJsonMapperKey;
-static const void* kPropertySetKey;
+@interface NSObject(LWAlchemy)
 
-@interface NSObject()
-
-@property (nonatomic,strong) NSSet* propertysSet;
-@property (nonatomic,copy) NSDictionary* mapper;
++ (NSSet *)propertysSet;
 
 @end
 
@@ -27,133 +24,62 @@ static const void* kPropertySetKey;
 
 #pragma mark - Associate
 
-- (NSDictionary *)mapper {
-    return objc_getAssociatedObject(self, &kJsonMapperKey);
-}
-
-- (void)setMapper:(NSDictionary *)mapper {
-    objc_setAssociatedObject(self, &kJsonMapperKey, mapper, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-}
-
-- (NSSet *)propertysSet {
-    NSSet *cachedKeys = objc_getAssociatedObject(self, &kPropertySetKey);
++ (NSSet *)propertysSet {
+    NSSet* cachedKeys = objc_getAssociatedObject(self, LWAlechmyCachedPropertyKeysKey);
     if (cachedKeys != nil) {
         return cachedKeys;
     }
-    NSArray* keys = [self.mapper allKeys];
-    NSMutableSet* propertys = [NSMutableSet set];
+    NSMutableSet* propertysSet = [NSMutableSet set];
     [self _enumeratePropertiesUsingBlock:^(objc_property_t property, BOOL *stop) {
         LWAlchemyPropertyInfo* propertyInfo = [[LWAlchemyPropertyInfo alloc] initWithProperty:property];
-        if ([keys containsObject:propertyInfo.propertyName]) {
-            [propertys addObject:propertyInfo];
-        }
+        [propertysSet addObject:propertyInfo];
     }];
-    objc_setAssociatedObject(self,&kPropertySetKey, propertys, OBJC_ASSOCIATION_COPY);
-    return propertys;
+    objc_setAssociatedObject(self,LWAlechmyCachedPropertyKeysKey, propertysSet, OBJC_ASSOCIATION_COPY);
+    return propertysSet;
 }
-
 
 #pragma mark - Init
 
 + (id)modelWithJSON:(id)json {
     NSObject* model = [[self alloc] init];
     if (model) {
-        NSDictionary* dic = [model _dictionaryWithJSON:json];
-        NSMutableDictionary* mapper = [[NSMutableDictionary alloc] init];
-        NSArray* keys = [dic allKeys];
-        for (NSString* key in keys) {
-            [mapper setObject:key forKey:key];
-        }
-        model.mapper = [mapper copy];
-        model = [model modelWithDictionary:dic];
-    }
-    return model;
-}
-
-
-+ (id)coreDataModelWithJSON:(id)json
-                    context:(NSManagedObjectContext *)context {
-    if ([self isSubclassOfClass:[NSManagedObject class]] && context) {
-        NSManagedObject* model = [NSEntityDescription insertNewObjectForEntityForName:NSStringFromClass(self)
-                                                               inManagedObjectContext:context];
-        if (model) {
+        if (![json isKindOfClass:[NSDictionary class]]) {
             NSDictionary* dic = [model _dictionaryWithJSON:json];
-            NSMutableDictionary* mapper = [[NSMutableDictionary alloc] init];
-            NSArray* keys = [dic allKeys];
-            for (NSString* key in keys) {
-                [mapper setObject:key forKey:key];
-            }
-            model.mapper = [mapper copy];
-            model = [model coreDataModelWithDictionary:dic context:context];
-        }
-        return model;
-    }
-    return [self modelWithJSON:json JSONKeyPathsByPropertyKey:self.mapper];
-}
-
-
-+ (id)modelWithJSON:(id)json JSONKeyPathsByPropertyKey:(NSDictionary *)mapper {
-    NSObject* model = [[self alloc] init];
-    if (model) {
-        NSDictionary* dic = [model _dictionaryWithJSON:json];
-        if (mapper != nil) {
-            model.mapper = [mapper copy];
+            model = [model modelWithDictionary:dic];
         }
         else {
-            NSMutableDictionary* mapper = [[NSMutableDictionary alloc] init];
-            NSArray* keys = [dic allKeys];
-            for (NSString* key in keys) {
-                [mapper setObject:key forKey:key];
-            }
-            model.mapper = [mapper copy];
+            model = [model modelWithDictionary:json];
         }
-        model = [model modelWithDictionary:dic];
     }
     return model;
 }
 
 
 + (id)coreDataModelWithJSON:(id)json
-  JSONKeyPathsByPropertyKey:(NSDictionary *)mapper
                     context:(NSManagedObjectContext *)context {
     if ([self isSubclassOfClass:[NSManagedObject class]] && context) {
         NSManagedObject* model = [NSEntityDescription insertNewObjectForEntityForName:NSStringFromClass(self)
                                                                inManagedObjectContext:context];
         if (model) {
-            NSDictionary* dic = [model _dictionaryWithJSON:json];
-            if (mapper != nil) {
-                model.mapper = [mapper copy];
+            if (![json isKindOfClass:[NSDictionary class]]) {
+                NSDictionary* dic = [model _dictionaryWithJSON:json];
+                model = [model coreDataModelWithDictionary:dic context:context];
             }
             else {
-                NSMutableDictionary* mapper = [[NSMutableDictionary alloc] init];
-                NSArray* keys = [dic allKeys];
-                for (NSString* key in keys) {
-                    [mapper setObject:key forKey:key];
-                }
-                model.mapper = [mapper copy];
+                model = [model coreDataModelWithDictionary:json context:context];
             }
-            model = [model coreDataModelWithDictionary:dic context:context];
         }
         return model;
     }
-    return [self modelWithJSON:json JSONKeyPathsByPropertyKey:self.mapper];
+    return [self modelWithJSON:json];
 }
-
 
 - (instancetype)modelWithDictionary:(NSDictionary *)dictionary {
     if (!dictionary || dictionary == (id)kCFNull) return nil;
     if (![dictionary isKindOfClass:[NSDictionary class]]) return nil;
-    if (!self.mapper) {
-        NSMutableDictionary* mapper = [[NSMutableDictionary alloc] init];
-        NSArray* keys = [dictionary allKeys];
-        for (NSString* key in keys) {
-            [mapper setObject:key forKey:key];
-        }
-        self.mapper = [mapper copy];
-    }
-    [self.propertysSet enumerateObjectsUsingBlock:^(LWAlchemyPropertyInfo* propertyInfo, BOOL * _Nonnull stop) {
-        NSString* mapKey = self.mapper[propertyInfo.propertyName];
-        id object = dictionary[mapKey];
+    NSSet* propertysSet = self.class.propertysSet;
+    [propertysSet enumerateObjectsUsingBlock:^(LWAlchemyPropertyInfo* propertyInfo, BOOL * _Nonnull stop) {
+        id object = dictionary[propertyInfo.propertyName];
         _SetPropertyValue(self,propertyInfo,object);
     }];
     return self;
@@ -162,23 +88,13 @@ static const void* kPropertySetKey;
 - (instancetype)coreDataModelWithDictionary:(NSDictionary *)dictionary context:(NSManagedObjectContext *)contxt {
     if (!dictionary || dictionary == (id)kCFNull) return nil;
     if (![dictionary isKindOfClass:[NSDictionary class]]) return nil;
-    if (!self.mapper) {
-        NSMutableDictionary* mapper = [[NSMutableDictionary alloc] init];
-        NSArray* keys = [dictionary allKeys];
-        for (NSString* key in keys) {
-            [mapper setObject:key forKey:key];
-        }
-        self.mapper = [mapper copy];
-    }
-
-    [self.propertysSet enumerateObjectsUsingBlock:^(LWAlchemyPropertyInfo* propertyInfo, BOOL * _Nonnull stop) {
-        NSString* mapKey = self.mapper[propertyInfo.propertyName];
-        id object = dictionary[mapKey];
+    NSSet* propertysSet = self.class.propertysSet;
+    [propertysSet enumerateObjectsUsingBlock:^(LWAlchemyPropertyInfo* propertyInfo, BOOL * _Nonnull stop) {
+        id object = dictionary[propertyInfo.propertyName];
         if (!propertyInfo.isReadonly) {
             if (propertyInfo.isFoundationType) {
                 [self setValue:object forKey:propertyInfo.propertyName];
-            }
-            else {
+            } else {
                 if (propertyInfo.isIdType) {
                     [self setValue:object forKey:propertyInfo.propertyName];
                 } else {
@@ -620,24 +536,24 @@ static inline Class LWNSBlockClass() {
 }
 
 #pragma mark - Description
-
-- (NSString *)lwAlchemyDescription {
-    return  _ModelDescription(self);
-}
-
-static NSString* _ModelDescription(NSObject *model) {
-    if (!model) return @"<nil>";
-    if (model == (id)kCFNull) return @"<null>";
-    if (![model isKindOfClass:[NSObject class]]) return [NSString stringWithFormat:@"%@",model];
-    __block NSMutableString* des = [[NSMutableString alloc] init];
-    [model.propertysSet enumerateObjectsUsingBlock:^(LWAlchemyPropertyInfo* propertyInfo, BOOL * _Nonnull stop) {
-        if (propertyInfo.getter) {
-            SEL getter = NSSelectorFromString(propertyInfo.getter);
-            id value = ((id (*)(id, SEL))(void *) objc_msgSend)((id)model,getter);
-            NSString* propertyDes = [NSString stringWithFormat:@"propertyName:%@,value:%@\n",propertyInfo.propertyName,value];
-            [des appendFormat:propertyDes];
-        }
-    }];
-    return des;
-}
+//
+//- (NSString *)lwAlchemyDescription {
+//    return  _ModelDescription(self);
+//}
+//
+//static NSString* _ModelDescription(NSObject *model) {
+//    if (!model) return @"<nil>";
+//    if (model == (id)kCFNull) return @"<null>";
+//    if (![model isKindOfClass:[NSObject class]]) return [NSString stringWithFormat:@"%@",model];
+//    __block NSMutableString* des = [[NSMutableString alloc] init];
+//    [model.propertysSet enumerateObjectsUsingBlock:^(LWAlchemyPropertyInfo* propertyInfo, BOOL * _Nonnull stop) {
+//        if (propertyInfo.getter) {
+//            SEL getter = NSSelectorFromString(propertyInfo.getter);
+//            id value = ((id (*)(id, SEL))(void *) objc_msgSend)((id)model,getter);
+//            NSString* propertyDes = [NSString stringWithFormat:@"propertyName:%@,value:%@\n",propertyInfo.propertyName,value];
+//            [des appendFormat:propertyDes];
+//        }
+//    }];
+//    return des;
+//}
 @end

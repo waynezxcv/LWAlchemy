@@ -28,10 +28,7 @@
 - (instancetype)modelWithDictionary:(NSDictionary *)dictionary;
 - (instancetype)coreDataModelWithDictionary:(NSDictionary *)dictionary context:(NSManagedObjectContext *)contxt;
 
-/**
- *  Description
- *
- */
-- (NSString *)lwAlchemyDescription;
+
+
 
 @end

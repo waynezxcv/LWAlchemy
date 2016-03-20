@@ -104,6 +104,26 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		0171C79A1C9EFD78000F2D14 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				B0F508FA1C9ECD160001D2ED /* StatusModel.h */,
+				B0F508FB1C9ECD160001D2ED /* StatusModel.m */,
+				013827461C9B02F6005374CA /* UserModel.h */,
+				013827471C9B02F6005374CA /* UserModel.m */,
+				B0A87CB51C9A5669004FD0D7 /* LWAlchemyDemo.xcdatamodeld */,
+				B002FA561C9EF37600A21ACC /* CDUserModel+CoreDataProperties.h */,
+				B002FA571C9EF37600A21ACC /* CDUserModel+CoreDataProperties.m */,
+				B002FA581C9EF37600A21ACC /* CDUserModel.h */,
+				B002FA591C9EF37600A21ACC /* CDUserModel.m */,
+				B002FA5C1C9EF62B00A21ACC /* CDStatusModel+CoreDataProperties.h */,
+				B002FA5D1C9EF62B00A21ACC /* CDStatusModel+CoreDataProperties.m */,
+				B002FA5E1C9EF62B00A21ACC /* CDStatusModel.h */,
+				B002FA5F1C9EF62B00A21ACC /* CDStatusModel.m */,
+			);
+			name = Models;
+			sourceTree = "<group>";
+		};
 		B0A87C9D1C9A5669004FD0D7 = {
 			isa = PBXGroup;
 			children = (
@@ -128,23 +148,11 @@
 		B0A87CA81C9A5669004FD0D7 /* LWAlchemyDemo */ = {
 			isa = PBXGroup;
 			children = (
+				0171C79A1C9EFD78000F2D14 /* Models */,
 				B0A87CAC1C9A5669004FD0D7 /* AppDelegate.h */,
 				B0A87CAD1C9A5669004FD0D7 /* AppDelegate.m */,
 				B0A87CAF1C9A5669004FD0D7 /* ViewController.h */,
 				B0A87CB01C9A5669004FD0D7 /* ViewController.m */,
-				B0F508FA1C9ECD160001D2ED /* StatusModel.h */,
-				B0F508FB1C9ECD160001D2ED /* StatusModel.m */,
-				013827461C9B02F6005374CA /* UserModel.h */,
-				013827471C9B02F6005374CA /* UserModel.m */,
-				B0A87CB51C9A5669004FD0D7 /* LWAlchemyDemo.xcdatamodeld */,
-				B002FA561C9EF37600A21ACC /* CDUserModel+CoreDataProperties.h */,
-				B002FA571C9EF37600A21ACC /* CDUserModel+CoreDataProperties.m */,
-				B002FA581C9EF37600A21ACC /* CDUserModel.h */,
-				B002FA591C9EF37600A21ACC /* CDUserModel.m */,
-				B002FA5C1C9EF62B00A21ACC /* CDStatusModel+CoreDataProperties.h */,
-				B002FA5D1C9EF62B00A21ACC /* CDStatusModel+CoreDataProperties.m */,
-				B002FA5E1C9EF62B00A21ACC /* CDStatusModel.h */,
-				B002FA5F1C9EF62B00A21ACC /* CDStatusModel.m */,
 				B0A87CA91C9A5669004FD0D7 /* Supporting Files */,
 			);
 			path = LWAlchemyDemo;
