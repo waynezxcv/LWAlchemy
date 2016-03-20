@@ -24,35 +24,36 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     self.appDelegate = [UIApplication sharedApplication].delegate;
-    NSDictionary* dict = @{@"text" : @"我们一起来使用LWAlechemy~",
-                           @"user" : @{
-                                   @"name":@"Waynezxcv",
-                                   @"sign":@"这是我的签名",
-                                   @"age":@(22),
-                                   @"website":@"http://www.waynezxcv.me",
-                                   @"test":@"testString"
-                                   },
-                           @"retweetedStatus" : @{
-                                   @"text" : @"hahaha...我们一起来使用LWAlechemy~",
-                                   @"user" : @{
-                                           @"name" : @"Wayne",
-                                           @"sign" : @"just do it!",
-                                           @"age": @(18),
-                                           @"website":@"http://www.baidu.com"
-                                           }
-                                   }
-                           };
-    LWAlchemyCoreDataManager* manager = [LWAlchemyCoreDataManager sharedManager];
-    [manager insertNSManagerObjectWithObjectClass:[CDStatusModel class] JSON:dict];
-    NSArray* results = [manager fetchNSManagerObjectWithObjectClass:[CDStatusModel class] sortDescriptor:nil predicate:nil];
-    NSLog(@"%ld",results.count);
-    for (CDStatusModel* cdStatus in results) {
-        NSLog(@"=======================NSManagedObject=================================");
-        NSLog(@"%@",cdStatus.text);
-        NSLog(@"user:%@...%@...%@...%@",cdStatus.user.name,cdStatus.user.sign,cdStatus.user.age,cdStatus.user.website);
-        NSLog(@"retweetStatus:%@",cdStatus.retweetedStatus.text);
-        NSLog(@"retweetUser:%@..%@..%@...%@",cdStatus.retweetedStatus.user.name,cdStatus.retweetedStatus.user.sign,cdStatus.retweetedStatus.user.age,cdStatus.retweetedStatus.user.website);
-    }
+//    NSDictionary* dict = @{@"text" : @"我们一起来使用LWAlechemy~",
+//                           @"user" : @{
+//                                   @"name":@"Waynezxcv",
+//                                   @"sign":@"这是我的签名",
+//                                   @"age":@(22),
+//                                   @"website":@"http://www.waynezxcv.me",
+//                                   @"test":@"testString"
+//                                   },
+//                           @"retweetedStatus" : @{
+//                                   @"text" : @"hahaha...我们一起来使用LWAlechemy~",
+//                                   @"user" : @{
+//                                           @"name" : @"Wayne",
+//                                           @"sign" : @"just do it!",
+//                                           @"age": @(18),
+//                                           @"website":@"http://www.baidu.com"
+//                                           }
+//                                   }
+//                           };
+//    LWAlchemyCoreDataManager* manager = [LWAlchemyCoreDataManager sharedManager];
+//    [manager insertNSManagerObjectWithObjectClass:[CDStatusModel class] JSON:dict];
+//    NSArray* results = [manager fetchNSManagerObjectWithObjectClass:[CDStatusModel class] sortDescriptor:nil predicate:nil];
+//    NSLog(@"%ld",results.count);
+//    for (CDStatusModel* cdStatus in results) {
+//        NSLog(@"=======================NSManagedObject=================================");
+//        NSLog(@"%@",cdStatus.text);
+//        NSLog(@"user:%@...%@...%@...%@",cdStatus.user.name,cdStatus.user.sign,cdStatus.user.age,cdStatus.user.website);
+//        NSLog(@"retweetStatus:%@",cdStatus.retweetedStatus.text);
+//        NSLog(@"retweetUser:%@..%@..%@...%@",cdStatus.retweetedStatus.user.name,cdStatus.retweetedStatus.user.sign,cdStatus.retweetedStatus.user.age,cdStatus.retweetedStatus.user.website);
+//    }
+    [self timeCostTest];
 }
 
 
@@ -61,7 +62,7 @@
  */
 - (void)timeCostTest {
     NSMutableArray* tmp = [[NSMutableArray alloc] init];
-    for (NSInteger i = 0; i < 1000; i ++) {
+    for (NSInteger i = 0; i < 10000; i ++) {
         NSDictionary* dict = @{@"text" : @"我们一起来使用LWAlechemy~",
                                @"user" : @{
                                        @"name" : @"Waynezxcv",
