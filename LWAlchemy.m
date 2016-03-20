@@ -232,7 +232,7 @@ static void _SetObjectTypePropertyValue(__unsafe_unretained id model,
         objc_msgSendToSetter((id)model, setterSelector, string);
     }
     else if ([propertyInfo.cls class] == [NSMutableString class]) {
-        NSMutableString* mutableString = [[NSMutableString alloc] initWithString:[NSString stringWithFormat:@"%@",value]];
+        NSMutableString* mutableString = [NSString stringWithFormat:@"%@",value].mutableCopy;
         void (*objc_msgSendToSetter)(id, SEL, NSMutableString*) = (void*)objc_msgSend;
         objc_msgSendToSetter((id)model, setterSelector, mutableString);
     }
@@ -390,13 +390,32 @@ static void _SetOtherTypePropertyValue(__unsafe_unretained id model,
                 }
             }
         }break;
-        case LWTypeUnkonw:
-        case LWTypeVoid:
         case LWTypeCFString:
-        case LWTypePointer:
+        case LWTypePointer:{
+            if (isNull) {
+                void (*objc_msgSendToSetter)(id, SEL,void*) = (void*)objc_msgSend;
+                objc_msgSendToSetter((id)model, setterSelector, (void *)NULL);
+            } else if ([value isKindOfClass:[NSValue class]]) {
+                NSValue *nsValue = value;
+                if (nsValue.objCType && strcmp(nsValue.objCType, "^v") == 0) {
+                    void (*objc_msgSendToSetter)(id, SEL, void* ) = (void*)objc_msgSend;
+                    objc_msgSendToSetter((id)model, setterSelector,nsValue.pointerValue);
+                }
+            }
+        }break;
         case LWTypeUnion:
         case LWTypeStruct:
         case LWTypeCFArray:
+            if ([value isKindOfClass:[NSValue class]]) {
+                const char* valueType = ((NSValue *)value).objCType;
+                 Ivar ivar = class_getInstanceVariable([propertyInfo.cls class],[propertyInfo.ivarName UTF8String]);
+               const char* metaType = ivar_getTypeEncoding(ivar);
+                if (valueType && metaType && strcmp(valueType, metaType) == 0) {
+                    [model setValue:value forKey:propertyInfo.propertyName];
+                }
+            }break;
+        case LWTypeUnkonw:
+        case LWTypeVoid:
         default:break;
         }
     }
@@ -448,6 +467,5 @@ static inline Class LWNSBlockClass() {
     objc_setAssociatedObject(self,&kPropertySetKey, propertys, OBJC_ASSOCIATION_COPY);
     return propertys;
 }
-
 
 @end

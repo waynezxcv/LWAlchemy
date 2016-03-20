@@ -43,6 +43,7 @@ typedef NS_ENUM(NSUInteger, LWType) {
 @property (nonatomic,strong,readonly) NSString* ivarName;
 @property (nonatomic,assign,readonly) Ivar ivar;
 @property (nonatomic,assign,readonly) LWType type;
+@property (nonatomic,copy,readonly) NSString* typeEncoding;
 @property (nonatomic,assign,readonly) Class cls;
 @property (nonatomic,strong,readonly) NSString* getter;
 @property (nonatomic,strong,readonly) NSString* setter;

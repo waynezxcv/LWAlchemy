@@ -24,6 +24,7 @@
 @property (nonatomic,assign,getter=isNumberType) BOOL numberType;
 @property (nonatomic,assign,getter=isObjectType) BOOL objectType;
 @property (nonatomic,assign,getter=isFoundationType) BOOL foundationType;
+@property (nonatomic,copy) NSString* typeEncoding;
 
 @end
 
@@ -38,6 +39,7 @@
         self.numberType = NO;
         self.objectType = NO;
         self.foundationType = NO;
+
         
         self.property = property;
         unsigned int attrCount;

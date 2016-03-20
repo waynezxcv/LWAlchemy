@@ -26,13 +26,11 @@
                            @"c_birth":@1458227969,
                            @"c_phone":@"18682189243",
                            @"c_email":@"liuweiself@126.com",
-                           @"c_website":@"http://www.waynezxcv.me",};
-    
-    
+                           @"c_website":@"http://www.waynezxcv.me"};
     NSDictionary* mapper = @{@"name":@"c_name",
                              @"email":@"c_email"};
-    
     UserModel* userModel = [UserModel modelWithJSON:dict JSONKeyPathsByPropertyKey:mapper];
+    NSLog(@"%@,%@",userModel.name,userModel.email);
 }
 
 
