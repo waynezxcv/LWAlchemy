@@ -23,18 +23,18 @@
 
 @interface LWAlchemyCoreDataManager : NSObject
 
-@property (readonly, strong, nonatomic) NSManagedObjectContext* context;
-@property (readonly, strong, nonatomic) NSManagedObjectContext* parentContext;
-@property (readonly, strong, nonatomic) NSManagedObjectContext* importContext;
-@property (readonly, strong, nonatomic) NSManagedObjectContext* sourceContext;
+@property (readonly, strong, nonatomic) NSManagedObjectContext* context;//主线程Context
+@property (readonly, strong, nonatomic) NSManagedObjectContext* parentContext;//用来保存到persistentStoreCoordinator的Context
+@property (readonly, strong, nonatomic) NSManagedObjectContext* importContext;//插入数据的Context
+//@property (readonly, strong, nonatomic) NSManagedObjectContext* sourceContext;
 
 @property (readonly, strong, nonatomic) NSManagedObjectModel* managedObjectModel;
 @property (readonly, strong, nonatomic) NSPersistentStoreCoordinator* persistentStoreCoordinator;
-@property (readonly, strong, nonatomic) NSPersistentStoreCoordinator* sourcePersistentStoreCoordinator;
+//@property (readonly, strong, nonatomic) NSPersistentStoreCoordinator* sourcePersistentStoreCoordinator;
 
 + (LWAlchemyCoreDataManager *)sharedManager;
 
-- (void)saveContext;
+- (void)saveContext:(NSManagedObjectContext *)context;
 - (void)backgroundSaveContext;
 
 /**

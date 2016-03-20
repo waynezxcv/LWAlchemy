@@ -106,7 +106,7 @@
         return nil;
     }
     _managedObjectContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSMainQueueConcurrencyType];
-    [_managedObjectContext setPersistentStoreCoordinator:coordinator];
+//    [_managedObjectContext setPersistentStoreCoordinator:coordinator];
     return _managedObjectContext;
 }
 
