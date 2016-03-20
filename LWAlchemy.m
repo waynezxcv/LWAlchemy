@@ -24,30 +24,175 @@ static const void* kPropertySetKey;
 
 @implementation NSObject(LWAlchemy)
 
-+ (id)modelWithJSON:(id)json JSONKeyPathsByPropertyKey:(NSDictionary *)mapper {
+
+#pragma mark - Associate
+
+- (NSDictionary *)mapper {
+    return objc_getAssociatedObject(self, &kJsonMapperKey);
+}
+
+- (void)setMapper:(NSDictionary *)mapper {
+    objc_setAssociatedObject(self, &kJsonMapperKey, mapper, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
+- (NSSet *)propertysSet {
+    NSSet *cachedKeys = objc_getAssociatedObject(self, &kPropertySetKey);
+    if (cachedKeys != nil) {
+        return cachedKeys;
+    }
+    NSArray* keys = [self.mapper allKeys];
+    NSMutableSet* propertys = [NSMutableSet set];
+    [self _enumeratePropertiesUsingBlock:^(objc_property_t property, BOOL *stop) {
+        LWAlchemyPropertyInfo* propertyInfo = [[LWAlchemyPropertyInfo alloc] initWithProperty:property];
+        if ([keys containsObject:propertyInfo.propertyName]) {
+            [propertys addObject:propertyInfo];
+        }
+    }];
+    objc_setAssociatedObject(self,&kPropertySetKey, propertys, OBJC_ASSOCIATION_COPY);
+    return propertys;
+}
+
+
+#pragma mark - Init
+
++ (id)modelWithJSON:(id)json {
     NSObject* model = [[self alloc] init];
     if (model) {
-        model.mapper = [mapper copy];
         NSDictionary* dic = [model _dictionaryWithJSON:json];
-        model = [model _modelWithDictionary:dic];
+        NSMutableDictionary* mapper = [[NSMutableDictionary alloc] init];
+        NSArray* keys = [dic allKeys];
+        for (NSString* key in keys) {
+            [mapper setObject:key forKey:key];
+        }
+        model.mapper = [mapper copy];
+        model = [model modelWithDictionary:dic];
     }
     return model;
 }
+
+
++ (id)coreDataModelWithJSON:(id)json
+                    context:(NSManagedObjectContext *)context {
+
+    if ([self isSubclassOfClass:[NSManagedObject class]] && context) {
+        NSManagedObject* model = [NSEntityDescription insertNewObjectForEntityForName:NSStringFromClass(self)
+                                                               inManagedObjectContext:context];
+        if (model) {
+            NSDictionary* dic = [model _dictionaryWithJSON:json];
+            NSMutableDictionary* mapper = [[NSMutableDictionary alloc] init];
+            NSArray* keys = [dic allKeys];
+            for (NSString* key in keys) {
+                [mapper setObject:key forKey:key];
+            }
+            model.mapper = [mapper copy];
+            model = [model coreDataModelWithDictionary:dic];
+        }
+        return model;
+    }
+    return [self modelWithJSON:json JSONKeyPathsByPropertyKey:self.mapper];
+}
+
+
++ (id)modelWithJSON:(id)json JSONKeyPathsByPropertyKey:(NSDictionary *)mapper {
+    NSObject* model = [[self alloc] init];
+    if (model) {
+        NSDictionary* dic = [model _dictionaryWithJSON:json];
+        if (mapper != nil) {
+            model.mapper = [mapper copy];
+        }
+        else {
+            NSMutableDictionary* mapper = [[NSMutableDictionary alloc] init];
+            NSArray* keys = [dic allKeys];
+            for (NSString* key in keys) {
+                [mapper setObject:key forKey:key];
+            }
+            model.mapper = [mapper copy];
+        }
+        model = [model modelWithDictionary:dic];
+    }
+    return model;
+}
+
 
 + (id)coreDataModelWithJSON:(id)json
   JSONKeyPathsByPropertyKey:(NSDictionary *)mapper
                     context:(NSManagedObjectContext *)context {
     if ([self isSubclassOfClass:[NSManagedObject class]] && context) {
-        NSManagedObject* model = [NSEntityDescription insertNewObjectForEntityForName:NSStringFromClass(self) inManagedObjectContext:context];
-        model.mapper = [mapper copy];
-        NSDictionary* dic = [model _dictionaryWithJSON:json];
-        model = [model _coreDataModelWithDictionary:dic];
+        NSManagedObject* model = [NSEntityDescription insertNewObjectForEntityForName:NSStringFromClass(self)
+                                                               inManagedObjectContext:context];
+        if (model) {
+            NSDictionary* dic = [model _dictionaryWithJSON:json];
+            if (mapper != nil) {
+                model.mapper = [mapper copy];
+            }
+            else {
+                NSMutableDictionary* mapper = [[NSMutableDictionary alloc] init];
+                NSArray* keys = [dic allKeys];
+                for (NSString* key in keys) {
+                    [mapper setObject:key forKey:key];
+                }
+                model.mapper = [mapper copy];
+            }
+            model = [model coreDataModelWithDictionary:dic];
+        }
         return model;
     }
-    return [self modelWithJSON:json JSONKeyPathsByPropertyKey:mapper];
+    return [self modelWithJSON:json JSONKeyPathsByPropertyKey:self.mapper];
 }
 
 
+- (instancetype)modelWithDictionary:(NSDictionary *)dictionary {
+    if (!dictionary || dictionary == (id)kCFNull) return nil;
+    if (![dictionary isKindOfClass:[NSDictionary class]]) return nil;
+    if (!self.mapper) {
+        NSMutableDictionary* mapper = [[NSMutableDictionary alloc] init];
+        NSArray* keys = [dictionary allKeys];
+        for (NSString* key in keys) {
+            [mapper setObject:key forKey:key];
+        }
+        self.mapper = [mapper copy];
+    }
+    [self.propertysSet enumerateObjectsUsingBlock:^(LWAlchemyPropertyInfo* propertyInfo, BOOL * _Nonnull stop) {
+        NSString* mapKey = self.mapper[propertyInfo.propertyName];
+        id object = dictionary[mapKey];
+        _SetPropertyValue(self,propertyInfo,object);
+    }];
+    return self;
+}
+
+
+
+- (instancetype)coreDataModelWithDictionary:(NSDictionary *)dictionary {
+    if (!dictionary || dictionary == (id)kCFNull) return nil;
+    if (![dictionary isKindOfClass:[NSDictionary class]]) return nil;
+    if (!self.mapper) {
+        NSMutableDictionary* mapper = [[NSMutableDictionary alloc] init];
+        NSArray* keys = [dictionary allKeys];
+        for (NSString* key in keys) {
+            [mapper setObject:key forKey:key];
+        }
+        self.mapper = [mapper copy];
+    }
+
+
+    [self.propertysSet enumerateObjectsUsingBlock:^(LWAlchemyPropertyInfo* propertyInfo, BOOL * _Nonnull stop) {
+        NSString* mapKey = self.mapper[propertyInfo.propertyName];
+        id object = dictionary[mapKey];
+        if (!propertyInfo.isReadonly) {
+            [self setValue:object forKey:propertyInfo.propertyName];
+            //多级
+        }
+    }];
+    return self;
+}
+
+
+#pragma mark - Private Methods
+
+/**
+ *  将Json转化成NSDictionary字典
+ *
+ */
 - (NSDictionary *)_dictionaryWithJSON:(id)json {
     if (!json || json == (id)kCFNull) return nil;
     NSDictionary* dic = nil;
@@ -55,7 +200,7 @@ static const void* kPropertySetKey;
     if ([json isKindOfClass:[NSDictionary class]]) {
         dic = json;
     } else if ([json isKindOfClass:[NSString class]]) {
-        jsonData = [(NSString *)json dataUsingEncoding : NSUTF8StringEncoding];
+        jsonData = [(NSString *)json dataUsingEncoding:NSUTF8StringEncoding];
     } else if ([json isKindOfClass:[NSData class]]) {
         jsonData = json;
     }
@@ -66,6 +211,11 @@ static const void* kPropertySetKey;
     return dic;
 }
 
+
+/**
+ *  遍历实例的对象的objc_property_t
+ *
+ */
 - (void)_enumeratePropertiesUsingBlock:(void (^)(objc_property_t property, BOOL *stop))block {
     Class cls = [self class];
     BOOL stop = NO;
@@ -84,32 +234,13 @@ static const void* kPropertySetKey;
     }
 }
 
-- (instancetype)_coreDataModelWithDictionary:(NSDictionary *)dictionary {
-    if (!dictionary || dictionary == (id)kCFNull) return nil;
-    if (![dictionary isKindOfClass:[NSDictionary class]]) return nil;
-    [self.propertysSet enumerateObjectsUsingBlock:^(LWAlchemyPropertyInfo* propertyInfo, BOOL * _Nonnull stop) {
-        NSString* mapKey = self.mapper[propertyInfo.propertyName];
-        id object = dictionary[mapKey];
-        if (!propertyInfo.isReadonly) {
-            [self setValue:object forKey:propertyInfo.propertyName];
-        }
-    }];
-    return self;
-}
-
-- (instancetype)_modelWithDictionary:(NSDictionary *)dictionary {
-    if (!dictionary || dictionary == (id)kCFNull) return nil;
-    if (![dictionary isKindOfClass:[NSDictionary class]]) return nil;
-    
-    [self.propertysSet enumerateObjectsUsingBlock:^(LWAlchemyPropertyInfo* propertyInfo, BOOL * _Nonnull stop) {
-        NSString* mapKey = self.mapper[propertyInfo.propertyName];
-        id object = dictionary[mapKey];
-        _SetPropertyValue(self,propertyInfo,object);
-    }];
-    return self;
-}
-
-
+/**
+ *  设置Property的值
+ *
+ *  @param model        模型对象
+ *  @param propertyInfo 属性的封装对象
+ *  @param value        值
+ */
 static void _SetPropertyValue(__unsafe_unretained id model,
                               __unsafe_unretained LWAlchemyPropertyInfo* propertyInfo,
                               __unsafe_unretained id value) {
@@ -127,6 +258,14 @@ static void _SetPropertyValue(__unsafe_unretained id model,
     }
 }
 
+
+/**
+ *  设置LWTypeNumber类型Property的值
+ *
+ *  @param model        模型对象
+ *  @param propertyInfo 属性的封装对象
+ *  @param value        值
+ */
 static void _SetNumberPropertyValue(__unsafe_unretained id model,
                                     __unsafe_unretained LWAlchemyPropertyInfo* propertyInfo,
                                     __unsafe_unretained id value) {
@@ -218,6 +357,13 @@ static void _SetNumberPropertyValue(__unsafe_unretained id model,
     }
 }
 
+/**
+ *  设置LWTypeOjbect类型Property的值
+ *
+ *  @param model        模型对象
+ *  @param propertyInfo 属性的封装对象
+ *  @param value        值
+ */
 static void _SetObjectTypePropertyValue(__unsafe_unretained id model,
                                         __unsafe_unretained LWAlchemyPropertyInfo* propertyInfo,
                                         __unsafe_unretained id value) {
@@ -331,10 +477,33 @@ static void _SetObjectTypePropertyValue(__unsafe_unretained id model,
             void (*objc_msgSendToSetter)(id, SEL,id) = (void*)objc_msgSend;
             objc_msgSendToSetter((id)model, setterSelector,(id)value);
         }
+        else if ([value isKindOfClass:[NSDictionary class]]) {
+            NSObject* child = nil;
+            if (propertyInfo.getter) {
+                SEL getter = NSSelectorFromString(propertyInfo.getter);
+                child = ((id (*)(id, SEL))(void *) objc_msgSend)((id)model,getter);
+            }
+            if (child) {
+                [child modelWithDictionary:value];
+            } else {
+                Class cls = propertyInfo.cls;
+                child = [cls new];
+                [child modelWithDictionary:value];
+                SEL setterSelector = NSSelectorFromString(propertyInfo.setter);
+                void (*objc_msgSendToSetter)(id, SEL,id) = (void*)objc_msgSend;
+                objc_msgSendToSetter((id)model,setterSelector,child);
+            }
+        }
     }
 }
 
-
+/**
+ *  设置其他类型Property的值
+ *
+ *  @param model        模型对象
+ *  @param propertyInfo 属性的封装对象
+ *  @param value        值
+ */
 static void _SetOtherTypePropertyValue(__unsafe_unretained id model,
                                        __unsafe_unretained LWAlchemyPropertyInfo* propertyInfo,
                                        __unsafe_unretained id value) {
@@ -408,8 +577,8 @@ static void _SetOtherTypePropertyValue(__unsafe_unretained id model,
         case LWTypeCFArray:
             if ([value isKindOfClass:[NSValue class]]) {
                 const char* valueType = ((NSValue *)value).objCType;
-                 Ivar ivar = class_getInstanceVariable([propertyInfo.cls class],[propertyInfo.ivarName UTF8String]);
-               const char* metaType = ivar_getTypeEncoding(ivar);
+                Ivar ivar = class_getInstanceVariable([propertyInfo.cls class],[propertyInfo.ivarName UTF8String]);
+                const char* metaType = ivar_getTypeEncoding(ivar);
                 if (valueType && metaType && strcmp(valueType, metaType) == 0) {
                     [model setValue:value forKey:propertyInfo.propertyName];
                 }
@@ -421,12 +590,14 @@ static void _SetOtherTypePropertyValue(__unsafe_unretained id model,
     }
 }
 
+/**
+ *  将时间戳字符串转化成NSDate
+ */
 static inline NSDate* LWNSDateFromString(__unsafe_unretained NSString *string) {
     NSTimeInterval timeInterval = [string floatValue];
     NSDate* date = [NSDate dateWithTimeIntervalSince1970:timeInterval];
     return date;
 }
-
 
 static inline Class LWNSBlockClass() {
     static Class cls;
@@ -441,31 +612,6 @@ static inline Class LWNSBlockClass() {
     return cls;
 }
 
-
-
-- (NSDictionary *)mapper {
-    return objc_getAssociatedObject(self, &kJsonMapperKey);
-}
-
-- (void)setMapper:(NSDictionary *)mapper {
-    objc_setAssociatedObject(self, &kJsonMapperKey, mapper, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-}
-
-- (NSSet *)propertysSet {
-    NSSet *cachedKeys = objc_getAssociatedObject(self, &kPropertySetKey);
-    if (cachedKeys != nil) {
-        return cachedKeys;
-    }
-    NSArray* keys = [self.mapper allKeys];
-    NSMutableSet* propertys = [NSMutableSet set];
-    [self _enumeratePropertiesUsingBlock:^(objc_property_t property, BOOL *stop) {
-        LWAlchemyPropertyInfo* propertyInfo = [[LWAlchemyPropertyInfo alloc] initWithProperty:property];
-        if ([keys containsObject:propertyInfo.propertyName]) {
-            [propertys addObject:propertyInfo];
-        }
-    }];
-    objc_setAssociatedObject(self,&kPropertySetKey, propertys, OBJC_ASSOCIATION_COPY);
-    return propertys;
-}
+#pragma mark - Override
 
 @end

@@ -14,16 +14,25 @@
 @interface NSObject(LWAlchemy)
 
 
-/**
- *  普通模型
- */
++ (id)modelWithJSON:(id)json;
+
+
 + (id)modelWithJSON:(id)json JSONKeyPathsByPropertyKey:(NSDictionary *)mapper;
 
-/**
- *  CoreData模型
- *
- */
+
++ (id)coreDataModelWithJSON:(id)json
+                    context:(NSManagedObjectContext *)context;
+
+
 + (id)coreDataModelWithJSON:(id)json
   JSONKeyPathsByPropertyKey:(NSDictionary *)mapper
                     context:(NSManagedObjectContext *)context;
+
+
+- (instancetype)modelWithDictionary:(NSDictionary *)dictionary;
+
+- (instancetype)coreDataModelWithDictionary:(NSDictionary *)dictionary;
+
+- (NSString *)description;
+
 @end

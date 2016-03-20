@@ -7,10 +7,10 @@
 //
 
 #import "ViewController.h"
-#import "UserModel.h"
 #import "LWAlchemy.h"
-#import "TestModel.h"
-#import "AppDelegate.h"
+#import "StatusModel.h"
+
+
 
 @interface ViewController ()
 
@@ -20,17 +20,25 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    NSDictionary* dict = @{
-                           @"c_name":@"waynezxcv",
-                           @"c_age":@18,
-                           @"c_birth":@1458227969,
-                           @"c_phone":@"18682189243",
-                           @"c_email":@"liuweiself@126.com",
-                           @"c_website":@"http://www.waynezxcv.me"};
-    NSDictionary* mapper = @{@"name":@"c_name",
-                             @"email":@"c_email"};
-    UserModel* userModel = [UserModel modelWithJSON:dict JSONKeyPathsByPropertyKey:mapper];
-    NSLog(@"%@,%@",userModel.name,userModel.email);
+    NSDictionary *dict = @{@"text" : @"是啊，今天天气确实不错！",
+                           @"user" : @{
+                                   @"name" : @"Jack",
+                                   @"sign" : @"这是我的签名"
+                                   },
+                           @"retweetedStatus" : @{
+                                   @"text" : @"今天天气真不错！",
+                                   @"user" : @{
+                                           @"name" : @"Rose",
+                                           @"sign" : @"just do it!"
+                                           }
+                                   }
+                           };
+
+    StatusModel* status = [StatusModel modelWithJSON:dict];
+//    NSLog(@"%@",status.text);
+//    NSLog(@"user:%@...%@",status.user.name,status.user.sign);
+//    NSLog(@"retweetStatus:%@",status.retweetedStatus.text);
+//    NSLog(@"retweetUser:%@..%@",status.retweetedStatus.user.name,status.retweetedStatus.user.sign);
 }
 
 
