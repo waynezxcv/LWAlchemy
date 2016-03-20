@@ -10,13 +10,6 @@
 
 @implementation UserModel
 
-@dynamic name;
-@dynamic age;
-@dynamic birth;
-@dynamic phone;
-@dynamic email;
-@dynamic website;
-
 
 
 @end

@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		013827481C9B02F6005374CA /* UserModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 013827471C9B02F6005374CA /* UserModel.m */; };
+		0138274B1C9DCEC5005374CA /* ChildClass.m in Sources */ = {isa = PBXBuildFile; fileRef = 0138274A1C9DCEC5005374CA /* ChildClass.m */; };
 		B0A87CAB1C9A5669004FD0D7 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = B0A87CAA1C9A5669004FD0D7 /* main.m */; };
 		B0A87CAE1C9A5669004FD0D7 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = B0A87CAD1C9A5669004FD0D7 /* AppDelegate.m */; };
 		B0A87CB11C9A5669004FD0D7 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B0A87CB01C9A5669004FD0D7 /* ViewController.m */; };
@@ -44,6 +45,8 @@
 /* Begin PBXFileReference section */
 		013827461C9B02F6005374CA /* UserModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UserModel.h; sourceTree = "<group>"; };
 		013827471C9B02F6005374CA /* UserModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UserModel.m; sourceTree = "<group>"; };
+		013827491C9DCEC5005374CA /* ChildClass.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChildClass.h; sourceTree = "<group>"; };
+		0138274A1C9DCEC5005374CA /* ChildClass.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChildClass.m; sourceTree = "<group>"; };
 		B0A87CA61C9A5669004FD0D7 /* LWAlchemyDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LWAlchemyDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B0A87CAA1C9A5669004FD0D7 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		B0A87CAC1C9A5669004FD0D7 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -61,10 +64,10 @@
 		B0A87CCD1C9A5669004FD0D7 /* LWAlchemyDemoUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = LWAlchemyDemoUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		B0A87CD11C9A5669004FD0D7 /* LWAlchemyDemoUITests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = LWAlchemyDemoUITests.m; sourceTree = "<group>"; };
 		B0A87CD31C9A5669004FD0D7 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		B0A87CEC1C9A5889004FD0D7 /* TestModel+CoreDataProperties.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "TestModel+CoreDataProperties.h"; sourceTree = "<group>"; };
-		B0A87CED1C9A5889004FD0D7 /* TestModel+CoreDataProperties.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "TestModel+CoreDataProperties.m"; sourceTree = "<group>"; };
-		B0A87CEE1C9A5889004FD0D7 /* TestModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TestModel.h; sourceTree = "<group>"; };
-		B0A87CEF1C9A5889004FD0D7 /* TestModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TestModel.m; sourceTree = "<group>"; };
+		B0A87CEC1C9A5889004FD0D7 /* TestModel+CoreDataProperties.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "TestModel+CoreDataProperties.h"; path = "../TestModel+CoreDataProperties.h"; sourceTree = "<group>"; };
+		B0A87CED1C9A5889004FD0D7 /* TestModel+CoreDataProperties.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "TestModel+CoreDataProperties.m"; path = "../TestModel+CoreDataProperties.m"; sourceTree = "<group>"; };
+		B0A87CEE1C9A5889004FD0D7 /* TestModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TestModel.h; path = ../TestModel.h; sourceTree = "<group>"; };
+		B0A87CEF1C9A5889004FD0D7 /* TestModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TestModel.m; path = ../TestModel.m; sourceTree = "<group>"; };
 		B0A87CF21C9A58B0004FD0D7 /* LWAlchemy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LWAlchemy.h; path = ../LWAlchemy.h; sourceTree = "<group>"; };
 		B0A87CF31C9A58B0004FD0D7 /* LWAlchemy.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = LWAlchemy.m; path = ../LWAlchemy.m; sourceTree = "<group>"; };
 		B0A87CF41C9A58B0004FD0D7 /* LWAlchemyPropertyInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LWAlchemyPropertyInfo.h; path = ../LWAlchemyPropertyInfo.h; sourceTree = "<group>"; };
@@ -101,10 +104,6 @@
 		B0A87C9D1C9A5669004FD0D7 = {
 			isa = PBXGroup;
 			children = (
-				B0A87CEC1C9A5889004FD0D7 /* TestModel+CoreDataProperties.h */,
-				B0A87CED1C9A5889004FD0D7 /* TestModel+CoreDataProperties.m */,
-				B0A87CEE1C9A5889004FD0D7 /* TestModel.h */,
-				B0A87CEF1C9A5889004FD0D7 /* TestModel.m */,
 				B0A87CDF1C9A5679004FD0D7 /* LWAlchemy */,
 				B0A87CA81C9A5669004FD0D7 /* LWAlchemyDemo */,
 				B0A87CC51C9A5669004FD0D7 /* LWAlchemyDemoTests */,
@@ -130,10 +129,16 @@
 				B0A87CAD1C9A5669004FD0D7 /* AppDelegate.m */,
 				B0A87CAF1C9A5669004FD0D7 /* ViewController.h */,
 				B0A87CB01C9A5669004FD0D7 /* ViewController.m */,
-				B0A87CB51C9A5669004FD0D7 /* LWAlchemyDemo.xcdatamodeld */,
-				B0A87CA91C9A5669004FD0D7 /* Supporting Files */,
 				013827461C9B02F6005374CA /* UserModel.h */,
 				013827471C9B02F6005374CA /* UserModel.m */,
+				013827491C9DCEC5005374CA /* ChildClass.h */,
+				0138274A1C9DCEC5005374CA /* ChildClass.m */,
+				B0A87CEC1C9A5889004FD0D7 /* TestModel+CoreDataProperties.h */,
+				B0A87CED1C9A5889004FD0D7 /* TestModel+CoreDataProperties.m */,
+				B0A87CEE1C9A5889004FD0D7 /* TestModel.h */,
+				B0A87CEF1C9A5889004FD0D7 /* TestModel.m */,
+				B0A87CB51C9A5669004FD0D7 /* LWAlchemyDemo.xcdatamodeld */,
+				B0A87CA91C9A5669004FD0D7 /* Supporting Files */,
 			);
 			path = LWAlchemyDemo;
 			sourceTree = "<group>";
@@ -316,6 +321,7 @@
 				B0A87CF71C9A58B0004FD0D7 /* LWAlchemyPropertyInfo.m in Sources */,
 				B0A87CF61C9A58B0004FD0D7 /* LWAlchemy.m in Sources */,
 				B0A87CB11C9A5669004FD0D7 /* ViewController.m in Sources */,
+				0138274B1C9DCEC5005374CA /* ChildClass.m in Sources */,
 				B0A87CB71C9A5669004FD0D7 /* LWAlchemyDemo.xcdatamodeld in Sources */,
 				B0A87CAE1C9A5669004FD0D7 /* AppDelegate.m in Sources */,
 				013827481C9B02F6005374CA /* UserModel.m in Sources */,

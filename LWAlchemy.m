@@ -24,32 +24,6 @@ static const void* kPropertySetKey;
 
 @implementation NSObject(LWAlchemy)
 
-
-- (NSDictionary *)mapper {
-    return objc_getAssociatedObject(self, &kJsonMapperKey);
-}
-
-- (void)setMapper:(NSDictionary *)mapper {
-    objc_setAssociatedObject(self, &kJsonMapperKey, mapper, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-}
-
-- (NSSet *)propertysSet {
-    NSSet *cachedKeys = objc_getAssociatedObject(self, &kPropertySetKey);
-    if (cachedKeys != nil) {
-        return cachedKeys;
-    }
-    NSArray* keys = [self.mapper allKeys];
-    NSMutableSet* propertys = [NSMutableSet set];
-    [self _enumeratePropertiesUsingBlock:^(objc_property_t property, BOOL *stop) {
-        LWAlchemyPropertyInfo* propertyInfo = [[LWAlchemyPropertyInfo alloc] initWithProperty:property];
-        if ([keys containsObject:propertyInfo.propertyName]) {
-            [propertys addObject:propertyInfo];
-        }
-    }];
-    objc_setAssociatedObject(self,&kPropertySetKey, propertys, OBJC_ASSOCIATION_COPY);
-    return propertys;
-}
-
 + (id)modelWithJSON:(id)json JSONKeyPathsByPropertyKey:(NSDictionary *)mapper {
     NSObject* model = [[self alloc] init];
     if (model) {
@@ -139,7 +113,7 @@ static const void* kPropertySetKey;
 static void _SetPropertyValue(__unsafe_unretained id model,
                               __unsafe_unretained LWAlchemyPropertyInfo* propertyInfo,
                               __unsafe_unretained id value) {
-    if (propertyInfo.isReadonly) {
+    if (propertyInfo.isReadonly || propertyInfo.isDynamic) {
         return;
     }
     if (propertyInfo.isNumberType) {
@@ -367,43 +341,53 @@ static void _SetOtherTypePropertyValue(__unsafe_unretained id model,
     if (!propertyInfo.setter) {
         return;
     }
-    SEL setter = NSSelectorFromString(propertyInfo.setter);
+    SEL setterSelector = NSSelectorFromString(propertyInfo.setter);
     BOOL isNull = (value == (id)kCFNull);
     switch (propertyInfo.type) {
         case LWTypeBlock: {
             if (isNull) {
-                ((void (*)(id, SEL, void (^)()))(void *) objc_msgSend)((id)model, setter, (void (^)())NULL);
+                void (*objc_msgSendToSetter)(id model, SEL selector, void (^)()) = (void*)objc_msgSend;
+                objc_msgSendToSetter((id)model, setterSelector, (void (^)())NULL);
             } else if ([value isKindOfClass:LWNSBlockClass()]) {
-                ((void (*)(id, SEL, void (^)()))(void *) objc_msgSend)((id)model, setter, (void (^)())value);
+                void (*objc_msgSendToSetter)(id model, SEL selector, void (^)()) = (void*)objc_msgSend;
+                objc_msgSendToSetter((id)model, setterSelector,(void (^)())value);
             }
         }break;
         case LWTypeClass:{
             if (isNull) {
-                ((void (*)(id, SEL, Class))(void *) objc_msgSend)((id)model,setter, (Class)NULL);
+                void (*objc_msgSendToSetter)(id model, SEL selector,Class c) = (void*)objc_msgSend;
+                objc_msgSendToSetter((id)model, setterSelector,(Class)NULL);
             } else {
                 Class cls = nil;
                 if ([value isKindOfClass:[NSString class]]) {
                     cls = NSClassFromString(value);
                     if (cls) {
-                        ((void (*)(id, SEL, Class))(void *) objc_msgSend)((id)model,setter, (Class)cls);
+                        void (*objc_msgSendToSetter)(id model, SEL selector,Class c) = (void*)objc_msgSend;
+                        objc_msgSendToSetter((id)model, setterSelector,(Class)cls);
                     }
                 } else {
                     cls = object_getClass(value);
                     if (cls) {
                         if (class_isMetaClass(cls)) {
-                            ((void (*)(id, SEL, Class))(void *) objc_msgSend)((id)model,setter, (Class)value);
+                            void (*objc_msgSendToSetter)(id model, SEL selector,Class c) = (void*)objc_msgSend;
+                            objc_msgSendToSetter((id)model, setterSelector, (Class)value);
                         } else {
-                            ((void (*)(id, SEL, Class))(void *) objc_msgSend)((id)model,setter, (Class)cls);
+                            void (*objc_msgSendToSetter)(id model, SEL selector,Class c) = (void*)objc_msgSend;
+                            objc_msgSendToSetter((id)model, setterSelector,(Class)cls);
                         }
                     }
                 }
             }
         case LWTypeSEL: {
             if (isNull) {
-                ((void (*)(id, SEL, SEL))(void *) objc_msgSend)((id)model,setter, (SEL)NULL);
+                void (*objc_msgSendToSetter)(id model, SEL selector,SEL s) = (void*)objc_msgSend;
+                objc_msgSendToSetter((id)model, setterSelector,(SEL)NULL);
             } else if ([value isKindOfClass:[NSString class]]) {
                 SEL sel = NSSelectorFromString(value);
-                if (sel) ((void (*)(id, SEL, SEL))(void *) objc_msgSend)((id)model,setter, (SEL)sel);
+                if (sel) {
+                    void (*objc_msgSendToSetter)(id model, SEL selector,SEL s) = (void*)objc_msgSend;
+                    objc_msgSendToSetter((id)model, setterSelector,sel);
+                }
             }
         }break;
         case LWTypeUnkonw:
@@ -437,5 +421,33 @@ static inline Class LWNSBlockClass() {
     });
     return cls;
 }
+
+
+
+- (NSDictionary *)mapper {
+    return objc_getAssociatedObject(self, &kJsonMapperKey);
+}
+
+- (void)setMapper:(NSDictionary *)mapper {
+    objc_setAssociatedObject(self, &kJsonMapperKey, mapper, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
+- (NSSet *)propertysSet {
+    NSSet *cachedKeys = objc_getAssociatedObject(self, &kPropertySetKey);
+    if (cachedKeys != nil) {
+        return cachedKeys;
+    }
+    NSArray* keys = [self.mapper allKeys];
+    NSMutableSet* propertys = [NSMutableSet set];
+    [self _enumeratePropertiesUsingBlock:^(objc_property_t property, BOOL *stop) {
+        LWAlchemyPropertyInfo* propertyInfo = [[LWAlchemyPropertyInfo alloc] initWithProperty:property];
+        if ([keys containsObject:propertyInfo.propertyName]) {
+            [propertys addObject:propertyInfo];
+        }
+    }];
+    objc_setAssociatedObject(self,&kPropertySetKey, propertys, OBJC_ASSOCIATION_COPY);
+    return propertys;
+}
+
 
 @end

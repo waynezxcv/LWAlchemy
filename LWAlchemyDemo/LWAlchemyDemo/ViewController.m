@@ -26,17 +26,13 @@
                            @"c_birth":@1458227969,
                            @"c_phone":@"18682189243",
                            @"c_email":@"liuweiself@126.com",
-                           @"c_website":@"http://www.waynezxcv.me",
-                           };
+                           @"c_website":@"http://www.waynezxcv.me",};
+    
+    
     NSDictionary* mapper = @{@"name":@"c_name",
                              @"email":@"c_email"};
     
-    AppDelegate* delegate = [UIApplication sharedApplication].delegate;
-    
-    TestModel* model1 = [TestModel coreDataModelWithJSON:dict JSONKeyPathsByPropertyKey:mapper context:delegate.managedObjectContext];
-    TestModel* model2 = [TestModel coreDataModelWithJSON:dict JSONKeyPathsByPropertyKey:mapper context:delegate.managedObjectContext];
-    TestModel* model3 = [TestModel coreDataModelWithJSON:dict JSONKeyPathsByPropertyKey:mapper context:delegate.managedObjectContext];
-    
+    UserModel* userModel = [UserModel modelWithJSON:dict JSONKeyPathsByPropertyKey:mapper];
 }
 
 

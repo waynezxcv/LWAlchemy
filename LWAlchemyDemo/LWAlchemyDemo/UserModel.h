@@ -7,6 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "ChildClass.h"
 
 @interface UserModel : NSObject
 
@@ -16,6 +17,5 @@
 @property (nullable, nonatomic, retain) NSString *phone;
 @property (nullable, nonatomic, retain) NSString *email;
 @property (nullable, nonatomic, retain) id website;
-
 
 @end
