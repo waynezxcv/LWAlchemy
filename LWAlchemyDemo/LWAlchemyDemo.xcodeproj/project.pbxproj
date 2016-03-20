@@ -8,7 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		013827481C9B02F6005374CA /* UserModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 013827471C9B02F6005374CA /* UserModel.m */; };
-		0171C7A51C9F12C3000F2D14 /* LWAlchemyCoreDataManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 0171C7A41C9F12C3000F2D14 /* LWAlchemyCoreDataManager.m */; };
+		0171C7AA1C9F29BE000F2D14 /* LWAlchemyCoreDataManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 0171C7A91C9F29BE000F2D14 /* LWAlchemyCoreDataManager.m */; };
 		B002FA5A1C9EF37600A21ACC /* CDUserModel+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = B002FA571C9EF37600A21ACC /* CDUserModel+CoreDataProperties.m */; };
 		B002FA5B1C9EF37600A21ACC /* CDUserModel.m in Sources */ = {isa = PBXBuildFile; fileRef = B002FA591C9EF37600A21ACC /* CDUserModel.m */; };
 		B002FA601C9EF62B00A21ACC /* CDStatusModel+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = B002FA5D1C9EF62B00A21ACC /* CDStatusModel+CoreDataProperties.m */; };
@@ -47,9 +47,9 @@
 /* Begin PBXFileReference section */
 		013827461C9B02F6005374CA /* UserModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UserModel.h; sourceTree = "<group>"; };
 		013827471C9B02F6005374CA /* UserModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UserModel.m; sourceTree = "<group>"; };
-		0171C7A31C9F12C3000F2D14 /* LWAlchemyCoreDataManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LWAlchemyCoreDataManager.h; sourceTree = "<group>"; };
-		0171C7A41C9F12C3000F2D14 /* LWAlchemyCoreDataManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LWAlchemyCoreDataManager.m; sourceTree = "<group>"; };
-		0171C7A61C9F13AB000F2D14 /* LWAlchemy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LWAlchemy.h; sourceTree = "<group>"; };
+		0171C7A71C9F29BE000F2D14 /* LWAlchemy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LWAlchemy.h; path = ../LWAlchemy.h; sourceTree = "<group>"; };
+		0171C7A81C9F29BE000F2D14 /* LWAlchemyCoreDataManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LWAlchemyCoreDataManager.h; path = ../LWAlchemyCoreDataManager.h; sourceTree = "<group>"; };
+		0171C7A91C9F29BE000F2D14 /* LWAlchemyCoreDataManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = LWAlchemyCoreDataManager.m; path = ../LWAlchemyCoreDataManager.m; sourceTree = "<group>"; };
 		B002FA561C9EF37600A21ACC /* CDUserModel+CoreDataProperties.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "CDUserModel+CoreDataProperties.h"; path = "../CDUserModel+CoreDataProperties.h"; sourceTree = "<group>"; };
 		B002FA571C9EF37600A21ACC /* CDUserModel+CoreDataProperties.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "CDUserModel+CoreDataProperties.m"; path = "../CDUserModel+CoreDataProperties.m"; sourceTree = "<group>"; };
 		B002FA581C9EF37600A21ACC /* CDUserModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CDUserModel.h; path = ../CDUserModel.h; sourceTree = "<group>"; };
@@ -211,9 +211,9 @@
 		B0A87CDF1C9A5679004FD0D7 /* LWAlchemy */ = {
 			isa = PBXGroup;
 			children = (
-				0171C7A61C9F13AB000F2D14 /* LWAlchemy.h */,
-				0171C7A31C9F12C3000F2D14 /* LWAlchemyCoreDataManager.h */,
-				0171C7A41C9F12C3000F2D14 /* LWAlchemyCoreDataManager.m */,
+				0171C7A71C9F29BE000F2D14 /* LWAlchemy.h */,
+				0171C7A81C9F29BE000F2D14 /* LWAlchemyCoreDataManager.h */,
+				0171C7A91C9F29BE000F2D14 /* LWAlchemyCoreDataManager.m */,
 				B0A87CF21C9A58B0004FD0D7 /* NSObject+LWAlchemy.h */,
 				B0A87CF31C9A58B0004FD0D7 /* NSObject+LWAlchemy.m */,
 				B0A87CF41C9A58B0004FD0D7 /* LWAlchemyPropertyInfo.h */,
@@ -362,10 +362,10 @@
 				B002FA5B1C9EF37600A21ACC /* CDUserModel.m in Sources */,
 				B0F508FC1C9ECD160001D2ED /* StatusModel.m in Sources */,
 				013827481C9B02F6005374CA /* UserModel.m in Sources */,
-				0171C7A51C9F12C3000F2D14 /* LWAlchemyCoreDataManager.m in Sources */,
 				B002FA5A1C9EF37600A21ACC /* CDUserModel+CoreDataProperties.m in Sources */,
 				B002FA611C9EF62B00A21ACC /* CDStatusModel.m in Sources */,
 				B0A87CAB1C9A5669004FD0D7 /* main.m in Sources */,
+				0171C7AA1C9F29BE000F2D14 /* LWAlchemyCoreDataManager.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
