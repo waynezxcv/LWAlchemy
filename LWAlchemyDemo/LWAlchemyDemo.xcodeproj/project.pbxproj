@@ -24,6 +24,7 @@
 		B0A87CD21C9A5669004FD0D7 /* LWAlchemyDemoUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = B0A87CD11C9A5669004FD0D7 /* LWAlchemyDemoUITests.m */; };
 		B0A87CF61C9A58B0004FD0D7 /* NSObject+LWAlchemy.m in Sources */ = {isa = PBXBuildFile; fileRef = B0A87CF31C9A58B0004FD0D7 /* NSObject+LWAlchemy.m */; };
 		B0A87CF71C9A58B0004FD0D7 /* LWAlchemyPropertyInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = B0A87CF51C9A58B0004FD0D7 /* LWAlchemyPropertyInfo.m */; };
+		B0C7C38D1C9FFEFA00081F08 /* LWAlchemyValueTransformer.m in Sources */ = {isa = PBXBuildFile; fileRef = B0C7C38C1C9FFEFA00081F08 /* LWAlchemyValueTransformer.m */; };
 		B0F508FC1C9ECD160001D2ED /* StatusModel.m in Sources */ = {isa = PBXBuildFile; fileRef = B0F508FB1C9ECD160001D2ED /* StatusModel.m */; };
 /* End PBXBuildFile section */
 
@@ -79,6 +80,8 @@
 		B0A87CF31C9A58B0004FD0D7 /* NSObject+LWAlchemy.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NSObject+LWAlchemy.m"; path = "../NSObject+LWAlchemy.m"; sourceTree = "<group>"; };
 		B0A87CF41C9A58B0004FD0D7 /* LWAlchemyPropertyInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LWAlchemyPropertyInfo.h; path = ../LWAlchemyPropertyInfo.h; sourceTree = "<group>"; };
 		B0A87CF51C9A58B0004FD0D7 /* LWAlchemyPropertyInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = LWAlchemyPropertyInfo.m; path = ../LWAlchemyPropertyInfo.m; sourceTree = "<group>"; };
+		B0C7C38B1C9FFEFA00081F08 /* LWAlchemyValueTransformer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LWAlchemyValueTransformer.h; path = ../LWAlchemyValueTransformer.h; sourceTree = "<group>"; };
+		B0C7C38C1C9FFEFA00081F08 /* LWAlchemyValueTransformer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = LWAlchemyValueTransformer.m; path = ../LWAlchemyValueTransformer.m; sourceTree = "<group>"; };
 		B0F508FA1C9ECD160001D2ED /* StatusModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StatusModel.h; sourceTree = "<group>"; };
 		B0F508FB1C9ECD160001D2ED /* StatusModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StatusModel.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -212,12 +215,14 @@
 			isa = PBXGroup;
 			children = (
 				0171C7A71C9F29BE000F2D14 /* LWAlchemy.h */,
-				0171C7A81C9F29BE000F2D14 /* LWAlchemyCoreDataManager.h */,
-				0171C7A91C9F29BE000F2D14 /* LWAlchemyCoreDataManager.m */,
 				B0A87CF21C9A58B0004FD0D7 /* NSObject+LWAlchemy.h */,
 				B0A87CF31C9A58B0004FD0D7 /* NSObject+LWAlchemy.m */,
 				B0A87CF41C9A58B0004FD0D7 /* LWAlchemyPropertyInfo.h */,
 				B0A87CF51C9A58B0004FD0D7 /* LWAlchemyPropertyInfo.m */,
+				0171C7A81C9F29BE000F2D14 /* LWAlchemyCoreDataManager.h */,
+				0171C7A91C9F29BE000F2D14 /* LWAlchemyCoreDataManager.m */,
+				B0C7C38B1C9FFEFA00081F08 /* LWAlchemyValueTransformer.h */,
+				B0C7C38C1C9FFEFA00081F08 /* LWAlchemyValueTransformer.m */,
 			);
 			name = LWAlchemy;
 			sourceTree = "<group>";
@@ -357,6 +362,7 @@
 				B0A87CF61C9A58B0004FD0D7 /* NSObject+LWAlchemy.m in Sources */,
 				B0A87CB11C9A5669004FD0D7 /* ViewController.m in Sources */,
 				B0A87CB71C9A5669004FD0D7 /* LWAlchemyDemo.xcdatamodeld in Sources */,
+				B0C7C38D1C9FFEFA00081F08 /* LWAlchemyValueTransformer.m in Sources */,
 				B0A87CAE1C9A5669004FD0D7 /* AppDelegate.m in Sources */,
 				B002FA601C9EF62B00A21ACC /* CDStatusModel+CoreDataProperties.m in Sources */,
 				B002FA5B1C9EF37600A21ACC /* CDUserModel.m in Sources */,

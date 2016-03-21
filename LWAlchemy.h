@@ -19,6 +19,7 @@
 
 #import "NSObject+LWAlchemy.h"
 #import "LWAlchemyCoreDataManager.h"
+#import "LWAlchemyValueTransformer.h"
 
 
 #endif /* LWAlchemy_h */

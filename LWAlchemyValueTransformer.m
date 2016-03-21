@@ -14,47 +14,9 @@
 //  See LICENSE for this sample’s licensing information
 //
 
-#import <UIKit/UIKit.h>
 
-@class NSManagedObjectContext;
-@class NSManagedObjectModel;
-@class NSPersistentStoreCoordinator;
+#import "LWAlchemyValueTransformer.h"
 
+@implementation LWAlchemyValueTransformer
 
-@interface LWAlchemyCoreDataManager : NSObject
-
-
-@property (readonly, strong, nonatomic) NSManagedObjectContext* context;//主线程Context
-@property (readonly, strong, nonatomic) NSManagedObjectContext* parentContext;//用来保存到persistentStoreCoordinator的Context
-@property (readonly, strong, nonatomic) NSManagedObjectContext* importContext;//插入数据的Context
-
-@property (readonly, strong, nonatomic) NSManagedObjectModel* managedObjectModel;
-@property (readonly, strong, nonatomic) NSPersistentStoreCoordinator* persistentStoreCoordinator;
-
-
-+ (LWAlchemyCoreDataManager *)sharedManager;
-
-- (void)saveContext:(NSManagedObjectContext *)context;
-- (void)backgroundSaveContext;
-
-/**
- *  增
- *
- */
-- (id)insertNSManagerObjectWithObjectClass:(Class)objectClass JSON:(id)json;
-
-/**
- *  查
- *
- */
-- (NSArray *)fetchNSManagerObjectWithObjectClass:(Class)objectClass
-                                  sortDescriptor:(NSSortDescriptor *)sortDescriptor
-                                       predicate:(NSPredicate *) predicate;
-/**
- *  改
- */
-
-/**
- *  删
- */
 @end

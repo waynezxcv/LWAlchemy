@@ -23,16 +23,12 @@
 @interface LWAlchemyCoreDataManager ()
 
 @property (nonatomic,weak) AppDelegate* appDelegate;
-
 @property (strong,nonatomic) NSManagedObjectContext* context;
 @property (strong,nonatomic) NSManagedObjectContext* parentContext;
 @property (strong,nonatomic) NSManagedObjectContext* importContext;
-//@property (strong,nonatomic) NSManagedObjectContext* sourceContext;
 
 @property (strong,nonatomic) NSManagedObjectModel *managedObjectModel;
 @property (strong,nonatomic) NSPersistentStoreCoordinator *persistentStoreCoordinator;
-//@property (strong, nonatomic) NSPersistentStoreCoordinator* sourcePersistentStoreCoordinator;
-
 
 @end
 
@@ -51,44 +47,74 @@
 - (id)init {
     self = [super init];
     if (self) {
-        self.appDelegate = [UIApplication sharedApplication].delegate;
-        _managedObjectModel = self.appDelegate.managedObjectModel;
-        _persistentStoreCoordinator = self.appDelegate.persistentStoreCoordinator;
-        
-        //        _managedObjectModel = [NSManagedObjectModel mergedModelFromBundles:nil];
-        
-        //        _persistentStoreCoordinator = [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel:_managedObjectModel];
-        _parentContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
-        
-        [_parentContext performBlockAndWait:^{
-            [_parentContext setPersistentStoreCoordinator:_persistentStoreCoordinator];
-            [_parentContext setMergePolicy:NSMergeByPropertyObjectTrumpMergePolicy];
-        }];
-        
-        _context = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSMainQueueConcurrencyType];
-        [_context setParentContext:_parentContext];
-        [_context setMergePolicy:NSMergeByPropertyObjectTrumpMergePolicy];
-        
-        
-        _importContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
-        [_importContext performBlockAndWait:^{
-            [_importContext setParentContext:_context];
-            [_importContext setMergePolicy:NSMergeByPropertyObjectTrumpMergePolicy];
-            [_importContext setUndoManager:nil];
-        }];
-        [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:@selector(backgroundSaveContext)
-                                                     name:UIApplicationWillTerminateNotification
-                                                   object:nil];
-        
-        [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:@selector(backgroundSaveContext)
-                                                     name:UIApplicationDidEnterBackgroundNotification
-                                                   object:nil];
+        [self setupNotifications];
     }
     return self;
 }
 
+#pragma mark - Getter
+
+- (NSManagedObjectContext *)context {
+    if (!_context) {
+        _context = self.appDelegate.managedObjectContext;
+        [_context setParentContext:self.parentContext];
+        [_context setMergePolicy:NSMergeByPropertyObjectTrumpMergePolicy];
+    }
+    return _context;
+}
+
+
+- (NSManagedObjectContext *)importContext {
+    if (!_importContext) {
+        _importContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
+        [_importContext performBlockAndWait:^{
+            [_importContext setParentContext:self.context];
+            [_importContext setMergePolicy:NSMergeByPropertyObjectTrumpMergePolicy];
+            [_importContext setUndoManager:nil];
+        }];
+    }
+    return _importContext;
+}
+
+- (NSManagedObjectContext *)parentContext {
+    if (!_parentContext) {
+        _parentContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
+        [_parentContext performBlockAndWait:^{
+            [_parentContext setPersistentStoreCoordinator:self.persistentStoreCoordinator];
+            [_parentContext setMergePolicy:NSMergeByPropertyObjectTrumpMergePolicy];
+        }];
+    }
+    return _parentContext;
+}
+
+- (AppDelegate *)appDelegate {
+    if (!_appDelegate) {
+        _appDelegate = [UIApplication sharedApplication].delegate;
+    }
+    return _appDelegate;
+}
+
+
+
+- (NSPersistentStoreCoordinator *)persistentStoreCoordinator {
+    if (!_persistentStoreCoordinator) {
+        _persistentStoreCoordinator = self.appDelegate.persistentStoreCoordinator;
+    }
+    return _persistentStoreCoordinator;
+}
+
+
+- (void)setupNotifications {
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(backgroundSaveContext)
+                                                 name:UIApplicationWillTerminateNotification
+                                               object:nil];
+
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(backgroundSaveContext)
+                                                 name:UIApplicationDidEnterBackgroundNotification
+                                               object:nil];
+}
 
 - (void)dealloc {
     [[NSNotificationCenter defaultCenter] removeObserver:self
@@ -115,14 +141,16 @@
 
 - (void)backgroundSaveContext {
     [self saveContext:self.importContext];
+    __weak typeof(self) weakSelf = self;
     [self.context performBlock:^{
+        __strong typeof(weakSelf) strongSelf = weakSelf;
         NSError *error = nil;
-        if ([self.context hasChanges] && ![self.context save:&error]) {
+        if ([strongSelf.context hasChanges] && ![strongSelf.context save:&error]) {
             NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
             abort();
         }
-        [_parentContext performBlock:^{
-            NSManagedObjectContext* managedObjectContext = _parentContext;
+        [strongSelf.parentContext performBlock:^{
+            NSManagedObjectContext* managedObjectContext = strongSelf.parentContext;
             if (managedObjectContext != nil) {
                 NSError *error = nil;
                 if ([managedObjectContext hasChanges] && ![managedObjectContext save:&error]) {
@@ -133,6 +161,7 @@
         }];
     }];
 }
+
 
 #pragma mark - CURD
 
@@ -154,7 +183,6 @@
     [self.context performBlockAndWait:^{
         __strong typeof(weakSelf) strongSelf = weakSelf;
         NSFetchRequest* fetchRequest = [[NSFetchRequest alloc] init];
-        
         NSEntityDescription* entity = [NSEntityDescription entityForName:NSStringFromClass(objectClass)
                                                   inManagedObjectContext:strongSelf.context];
         [fetchRequest setEntity:entity];

@@ -19,30 +19,61 @@
 
 
 
-typedef NS_ENUM(NSUInteger, LWType) {
-    LWTypeUnkonw        = 0,
-    LWTypeVoid          = 1,
-    LWTypeBool          = 2,
-    LWTypeInt8          = 3,
-    LWTypeUInt8         = 4,
-    LWTypeInt16         = 5,
-    LWTypeUInt16        = 6,
-    LWTypeInt32         = 7,
-    LWTypeUInt32        = 8,
-    LWTypeInt64         = 9,
-    LWTypeUInt64        = 10,
-    LWTypeFloat         = 11,
-    LWTypeDouble        = 12,
-    LWTypeLongDouble    = 13,
-    LWTypeClass         = 14,
-    LWTypeSEL           = 15,
-    LWTypeCFString      = 16,
-    LWTypePointer       = 17,
-    LWTypeCFArray       = 18,
-    LWTypeUnion         = 19,
-    LWTypeStruct        = 20,
-    LWTypeObject        = 21,
-    LWTypeBlock         = 22,
+typedef NS_ENUM(NSUInteger, LWPropertyType) {
+    LWPropertyTypeUnkonw        = 0,
+    LWPropertyTypeVoid          = 1,
+    LWPropertyTypeBool          = 2,
+    LWPropertyTypeInt8          = 3,
+    LWPropertyTypeUInt8         = 4,
+    LWPropertyTypeInt16         = 5,
+    LWPropertyTypeUInt16        = 6,
+    LWPropertyTypeInt32         = 7,
+    LWPropertyTypeUInt32        = 8,
+    LWPropertyTypeInt64         = 9,
+    LWPropertyTypeUInt64        = 10,
+    LWPropertyTypeFloat         = 11,
+    LWPropertyTypeDouble        = 12,
+    LWPropertyTypeLongDouble    = 13,
+    LWPropertyTypeClass         = 14,
+    LWPropertyTypeSEL           = 15,
+    LWPropertyTypeCFString      = 16,
+    LWPropertyTypePointer       = 17,
+    LWPropertyTypeCFArray       = 18,
+    LWPropertyTypeUnion         = 19,
+    LWPropertyTypeStruct        = 20,
+    LWPropertyTypeObject        = 21,
+    LWPropertyTypeBlock         = 22,
+
+    LWPropertyMask         = 0xFF0000, ///< mask of property
+    LWPropertyReadonly     = 1 << 16, ///< readonly
+    LWPropertyCopy         = 1 << 17, ///< copy
+    LWPropertyRetain       = 1 << 18, ///< retain
+    LWPropertyNonatomic    = 1 << 19, ///< nonatomic
+    LWPropertyWeak         = 1 << 20, ///< weak
+    LWPropertyCustomGetter = 1 << 21, ///< getter=
+    LWPropertyCustomSetter = 1 << 22, ///< setter=
+    LWPropertyDynamic      = 1 << 23, ///< @dynamic
+};
+
+
+
+typedef NS_ENUM (NSUInteger, LWPropertyNSObjectType) {
+    LWPropertyNSObjectTypeNSUnknown = 0,
+    LWPropertyNSObjectTypeNSString,
+    LWPropertyNSObjectTypeNSMutableString,
+    LWPropertyNSObjectTypeNSValue,
+    LWPropertyNSObjectTypeNSNumber,
+    LWPropertyNSObjectTypeNSDecimalNumber,
+    LWPropertyNSObjectTypeNSData,
+    LWPropertyNSObjectTypeNSMutableData,
+    LWPropertyNSObjectTypeNSDate,
+    LWPropertyNSObjectTypeNSURL,
+    LWPropertyNSObjectTypeNSArray,
+    LWPropertyNSObjectTypeNSMutableArray,
+    LWPropertyNSObjectTypeNSDictionary,
+    LWPropertyNSObjectTypeNSMutableDictionary,
+    LWPropertyNSObjectTypeNSSet,
+    LWPropertyNSObjectTypeNSMutableSet,
 };
 
 
@@ -52,7 +83,8 @@ typedef NS_ENUM(NSUInteger, LWType) {
 @property (nonatomic,strong,readonly) NSString* propertyName;
 @property (nonatomic,strong,readonly) NSString* ivarName;
 @property (nonatomic,assign,readonly) Ivar ivar;
-@property (nonatomic,assign,readonly) LWType type;
+@property (nonatomic,assign,readonly) LWPropertyType type;
+@property (nonatomic,assign,readonly) LWPropertyNSObjectType nsType;
 @property (nonatomic,copy,readonly) NSString* typeEncoding;
 @property (nonatomic,assign,readonly) Class cls;
 @property (nonatomic,strong,readonly) NSString* getter;

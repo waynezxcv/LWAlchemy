@@ -17,6 +17,14 @@
 #import <Foundation/Foundation.h>
 
 
+
+@protocol LWAlchemyDelegate <NSObject>
+
++ (NSDictionary *)mapDictionary;
+
+@end
+
+
 @class NSManagedObjectContext;
 
 @interface NSObject(LWAlchemy)
