@@ -44,36 +44,35 @@ typedef NS_ENUM(NSUInteger, LWPropertyType) {
     LWPropertyTypeObject        = 21,
     LWPropertyTypeBlock         = 22,
 
-    LWPropertyMask         = 0xFF0000, ///< mask of property
-    LWPropertyReadonly     = 1 << 16, ///< readonly
-    LWPropertyCopy         = 1 << 17, ///< copy
-    LWPropertyRetain       = 1 << 18, ///< retain
-    LWPropertyNonatomic    = 1 << 19, ///< nonatomic
-    LWPropertyWeak         = 1 << 20, ///< weak
-    LWPropertyCustomGetter = 1 << 21, ///< getter=
-    LWPropertyCustomSetter = 1 << 22, ///< setter=
-    LWPropertyDynamic      = 1 << 23, ///< @dynamic
+    LWPropertyReadonly     = 1 << 16,
+    LWPropertyCopy         = 1 << 17,
+    LWPropertyRetain       = 1 << 18,
+    LWPropertyNonatomic    = 1 << 19,
+    LWPropertyWeak         = 1 << 20,
+    LWPropertyCustomGetter = 1 << 21,
+    LWPropertyCustomSetter = 1 << 22,
+    LWPropertyDynamic      = 1 << 23,
 };
 
 
 
 typedef NS_ENUM (NSUInteger, LWPropertyNSObjectType) {
-    LWPropertyNSObjectTypeNSUnknown = 0,
-    LWPropertyNSObjectTypeNSString,
-    LWPropertyNSObjectTypeNSMutableString,
-    LWPropertyNSObjectTypeNSValue,
-    LWPropertyNSObjectTypeNSNumber,
-    LWPropertyNSObjectTypeNSDecimalNumber,
-    LWPropertyNSObjectTypeNSData,
-    LWPropertyNSObjectTypeNSMutableData,
-    LWPropertyNSObjectTypeNSDate,
-    LWPropertyNSObjectTypeNSURL,
-    LWPropertyNSObjectTypeNSArray,
-    LWPropertyNSObjectTypeNSMutableArray,
-    LWPropertyNSObjectTypeNSDictionary,
-    LWPropertyNSObjectTypeNSMutableDictionary,
-    LWPropertyNSObjectTypeNSSet,
-    LWPropertyNSObjectTypeNSMutableSet,
+    LWPropertyNSObjectTypeNSUnknown             = 0,
+    LWPropertyNSObjectTypeNSString              = 1,
+    LWPropertyNSObjectTypeNSMutableString       = 2,
+    LWPropertyNSObjectTypeNSValue               = 3,
+    LWPropertyNSObjectTypeNSNumber              = 4,
+    LWPropertyNSObjectTypeNSDecimalNumber       = 5,
+    LWPropertyNSObjectTypeNSData                = 6,
+    LWPropertyNSObjectTypeNSMutableData         = 7,
+    LWPropertyNSObjectTypeNSDate                = 8,
+    LWPropertyNSObjectTypeNSURL                 = 9,
+    LWPropertyNSObjectTypeNSArray               = 10,
+    LWPropertyNSObjectTypeNSMutableArray        = 11,
+    LWPropertyNSObjectTypeNSDictionary          = 12,
+    LWPropertyNSObjectTypeNSMutableDictionary   = 13,
+    LWPropertyNSObjectTypeNSSet                 = 14,
+    LWPropertyNSObjectTypeNSMutableSet          = 15
 };
 
 

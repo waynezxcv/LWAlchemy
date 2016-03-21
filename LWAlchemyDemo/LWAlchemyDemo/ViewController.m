@@ -71,7 +71,7 @@
  */
 - (void)timeCostTest {
     NSMutableArray* tmp = [[NSMutableArray alloc] init];
-    for (NSInteger i = 0; i < 1; i ++) {
+    for (NSInteger i = 0; i < 10000; i ++) {
         NSDictionary* dict = @{@"text" : @"我们一起来使用LWAlechemy~",
                                @"user" : @{
                                        @"name" : @"Waynezxcv",
@@ -100,11 +100,11 @@
     for (NSDictionary* dict in tmp) {
         // 将字典转为Status模型
         StatusModel* status = [StatusModel modelWithJSON:dict];
-        NSLog(@"=======================NSManagedObject=================================");
-        NSLog(@"%@",status.text);
-        NSLog(@"user:%@...%@...%ld...%@",status.user.name,status.user.sign,status.user.age,status.user.website);
-        NSLog(@"retweetStatus:%@",status.retweetedStatus.text);
-        NSLog(@"retweetUser:%@..%@..%ld...%@",status.retweetedStatus.user.name,status.retweetedStatus.user.sign,status.retweetedStatus.user.age,status.retweetedStatus.user.website);
+//        NSLog(@"=======================NSManagedObject=================================");
+//        NSLog(@"%@",status.text);
+//        NSLog(@"user:%@...%@...%ld...%@",status.user.name,status.user.sign,status.user.age,status.user.website);
+//        NSLog(@"retweetStatus:%@",status.retweetedStatus.text);
+//        NSLog(@"retweetUser:%@..%@..%ld...%@",status.retweetedStatus.user.name,status.retweetedStatus.user.sign,status.retweetedStatus.user.age,status.retweetedStatus.user.website);
         [results addObject:status];
     }
     NSLog(@"LWAlchemy 花费时间为: %f", -[startTime timeIntervalSinceNow]);
