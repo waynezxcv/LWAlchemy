@@ -45,6 +45,7 @@
 - (instancetype)nsManagedObject:(NSManagedObject *)object
             modelWithDictionary:(NSDictionary *)dictionary
                         context:(NSManagedObjectContext *)contxt;
+- (NSDictionary *)_dictionaryWithJSON:(id)json;
 
 
 + (NSSet *)propertysSet;

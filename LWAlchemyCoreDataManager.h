@@ -21,7 +21,10 @@
 @class NSManagedObjectContext;
 @class NSManagedObjectModel;
 @class NSPersistentStoreCoordinator;
+@class NSManagedObjectID;
+@class NSManagedObject;
 
+typedef void(^Completion)(void);
 
 @interface LWAlchemyCoreDataManager : NSObject
 
@@ -41,28 +44,31 @@
  *  增
  *
  */
-- (id)insertNSManagerObjectWithObjectClass:(Class)objectClass JSON:(id)json;
+- (id)insertNSManagedObjectWithObjectClass:(Class)objectClass JSON:(id)json;
 
 /**
  *  查
  *
  */
-- (NSArray *)fetchNSManagerObjectWithObjectClass:(Class)objectClass
-                                  sortDescriptor:(NSSortDescriptor *)sortDescriptor
+- (NSArray *)fetchNSManagedObjectWithObjectClass:(Class)objectClass
+                                  sortDescriptor:(NSArray<NSSortDescriptor *> *)sortDescriptor
                                        predicate:(NSPredicate *) predicate;
-/**
- *  改
- */
-
 
 /**
  *  删
  */
 
+- (BOOL)deleteNSManagedObjectWithObjectWithObjectIdsArray:(NSArray<NSManagedObjectID *> *)objectIDs;
 
 /**
- *  保存NSManagedObjectContext中的内容
+ *  改
+ *
  */
-- (void)backgroundSaveContext;
+- (NSManagedObject *)updateNSManagedObjectWithObjectID:(NSManagedObjectID *)objectID JSON:(id)json;
+
+/**
+ *  保存NSManagedObjectContext中的内容到SQLite
+ */
+- (void)commitContextCompletion:(Completion)completeBlock;
 
 @end

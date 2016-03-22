@@ -15,7 +15,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface TestModel1 (CoreDataProperties)
 
-@property (nullable, nonatomic, retain) id url;
+@property (nullable, nonatomic, retain) NSURL* url;
 @property (nullable, nonatomic, retain) NSString *text;
 @property (nullable, nonatomic, retain) NSDate *timeStampe;
 @property (nullable, nonatomic, retain) TestModel2 *user;

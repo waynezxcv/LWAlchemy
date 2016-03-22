@@ -25,8 +25,6 @@
     [self insertTest];
 }
 
-
-
 - (void)insertTest {
     NSDictionary* dict = @{@"url":@"http://www.waynezxcv.me",
                            @"text" :@"我们一起来使用LWAlechemy~",
@@ -38,18 +36,15 @@
                                    @"website":@"http://www.waynezxcv.me",
                                    }
                            };
-
     LWAlchemyCoreDataManager* manager = [LWAlchemyCoreDataManager sharedManager];
     [manager insertNSManagerObjectWithObjectClass:[TestModel1 class] JSON:dict];
-    [manager backgroundSaveContext];
     NSArray* results = [manager fetchNSManagerObjectWithObjectClass:[TestModel1 class] sortDescriptor:nil predicate:nil];
-    TestModel1* model = results[0];
-    NSLog(@"%@",[model lwDescription]);
+    if (results.count != 0) {
+        TestModel1* model = results[0];
+        NSLog(@"%@",[model.user lwDescription]);
+    }
+
 }
-
-
-
-
 
 /**
  *  测试时间消耗

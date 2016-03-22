@@ -502,6 +502,10 @@ static void _SetOtherTypePropertyValue(__unsafe_unretained id model,
             NSDate* date = LWNSDateFromString([NSString stringWithFormat:@"%@",value]);
             [object setValue:date forKey:propertyInfo.propertyName];
         }break;
+        case LWPropertyNSObjectTypeNSURL: {
+            NSURL* URL = [NSURL URLWithString:[NSString stringWithFormat:@"%@",value]];
+            [object setValue:URL forKey:propertyInfo.propertyName];
+        }break;
         case LWPropertyNSObjectTypeNSString:
         case LWPropertyNSObjectTypeNSMutableString:
         case LWPropertyNSObjectTypeNSValue:
@@ -509,7 +513,6 @@ static void _SetOtherTypePropertyValue(__unsafe_unretained id model,
         case LWPropertyNSObjectTypeNSDecimalNumber:
         case LWPropertyNSObjectTypeNSData:
         case LWPropertyNSObjectTypeNSMutableData:
-        case LWPropertyNSObjectTypeNSURL:
         case LWPropertyNSObjectTypeNSArray:
         case LWPropertyNSObjectTypeNSMutableArray:
         case LWPropertyNSObjectTypeNSDictionary:

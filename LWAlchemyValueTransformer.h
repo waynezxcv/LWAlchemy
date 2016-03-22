@@ -17,15 +17,11 @@
 
 #import <Foundation/Foundation.h>
 
-
 typedef id (^LWAlchemyValueTransformerBlock)(id value, BOOL* success, NSError **error);
-
 
 @interface LWAlchemyValueTransformer : NSValueTransformer
 
-
 + (instancetype)transformerUsingForwardBlock:(LWAlchemyValueTransformerBlock)transformation;
-
 + (instancetype)transformerUsingReversibleBlock:(LWAlchemyValueTransformerBlock)transformation;
 
 

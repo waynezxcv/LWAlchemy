@@ -55,22 +55,27 @@
 
 #pragma mark - CURD
 
-- (id)insertNSManagerObjectWithObjectClass:(Class)objectClass JSON:(id)json {
+- (id)insertNSManagedObjectWithObjectClass:(Class)objectClass JSON:(id)json {
     __block NSObject* model;
     __weak typeof(self) weakSelf = self;
     [self.importContext performBlock:^{
         __strong typeof(weakSelf) strongSelf = weakSelf;
         model = [objectClass nsManagedObjectModelWithJSON:json context:strongSelf.importContext];
     }];
+    NSError *error = nil;
+    if ([self.importContext hasChanges] && ![self.importContext save:&error]) {
+        NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
+        abort();
+    }
     return model;
 }
 
-- (NSArray *)fetchNSManagerObjectWithObjectClass:(Class)objectClass
+- (NSArray *)fetchNSManagedObjectWithObjectClass:(Class)objectClass
                                   sortDescriptor:(NSArray<NSSortDescriptor *> *)sortDescriptors
                                        predicate:(NSPredicate *) predicate {
     __block NSArray* results;
     __weak typeof(self) weakSelf = self;
-    [self.managedObjectContext performBlockAndWait:^{
+    [self.importContext performBlockAndWait:^{
         __strong typeof(weakSelf) strongSelf = weakSelf;
         NSFetchRequest* fetchRequest = [[NSFetchRequest alloc] init];
         NSEntityDescription* entity = [NSEntityDescription entityForName:NSStringFromClass(objectClass)
@@ -83,9 +88,52 @@
             [fetchRequest setPredicate:predicate];
         }
         NSError* requestError = nil;
-        results = [strongSelf.managedObjectContext executeFetchRequest:fetchRequest error:&requestError];
+        results = [strongSelf.importContext executeFetchRequest:fetchRequest error:&requestError];
     }];
     return results;
+}
+
+- (BOOL)deleteNSManagedObjectWithObjectWithObjectIdsArray:(NSArray<NSManagedObjectID *> *)objectIDs {
+    __weak typeof(self) weakSelf = self;
+    BOOL success = NO;
+    [self.importContext performBlock:^{
+        __strong typeof(weakSelf) strongSelf = weakSelf;
+        for (NSManagedObjectID* objectID in objectIDs) {
+            NSManagedObject* object = [strongSelf.importContext objectWithID:objectID];
+            if (object) {
+                [strongSelf.importContext deleteObject:object];
+            }
+        }
+    }];
+    NSError *error = nil;
+    if ([self.importContext hasChanges] && ![self.importContext save:&error]) {
+        NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
+        abort();
+        success = NO;
+    }
+    success = YES;
+    return success;
+}
+
+- (NSManagedObject *)updateNSManagedObjectWithObjectID:(NSManagedObjectID *)objectID JSON:(id)json {
+    __block NSManagedObject* object;
+    __weak typeof(self) weakSelf = self;
+    [self.importContext performBlock:^{
+        __strong typeof(weakSelf) strongSelf = weakSelf;
+        object = [strongSelf.importContext objectWithID:objectID];
+        if ([json isKindOfClass:[NSDictionary class]]) {
+            object = [object nsManagedObject:object modelWithDictionary:json context:strongSelf.importContext];
+        } else {
+            NSDictionary* dict = [self _dictionaryWithJSON:json];
+            object = [object nsManagedObject:object modelWithDictionary:dict context:strongSelf.importContext];
+        }
+    }];
+    NSError *error = nil;
+    if ([self.importContext hasChanges] && ![self.importContext save:&error]) {
+        NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
+        abort();
+    }
+    return object;
 }
 
 - (void)saveContext:(NSManagedObjectContext *)context {
@@ -101,7 +149,7 @@
     }];
 }
 
-- (void)backgroundSaveContext {
+- (void)commitContextCompletion:(Completion)completeBlock {
     [self saveContext:self.importContext];
     __weak typeof(self) weakSelf = self;
     [self.managedObjectContext performBlock:^{
@@ -111,7 +159,7 @@
             NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
             abort();
         }
-        [strongSelf.parentContext performBlock:^{
+        [strongSelf.parentContext performBlockAndWait:^{
             NSManagedObjectContext* managedObjectContext = strongSelf.parentContext;
             if (managedObjectContext != nil) {
                 NSError *error = nil;
@@ -119,14 +167,14 @@
                     NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
                     abort();
                 }
+                NSLog(@"commit");
+                completeBlock();
             }
         }];
     }];
 }
 
-
 #pragma mark - Getter
-
 - (NSString *)executableFile {
     if (!_executableFile) {
         _executableFile = [[[NSBundle mainBundle] infoDictionary] objectForKey:(NSString *)kCFBundleExecutableKey];
@@ -146,7 +194,6 @@
 
 
 - (NSURL *)applicationDocumentsDirectory {
-
     return [[[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] lastObject];
 }
 
@@ -209,12 +256,12 @@
 
 - (void)setupNotifications {
     [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(backgroundSaveContext)
+                                             selector:@selector(backgourndSaveContext)
                                                  name:UIApplicationWillTerminateNotification
                                                object:nil];
 
     [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(backgroundSaveContext)
+                                             selector:@selector(backgourndSaveContext)
                                                  name:UIApplicationDidEnterBackgroundNotification
                                                object:nil];
 }
@@ -226,6 +273,22 @@
     [[NSNotificationCenter defaultCenter] removeObserver:self
                                                     name:UIApplicationDidEnterBackgroundNotification
                                                   object:nil];
+}
+
+- (void)backgourndSaveContext {
+    Class UIApplicationClass = NSClassFromString(@"UIApplication");
+    if(!UIApplicationClass || ![UIApplicationClass respondsToSelector:@selector(sharedApplication)]) {
+        return;
+    }
+    UIApplication* application = [UIApplication performSelector:@selector(sharedApplication)];
+    __block UIBackgroundTaskIdentifier bgTask = [application beginBackgroundTaskWithExpirationHandler:^{
+        [application endBackgroundTask:bgTask];
+        bgTask = UIBackgroundTaskInvalid;
+    }];
+    [self commitContextCompletion:^{
+        [application endBackgroundTask:bgTask];
+        bgTask = UIBackgroundTaskInvalid;
+    }];
 }
 
 @end
