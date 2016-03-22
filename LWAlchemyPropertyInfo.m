@@ -23,15 +23,15 @@
 
 @interface LWAlchemyPropertyInfo ()
 
-@property (nonatomic, assign) objc_property_t property;//属性
-@property (nonatomic, strong) NSString* propertyName;//属性名称
-@property (nonatomic, strong) NSString* ivarName;//实例对象名称
-@property (nonatomic, assign) LWPropertyType type;//类型
+@property (nonatomic,assign) objc_property_t property;
+@property (nonatomic,strong) NSString* propertyName;
+@property (nonatomic,strong) NSString* ivarName;
+@property (nonatomic,assign) LWPropertyType type;
 @property (nonatomic,assign) LWPropertyNSObjectType nsType;
-@property (nonatomic, assign) Class cls;//如果是LWTypeObject类型，用来表示该对象所属的类,否则为nil
-@property (nonatomic, strong) NSString* getter;//getter方法
-@property (nonatomic, strong) NSString* setter;//setter方法
-@property (nonatomic,assign,getter=isReadonly) BOOL readonly;//是否是只读属性
+@property (nonatomic,assign) Class cls;
+@property (nonatomic,strong) NSString* getter;
+@property (nonatomic,strong) NSString* setter;
+@property (nonatomic,assign,getter=isReadonly) BOOL readonly;
 @property (nonatomic,assign,getter=isDynamic) BOOL dynamic;
 @property (nonatomic,assign,getter=isIdType) BOOL idType;
 @property (nonatomic,assign,getter=isNumberType) BOOL numberType;
@@ -57,7 +57,6 @@
         objc_property_attribute_t* attributes = property_copyAttributeList(property, &attrCount);
         for (unsigned int i = 0; i < attrCount; i++) {
             switch (attributes[i].name[0]) {
-                    //类型属性
                 case 'T': {
                     if (attributes[i].value) {
                         LWPropertyType type = _GetPropertyInfoType(self, attributes[i].value);
@@ -76,25 +75,21 @@
                         }
                     }
                 } break;
-                    //实例对象属性
                 case 'V': {
                     if (attributes[i].value) {
                         self.ivarName = [NSString stringWithUTF8String:attributes[i].value];
                     }
                 } break;
-                    //自定义的Getter方法
                 case 'G': {
                     if (attributes[i].value) {
                         self.getter = [NSString stringWithUTF8String:attributes[i].value];
                     }
                 } break;
-                    //自定义的Setter方法
                 case 'S': {
                     if (attributes[i].value) {
                         self.setter = [NSString stringWithUTF8String:attributes[i].value];
                     }
                 }break;
-                    //是否是只读属性
                 case 'R': {
                     self.type |= LWPropertyReadonly;
                     self.readonly = YES;
@@ -110,9 +105,7 @@
             free(attributes);
             attributes = NULL;
         }
-        //propertyName
         self.propertyName =  @(property_getName(property));
-        //setter & getter
         if (self.propertyName) {
             if (!self.getter) {
                 self.getter = self.propertyName;

@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="9525" systemVersion="15D21" minimumToolsVersion="Automatic">
+<model userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="9525" systemVersion="15B42" minimumToolsVersion="Automatic">
     <entity name="CDStatusModel" representedClassName="CDStatusModel" syncable="YES">
         <attribute name="test" optional="YES" attributeType="Transformable" syncable="YES"/>
         <attribute name="text" optional="YES" attributeType="String" syncable="YES"/>
-        <relationship name="retweetedStatus" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="CDStatusModel" inverseName="retweetedStatus" inverseEntity="CDStatusModel" syncable="YES"/>
         <relationship name="user" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="CDUserModel" syncable="YES"/>
     </entity>
     <entity name="CDUserModel" representedClassName="CDUserModel" syncable="YES">
@@ -13,7 +12,7 @@
         <attribute name="website" optional="YES" attributeType="Transformable" syncable="YES"/>
     </entity>
     <elements>
-        <element name="CDStatusModel" positionX="-54" positionY="18" width="128" height="105"/>
+        <element name="CDStatusModel" positionX="-54" positionY="18" width="128" height="90"/>
         <element name="CDUserModel" positionX="-63" positionY="-18" width="128" height="105"/>
     </elements>
 </model>

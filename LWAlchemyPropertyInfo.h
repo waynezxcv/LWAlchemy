@@ -17,8 +17,6 @@
 #import <Foundation/Foundation.h>
 #import <objc/runtime.h>
 
-
-
 typedef NS_ENUM(NSUInteger, LWPropertyType) {
     LWPropertyTypeUnkonw        = 0,
     LWPropertyTypeVoid          = 1,
@@ -53,7 +51,6 @@ typedef NS_ENUM(NSUInteger, LWPropertyType) {
     LWPropertyCustomSetter = 1 << 22,
     LWPropertyDynamic      = 1 << 23,
 };
-
 
 
 typedef NS_ENUM (NSUInteger, LWPropertyNSObjectType) {

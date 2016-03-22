@@ -33,8 +33,8 @@
  *  NSObject
  *
  */
-+ (id)modelWithJSON:(id)json;
-+ (id)coreDataModelWithJSON:(id)json context:(NSManagedObjectContext *)context;
++ (id)objectModelWithJSON:(id)json;
++ (id)nsManagedObjectModelWithJSON:(id)json context:(NSManagedObjectContext *)context;
 
 
 /**
@@ -42,9 +42,10 @@
  *
  */
 - (instancetype)modelWithDictionary:(NSDictionary *)dictionary;
-- (instancetype)coreDataModelWithDictionary:(NSDictionary *)dictionary context:(NSManagedObjectContext *)contxt;
+- (instancetype)nsManagedObjectModelWithDictionary:(NSDictionary *)dictionary context:(NSManagedObjectContext *)contxt;
 
 + (NSSet *)propertysSet;
 + (NSDictionary *)mapDictionary;
+- (NSString *)lwDescription;
 
 @end

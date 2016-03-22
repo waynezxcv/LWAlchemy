@@ -14,6 +14,8 @@
 //  See LICENSE for this sample’s licensing information
 //
 
+
+
 #import <UIKit/UIKit.h>
 
 @class NSManagedObjectContext;
@@ -23,19 +25,17 @@
 
 @interface LWAlchemyCoreDataManager : NSObject
 
-
-@property (readonly, strong, nonatomic) NSManagedObjectContext* context;//主线程Context
-@property (readonly, strong, nonatomic) NSManagedObjectContext* parentContext;//用来保存到persistentStoreCoordinator的Context
-@property (readonly, strong, nonatomic) NSManagedObjectContext* importContext;//插入数据的Context
-
 @property (readonly, strong, nonatomic) NSManagedObjectModel* managedObjectModel;
 @property (readonly, strong, nonatomic) NSPersistentStoreCoordinator* persistentStoreCoordinator;
 
+@property (readonly, strong, nonatomic) NSManagedObjectContext* managedObjectContext;//主线程Context
+@property (readonly, strong, nonatomic) NSManagedObjectContext* parentContext;//用来保存到persistentStoreCoordinator的Context
+@property (readonly, strong, nonatomic) NSManagedObjectContext* importContext;//插入数据的Context
+
+
+
 
 + (LWAlchemyCoreDataManager *)sharedManager;
-
-- (void)saveContext:(NSManagedObjectContext *)context;
-- (void)backgroundSaveContext;
 
 /**
  *  增
@@ -54,7 +54,15 @@
  *  改
  */
 
+
 /**
  *  删
  */
+
+
+/**
+ *  保存NSManagedObjectContext中的内容
+ */
+- (void)backgroundSaveContext;
+
 @end

@@ -8,12 +8,20 @@
 
 #import <Foundation/Foundation.h>
 #import "UserModel.h"
+#import <UIKit/UIKit.h>
 
 @interface StatusModel : NSObject
 
-@property (nonatomic,strong) id test;
+@property (nonatomic,assign,getter=isLiked) BOOL liked;
+@property (nonatomic,assign) NSInteger statusId;
+@property (nonatomic,assign) CGFloat percent;
 @property (nonatomic,copy) NSString* text;
+@property (nonatomic,strong) NSURL* website;
+@property (nonatomic,strong) NSNumber* likedCount;
+@property (nonatomic,strong) NSArray* imgs;
+@property (nonatomic,strong) NSDictionary* profileDict;
+@property (nonatomic,strong) NSDate* timeStamp;
 @property (nonatomic,strong) UserModel* user;
-@property (nonatomic,strong) StatusModel* retweetedStatus;
+@property (nonatomic,strong) id idContent;
 
 @end

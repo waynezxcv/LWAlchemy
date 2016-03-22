@@ -22,13 +22,13 @@
 
 @interface LWAlchemyCoreDataManager ()
 
-@property (nonatomic,weak) AppDelegate* appDelegate;
-@property (strong,nonatomic) NSManagedObjectContext* context;
-@property (strong,nonatomic) NSManagedObjectContext* parentContext;
-@property (strong,nonatomic) NSManagedObjectContext* importContext;
-
 @property (strong,nonatomic) NSManagedObjectModel *managedObjectModel;
 @property (strong,nonatomic) NSPersistentStoreCoordinator *persistentStoreCoordinator;
+
+@property (strong,nonatomic) NSManagedObjectContext* managedObjectContext;
+@property (strong,nonatomic) NSManagedObjectContext* parentContext;
+@property (strong,nonatomic) NSManagedObjectContext* importContext;
+@property (nonatomic,copy) NSString* executableFile;
 
 @end
 
@@ -48,19 +48,127 @@
     self = [super init];
     if (self) {
         [self setupNotifications];
+
     }
     return self;
 }
 
+#pragma mark - CURD
+
+- (id)insertNSManagerObjectWithObjectClass:(Class)objectClass JSON:(id)json {
+    __block NSObject* model;
+    __weak typeof(self) weakSelf = self;
+    [self.importContext performBlock:^{
+        __strong typeof(weakSelf) strongSelf = weakSelf;
+        model = [objectClass nsManagedObjectModelWithDictionary:json context:strongSelf.importContext];
+    }];
+    return model;
+}
+
+- (NSArray *)fetchNSManagerObjectWithObjectClass:(Class)objectClass
+                                  sortDescriptor:(NSArray<NSSortDescriptor *> *)sortDescriptors
+                                       predicate:(NSPredicate *) predicate {
+    __block NSArray* results;
+    __weak typeof(self) weakSelf = self;
+    [self.managedObjectContext performBlockAndWait:^{
+        __strong typeof(weakSelf) strongSelf = weakSelf;
+        NSFetchRequest* fetchRequest = [[NSFetchRequest alloc] init];
+        NSEntityDescription* entity = [NSEntityDescription entityForName:NSStringFromClass(objectClass)
+                                                  inManagedObjectContext:strongSelf.managedObjectContext];
+        [fetchRequest setEntity:entity];
+        if (sortDescriptors) {
+            [fetchRequest setSortDescriptors:sortDescriptors];
+        }
+        if (predicate) {
+            [fetchRequest setPredicate:predicate];
+        }
+        NSError* requestError = nil;
+        results = [strongSelf.managedObjectContext executeFetchRequest:fetchRequest error:&requestError];
+    }];
+    return results;
+}
+
+- (void)saveContext:(NSManagedObjectContext *)context {
+    if (!context) {
+        return;
+    }
+    [context performBlockAndWait:^{
+        NSError *error = nil;
+        if ([context hasChanges] && ![context save:&error]) {
+            NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
+            abort();
+        }
+    }];
+}
+
+- (void)backgroundSaveContext {
+    [self saveContext:self.importContext];
+    __weak typeof(self) weakSelf = self;
+    [self.managedObjectContext performBlock:^{
+        __strong typeof(weakSelf) strongSelf = weakSelf;
+        NSError *error = nil;
+        if ([strongSelf.managedObjectContext hasChanges] && ![strongSelf.managedObjectContext save:&error]) {
+            NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
+            abort();
+        }
+        [strongSelf.parentContext performBlock:^{
+            NSManagedObjectContext* managedObjectContext = strongSelf.parentContext;
+            if (managedObjectContext != nil) {
+                NSError *error = nil;
+                if ([managedObjectContext hasChanges] && ![managedObjectContext save:&error]) {
+                    NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
+                    abort();
+                }
+            }
+        }];
+    }];
+}
+
+
 #pragma mark - Getter
 
-- (NSManagedObjectContext *)context {
-    if (!_context) {
-        _context = self.appDelegate.managedObjectContext;
-        [_context setParentContext:self.parentContext];
-        [_context setMergePolicy:NSMergeByPropertyObjectTrumpMergePolicy];
+- (NSString *)executableFile {
+    if (!_executableFile) {
+        _executableFile = [[[NSBundle mainBundle] infoDictionary] objectForKey:(NSString *)kCFBundleExecutableKey];
     }
-    return _context;
+    return _executableFile;
+}
+
+
+- (NSManagedObjectModel *)managedObjectModel {
+    if (_managedObjectModel != nil) {
+        return _managedObjectModel;
+    }
+    NSURL *modelURL = [[NSBundle mainBundle] URLForResource:self.executableFile withExtension:@"momd"];
+    _managedObjectModel = [[NSManagedObjectModel alloc] initWithContentsOfURL:modelURL];
+    return _managedObjectModel;
+}
+
+
+- (NSURL *)applicationDocumentsDirectory {
+
+    return [[[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] lastObject];
+}
+
+- (NSPersistentStoreCoordinator *)persistentStoreCoordinator {
+    if (_persistentStoreCoordinator != nil) {
+        return _persistentStoreCoordinator;
+    }
+    _persistentStoreCoordinator = [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel:[self managedObjectModel]];
+    NSString* sql = [NSString stringWithFormat:@"%@.sqlite",self.executableFile];
+    NSURL* storeURL = [[self applicationDocumentsDirectory] URLByAppendingPathComponent:sql];
+    NSError *error = nil;
+    NSString *failureReason = @"There was an error creating or loading the application's saved data.";
+    if (![_persistentStoreCoordinator addPersistentStoreWithType:NSSQLiteStoreType configuration:nil URL:storeURL options:nil error:&error]) {
+        NSMutableDictionary *dict = [NSMutableDictionary dictionary];
+        dict[NSLocalizedDescriptionKey] = @"Failed to initialize the application's saved data";
+        dict[NSLocalizedFailureReasonErrorKey] = failureReason;
+        dict[NSUnderlyingErrorKey] = error;
+        error = [NSError errorWithDomain:@"YOUR_ERROR_DOMAIN" code:9999 userInfo:dict];
+        NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
+        abort();
+    }
+    return _persistentStoreCoordinator;
 }
 
 
@@ -68,12 +176,24 @@
     if (!_importContext) {
         _importContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
         [_importContext performBlockAndWait:^{
-            [_importContext setParentContext:self.context];
+            [_importContext setParentContext:self.managedObjectContext];
             [_importContext setMergePolicy:NSMergeByPropertyObjectTrumpMergePolicy];
             [_importContext setUndoManager:nil];
         }];
     }
     return _importContext;
+}
+
+- (NSManagedObjectContext *)managedObjectContext {
+    if (!_managedObjectContext) {
+        _managedObjectContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSMainQueueConcurrencyType];
+        [_managedObjectContext performBlockAndWait:^{
+            [_managedObjectContext setParentContext:self.parentContext];
+            [_managedObjectContext setMergePolicy:NSMergeByPropertyObjectTrumpMergePolicy];
+            [_managedObjectContext setUndoManager:nil];
+        }];
+    }
+    return _managedObjectContext;
 }
 
 - (NSManagedObjectContext *)parentContext {
@@ -86,23 +206,6 @@
     }
     return _parentContext;
 }
-
-- (AppDelegate *)appDelegate {
-    if (!_appDelegate) {
-        _appDelegate = [UIApplication sharedApplication].delegate;
-    }
-    return _appDelegate;
-}
-
-
-
-- (NSPersistentStoreCoordinator *)persistentStoreCoordinator {
-    if (!_persistentStoreCoordinator) {
-        _persistentStoreCoordinator = self.appDelegate.persistentStoreCoordinator;
-    }
-    return _persistentStoreCoordinator;
-}
-
 
 - (void)setupNotifications {
     [[NSNotificationCenter defaultCenter] addObserver:self
@@ -124,79 +227,5 @@
                                                     name:UIApplicationDidEnterBackgroundNotification
                                                   object:nil];
 }
-
-- (void)saveContext:(NSManagedObjectContext *)context {
-    if (!context) {
-        return;
-    }
-    [context performBlockAndWait:^{
-        NSError *error = nil;
-        if ([context hasChanges] && ![context save:&error]) {
-            NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
-            abort();
-        }
-    }];
-}
-
-
-- (void)backgroundSaveContext {
-    [self saveContext:self.importContext];
-    __weak typeof(self) weakSelf = self;
-    [self.context performBlock:^{
-        __strong typeof(weakSelf) strongSelf = weakSelf;
-        NSError *error = nil;
-        if ([strongSelf.context hasChanges] && ![strongSelf.context save:&error]) {
-            NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
-            abort();
-        }
-        [strongSelf.parentContext performBlock:^{
-            NSManagedObjectContext* managedObjectContext = strongSelf.parentContext;
-            if (managedObjectContext != nil) {
-                NSError *error = nil;
-                if ([managedObjectContext hasChanges] && ![managedObjectContext save:&error]) {
-                    NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
-                    abort();
-                }
-            }
-        }];
-    }];
-}
-
-
-#pragma mark - CURD
-
-- (id)insertNSManagerObjectWithObjectClass:(Class)objectClass JSON:(id)json {
-    __block NSObject* model;
-    __weak typeof(self) weakSelf = self;
-    [self.importContext performBlock:^{
-        __strong typeof(weakSelf) strongSelf = weakSelf;
-        model = [objectClass coreDataModelWithJSON:json context:strongSelf.importContext];
-    }];
-    return model;
-}
-
-- (NSArray *)fetchNSManagerObjectWithObjectClass:(Class)objectClass
-                                  sortDescriptor:(NSArray<NSSortDescriptor *> *)sortDescriptors
-                                       predicate:(NSPredicate *) predicate {
-    __block NSArray* results;
-    __weak typeof(self) weakSelf = self;
-    [self.context performBlockAndWait:^{
-        __strong typeof(weakSelf) strongSelf = weakSelf;
-        NSFetchRequest* fetchRequest = [[NSFetchRequest alloc] init];
-        NSEntityDescription* entity = [NSEntityDescription entityForName:NSStringFromClass(objectClass)
-                                                  inManagedObjectContext:strongSelf.context];
-        [fetchRequest setEntity:entity];
-        if (sortDescriptors) {
-            [fetchRequest setSortDescriptors:sortDescriptors];
-        }
-        if (predicate) {
-            [fetchRequest setPredicate:predicate];
-        }
-        NSError* requestError = nil;
-        results = [strongSelf.context executeFetchRequest:fetchRequest error:&requestError];
-    }];
-    return results;
-}
-
 
 @end
