@@ -37,13 +37,13 @@
                                    }
                            };
     LWAlchemyCoreDataManager* manager = [LWAlchemyCoreDataManager sharedManager];
-    [manager insertNSManagerObjectWithObjectClass:[TestModel1 class] JSON:dict];
-    NSArray* results = [manager fetchNSManagerObjectWithObjectClass:[TestModel1 class] sortDescriptor:nil predicate:nil];
+    [manager insertNSManagedObjectWithObjectClass:[TestModel1 class] JSON:dict];
+    NSArray* results = [manager fetchNSManagedObjectWithObjectClass:[TestModel1 class] sortDescriptor:nil predicate:nil];
     if (results.count != 0) {
         TestModel1* model = results[0];
         NSLog(@"%@",[model.user lwDescription]);
     }
-
+    NSLog(@"%ld",results.count);
 }
 
 /**
