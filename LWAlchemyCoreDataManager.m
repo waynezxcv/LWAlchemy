@@ -58,7 +58,7 @@
 - (id)insertNSManagedObjectWithObjectClass:(Class)objectClass JSON:(id)json {
     __block NSObject* model;
     __weak typeof(self) weakSelf = self;
-    [self.importContext performBlock:^{
+    [self.importContext performBlockAndWait:^{
         __strong typeof(weakSelf) strongSelf = weakSelf;
         model = [objectClass nsManagedObjectModelWithJSON:json context:strongSelf.importContext];
     }];
@@ -71,39 +71,41 @@
 }
 
 - (id)insertNSManagedObjectWithObjectClass:(Class)objectClass JSON:(id)json uiqueAttributesName:(NSString *)uniqueAttributesName {
-    __block NSObject* model;
-    __weak typeof(self) weakSelf = self;
-    [self.importContext performBlock:^{
-        __strong typeof(weakSelf) strongSelf = weakSelf;
-        model = [objectClass nsManagedObjectModelWithJSON:json context:strongSelf.importContext];
-        NSString* attributesName = [objectClass uniqueAttributesName];
-        if (!attributesName) {
-            [objectClass setUniqueAttributesName:uniqueAttributesName];
-        }
-        NSLog(@"insert:%@",[objectClass uniqueAttributesName]);
-    }];
-    
-    NSError *error = nil;
-    if ([self.importContext hasChanges] && ![self.importContext save:&error]) {
-        NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
-        abort();
+    __block NSManagedObject* model;
+    model = [self existingObjectForEntity:objectClass withUniquAttributesName:uniqueAttributesName uniqueAttributesValue:[[self dictionaryWithJSON:json]objectForKey:uniqueAttributesName]];
+    if (model) {
+        [self updateNSManagedObjectWithObjectID:model.objectID JSON:json];
+    }
+    else {
+        [self insertNSManagedObjectWithObjectClass:objectClass JSON:json];
     }
     return model;
 }
 
-- (NSManagedObject *)existingObjectForEntity:(Class)entity withUniqueAttributesValue:(NSString *)uniqueAttributesValue {
-    NSManagedObject* object = nil;
-    NSString* attributesName = [entity uniqueAttributesName];
-    NSLog(@"%@",[entity uniqueAttributesName]);
-    NSPredicate* predicate = [NSPredicate predicateWithFormat:@"%@ == %@",attributesName,uniqueAttributesValue];
-    NSArray* results = [self fetchNSManagedObjectWithObjectClass:[entity class] sortDescriptor:nil predicate:predicate];
-    if (results.count != 0) {
-        object = [results lastObject];
+- (NSManagedObject *)existingObjectForEntity:(Class)objectClass
+                     withUniquAttributesName:(NSString *)uniqueAttributesName
+                       uniqueAttributesValue:(id)uniqueAttributesValue {
+    if (!uniqueAttributesName || !uniqueAttributesValue) {
+        return nil;
     }
-    NSLog(@"%@....%@ %@",results,attributesName,uniqueAttributesValue);
+    __block NSManagedObject* object = nil;
+    __weak typeof(self) weakSelf = self;
+    [self.importContext performBlockAndWait:^{
+        __strong typeof(weakSelf) strongSelf = weakSelf;
+        NSEntityDescription* entity = [NSEntityDescription entityForName:NSStringFromClass(objectClass)
+                                                  inManagedObjectContext:strongSelf.importContext];
+        NSFetchRequest* request = [[NSFetchRequest alloc] init];
+        [request setEntity:entity];
+        NSPredicate* predicate = [NSPredicate predicateWithFormat:@"%K == %@", uniqueAttributesName, uniqueAttributesValue];
+        [request setPredicate:predicate];
+        NSError* error = nil;
+        NSArray* results = [[strongSelf.importContext executeFetchRequest:request error:&error] copy];
+        if (results.count != 0) {
+            object = [results lastObject];
+        }
+    }];
     return object;
 }
-
 
 - (NSArray *)fetchNSManagedObjectWithObjectClass:(Class)objectClass
                                   sortDescriptor:(NSArray<NSSortDescriptor *> *)sortDescriptors
@@ -131,7 +133,7 @@
 - (BOOL)deleteNSManagedObjectWithObjectWithObjectIdsArray:(NSArray<NSManagedObjectID *> *)objectIDs {
     __weak typeof(self) weakSelf = self;
     BOOL success = NO;
-    [self.importContext performBlock:^{
+    [self.importContext performBlockAndWait:^{
         __strong typeof(weakSelf) strongSelf = weakSelf;
         for (NSManagedObjectID* objectID in objectIDs) {
             NSManagedObject* object = [strongSelf.importContext objectWithID:objectID];
@@ -153,7 +155,7 @@
 - (NSManagedObject *)updateNSManagedObjectWithObjectID:(NSManagedObjectID *)objectID JSON:(id)json {
     __block NSManagedObject* object;
     __weak typeof(self) weakSelf = self;
-    [self.importContext performBlock:^{
+    [self.importContext performBlockAndWait:^{
         __strong typeof(weakSelf) strongSelf = weakSelf;
         object = [strongSelf.importContext objectWithID:objectID];
         if ([json isKindOfClass:[NSDictionary class]]) {

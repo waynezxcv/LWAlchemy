@@ -60,7 +60,9 @@ typedef void(^Completion)(void);
  *  查询是否存在UniqueAttributes值为uniqueAttributesValue的NSManagedObject
  *
  */
-- (NSManagedObject *)existingObjectForEntity:(Class)entity withUniqueAttributesValue:(NSString *)uniqueAttributesValue;
+- (NSManagedObject *)existingObjectForEntity:(Class)objectClass
+                     withUniquAttributesName:(NSString *)uniqueAttributesName
+                       uniqueAttributesValue:(id)uniqueAttributesValue ;
 
 
 /**

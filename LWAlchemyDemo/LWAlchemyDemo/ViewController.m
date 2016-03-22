@@ -37,11 +37,11 @@
                                    }
                            };
     LWAlchemyCoreDataManager* manager = [LWAlchemyCoreDataManager sharedManager];
-    [manager insertNSManagedObjectWithObjectClass:[TestModel1 class] JSON:dict uiqueAttributesName:@"url"];
-    NSManagedObject* object = [manager existingObjectForEntity:[TestModel1 class] withUniqueAttributesValue:@"http://www.waynezxcv.me"];
-    if (object != nil) {
-        NSLog(@"已经存在了。。。。%@",object);
+    for (NSInteger i = 0; i < 10; i ++) {
+//        [manager insertNSManagedObjectWithObjectClass:[TestModel1 class] JSON:dict];
+        [manager insertNSManagedObjectWithObjectClass:[TestModel1 class] JSON:dict uiqueAttributesName:@"text"];
     }
+    NSLog(@"%ld",[manager fetchNSManagedObjectWithObjectClass:[TestModel1 class] sortDescriptor:nil predicate:nil].count);
 }
 
 
