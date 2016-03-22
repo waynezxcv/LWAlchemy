@@ -24,7 +24,7 @@
 
 @end
 
-
+@class NSManagedObject;
 @class NSManagedObjectContext;
 
 @interface NSObject(LWAlchemy)
@@ -36,13 +36,16 @@
 + (id)objectModelWithJSON:(id)json;
 + (id)nsManagedObjectModelWithJSON:(id)json context:(NSManagedObjectContext *)context;
 
-
 /**
  *  NSManagedObject
  *
  */
 - (instancetype)modelWithDictionary:(NSDictionary *)dictionary;
-- (instancetype)nsManagedObjectModelWithDictionary:(NSDictionary *)dictionary context:(NSManagedObjectContext *)contxt;
+
+- (instancetype)nsManagedObject:(NSManagedObject *)object
+            modelWithDictionary:(NSDictionary *)dictionary
+                        context:(NSManagedObjectContext *)contxt;
+
 
 + (NSSet *)propertysSet;
 + (NSDictionary *)mapDictionary;

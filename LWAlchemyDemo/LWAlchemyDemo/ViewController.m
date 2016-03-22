@@ -9,7 +9,8 @@
 #import "ViewController.h"
 #import "StatusModel.h"
 #import "LWAlchemy.h"
-
+#import "TestModel1.h"
+#import "TestModel2.h"
 
 
 
@@ -26,26 +27,10 @@
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 - (void)insertTest {
     NSDictionary* dict = @{@"url":@"http://www.waynezxcv.me",
-                           @"text" : @"我们一起来使用LWAlechemy~",
+                           @"text" :@"我们一起来使用LWAlechemy~",
+                           @"timeStampe":@1458628616,
                            @"user" : @{
                                    @"name" : @"Waynezxcv",
                                    @"sign" : @"这是我的签名",
@@ -53,7 +38,13 @@
                                    @"website":@"http://www.waynezxcv.me",
                                    }
                            };
+
     LWAlchemyCoreDataManager* manager = [LWAlchemyCoreDataManager sharedManager];
+    [manager insertNSManagerObjectWithObjectClass:[TestModel1 class] JSON:dict];
+    [manager backgroundSaveContext];
+    NSArray* results = [manager fetchNSManagerObjectWithObjectClass:[TestModel1 class] sortDescriptor:nil predicate:nil];
+    TestModel1* model = results[0];
+    NSLog(@"%@",[model lwDescription]);
 }
 
 

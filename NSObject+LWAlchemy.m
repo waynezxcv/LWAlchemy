@@ -75,10 +75,10 @@ static void* LWAlechmyMapDictionaryKey = &LWAlechmyMapDictionaryKey;
         if (model) {
             if (![json isKindOfClass:[NSDictionary class]]) {
                 NSDictionary* dic = [model _dictionaryWithJSON:json];
-                model = [model nsManagedObjectModelWithDictionary:dic context:context];
+                model = [model nsManagedObject:model modelWithDictionary:dic context:context];
             }
             else {
-                model = [model nsManagedObjectModelWithDictionary:json context:context];
+                model = [model nsManagedObject:model modelWithDictionary:json context:context];
             }
         }
         return model;
@@ -91,26 +91,29 @@ static void* LWAlechmyMapDictionaryKey = &LWAlechmyMapDictionaryKey;
     if (![dictionary isKindOfClass:[NSDictionary class]]) return nil;
     NSSet* propertysSet = self.class.propertysSet;
     [propertysSet enumerateObjectsUsingBlock:^(LWAlchemyPropertyInfo* propertyInfo, BOOL * _Nonnull stop) {
-        id object = dictionary[propertyInfo.propertyName];
-        if (object != nil && ![object isEqual:[NSNull null]]) {
-            _SetPropertyValue(self,propertyInfo,object);
+        id value = dictionary[propertyInfo.propertyName];
+        if (value != nil && ![value isEqual:[NSNull null]]) {
+            _SetPropertyValue(self,propertyInfo,value);
         }
     }];
     return self;
 }
 
-- (instancetype)nsManagedObjectModelWithDictionary:(NSDictionary *)dictionary context:(NSManagedObjectContext *)contxt {
+- (instancetype)nsManagedObject:(NSManagedObject *)object
+            modelWithDictionary:(NSDictionary *)dictionary
+                        context:(NSManagedObjectContext *)contxt {
     if (!dictionary || dictionary == (id)kCFNull) return nil;
     if (![dictionary isKindOfClass:[NSDictionary class]]) return nil;
     NSSet* propertysSet = self.class.propertysSet;
     [propertysSet enumerateObjectsUsingBlock:^(LWAlchemyPropertyInfo* propertyInfo, BOOL * _Nonnull stop) {
-        id object = dictionary[propertyInfo.propertyName];
-        if (object != nil && ![object isEqual:[NSNull null]]) {
-            [self _coredataModelSetProperty:propertyInfo value:object context:contxt];
+        id value = dictionary[propertyInfo.propertyName];
+        if (value != nil && ![value isEqual:[NSNull null]]) {
+            [self _nsmanagedObject:(NSManagedObject *)object Setvalue:value WithProperty:propertyInfo Incontext:contxt];
         }
     }];
     return self;
 }
+
 
 #pragma mark - Private Methods
 
@@ -490,8 +493,15 @@ static void _SetOtherTypePropertyValue(__unsafe_unretained id model,
 }
 
 
-- (void)_coredataModelSetProperty:(LWAlchemyPropertyInfo *)propertyInfo value:(id)value context:(NSManagedObjectContext *)context {
+- (void)_nsmanagedObject:(NSManagedObject *)object
+                   Setvalue:(id)value
+             WithProperty:(LWAlchemyPropertyInfo *)propertyInfo
+                 Incontext:(NSManagedObjectContext *)context {
     switch (propertyInfo.nsType) {
+        case LWPropertyNSObjectTypeNSDate: {
+            NSDate* date = LWNSDateFromString([NSString stringWithFormat:@"%@",value]);
+            [object setValue:date forKey:propertyInfo.propertyName];
+        }break;
         case LWPropertyNSObjectTypeNSString:
         case LWPropertyNSObjectTypeNSMutableString:
         case LWPropertyNSObjectTypeNSValue:
@@ -499,7 +509,6 @@ static void _SetOtherTypePropertyValue(__unsafe_unretained id model,
         case LWPropertyNSObjectTypeNSDecimalNumber:
         case LWPropertyNSObjectTypeNSData:
         case LWPropertyNSObjectTypeNSMutableData:
-        case LWPropertyNSObjectTypeNSDate:
         case LWPropertyNSObjectTypeNSURL:
         case LWPropertyNSObjectTypeNSArray:
         case LWPropertyNSObjectTypeNSMutableArray:
@@ -507,18 +516,20 @@ static void _SetOtherTypePropertyValue(__unsafe_unretained id model,
         case LWPropertyNSObjectTypeNSMutableDictionary:
         case LWPropertyNSObjectTypeNSSet:
         case LWPropertyNSObjectTypeNSMutableSet:{
-            [self setValue:value forKey:propertyInfo.propertyName];
+            [object setValue:value forKey:propertyInfo.propertyName];
         }break;
         default:{
             if (propertyInfo.isIdType) {
-                [self setValue:value forKey:propertyInfo.propertyName];
+                [object setValue:value forKey:propertyInfo.propertyName];
             } else {
                 if (propertyInfo.cls) {
                     Class cls = propertyInfo.cls;
-                    NSManagedObject* model = [NSEntityDescription insertNewObjectForEntityForName:NSStringFromClass(cls)
-                                                                           inManagedObjectContext:context];
-                    [model nsManagedObjectModelWithDictionary:value context:context];
-                    [self setValue:model forKey:propertyInfo.propertyName];
+                    if ([cls isSubclassOfClass:[NSManagedObject class]]) {
+                        NSManagedObject* one = [NSEntityDescription insertNewObjectForEntityForName:NSStringFromClass(cls)
+                                                                             inManagedObjectContext:context];
+                        [one nsManagedObject:one modelWithDictionary:value context:context];
+                        [object setValue:one forKey:propertyInfo.propertyName];
+                    }
                 }
             }
         }break;

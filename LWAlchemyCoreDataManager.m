@@ -60,7 +60,7 @@
     __weak typeof(self) weakSelf = self;
     [self.importContext performBlock:^{
         __strong typeof(weakSelf) strongSelf = weakSelf;
-        model = [objectClass nsManagedObjectModelWithDictionary:json context:strongSelf.importContext];
+        model = [objectClass nsManagedObjectModelWithJSON:json context:strongSelf.importContext];
     }];
     return model;
 }

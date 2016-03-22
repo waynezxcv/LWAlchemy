@@ -9,6 +9,10 @@
 /* Begin PBXBuildFile section */
 		013827481C9B02F6005374CA /* UserModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 013827471C9B02F6005374CA /* UserModel.m */; };
 		0171C7AA1C9F29BE000F2D14 /* LWAlchemyCoreDataManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 0171C7A91C9F29BE000F2D14 /* LWAlchemyCoreDataManager.m */; };
+		B07DAB531CA1311700CFE78E /* TestModel2+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = B07DAB4C1CA1311700CFE78E /* TestModel2+CoreDataProperties.m */; };
+		B07DAB541CA1311700CFE78E /* TestModel2.m in Sources */ = {isa = PBXBuildFile; fileRef = B07DAB4E1CA1311700CFE78E /* TestModel2.m */; };
+		B07DAB551CA1311700CFE78E /* TestModel1+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = B07DAB501CA1311700CFE78E /* TestModel1+CoreDataProperties.m */; };
+		B07DAB561CA1311700CFE78E /* TestModel1.m in Sources */ = {isa = PBXBuildFile; fileRef = B07DAB521CA1311700CFE78E /* TestModel1.m */; };
 		B0A87CAB1C9A5669004FD0D7 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = B0A87CAA1C9A5669004FD0D7 /* main.m */; };
 		B0A87CAE1C9A5669004FD0D7 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = B0A87CAD1C9A5669004FD0D7 /* AppDelegate.m */; };
 		B0A87CB11C9A5669004FD0D7 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B0A87CB01C9A5669004FD0D7 /* ViewController.m */; };
@@ -47,6 +51,14 @@
 		0171C7A71C9F29BE000F2D14 /* LWAlchemy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LWAlchemy.h; path = ../LWAlchemy.h; sourceTree = "<group>"; };
 		0171C7A81C9F29BE000F2D14 /* LWAlchemyCoreDataManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LWAlchemyCoreDataManager.h; path = ../LWAlchemyCoreDataManager.h; sourceTree = "<group>"; };
 		0171C7A91C9F29BE000F2D14 /* LWAlchemyCoreDataManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = LWAlchemyCoreDataManager.m; path = ../LWAlchemyCoreDataManager.m; sourceTree = "<group>"; };
+		B07DAB4B1CA1311700CFE78E /* TestModel2+CoreDataProperties.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "TestModel2+CoreDataProperties.h"; path = "../TestModel2+CoreDataProperties.h"; sourceTree = "<group>"; };
+		B07DAB4C1CA1311700CFE78E /* TestModel2+CoreDataProperties.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "TestModel2+CoreDataProperties.m"; path = "../TestModel2+CoreDataProperties.m"; sourceTree = "<group>"; };
+		B07DAB4D1CA1311700CFE78E /* TestModel2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TestModel2.h; path = ../TestModel2.h; sourceTree = "<group>"; };
+		B07DAB4E1CA1311700CFE78E /* TestModel2.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TestModel2.m; path = ../TestModel2.m; sourceTree = "<group>"; };
+		B07DAB4F1CA1311700CFE78E /* TestModel1+CoreDataProperties.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "TestModel1+CoreDataProperties.h"; path = "../TestModel1+CoreDataProperties.h"; sourceTree = "<group>"; };
+		B07DAB501CA1311700CFE78E /* TestModel1+CoreDataProperties.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "TestModel1+CoreDataProperties.m"; path = "../TestModel1+CoreDataProperties.m"; sourceTree = "<group>"; };
+		B07DAB511CA1311700CFE78E /* TestModel1.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TestModel1.h; path = ../TestModel1.h; sourceTree = "<group>"; };
+		B07DAB521CA1311700CFE78E /* TestModel1.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TestModel1.m; path = ../TestModel1.m; sourceTree = "<group>"; };
 		B0A87CA61C9A5669004FD0D7 /* LWAlchemyDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LWAlchemyDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B0A87CAA1C9A5669004FD0D7 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		B0A87CAC1C9A5669004FD0D7 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -111,6 +123,14 @@
 		0171C7A11C9F120B000F2D14 /* NSManagedObject */ = {
 			isa = PBXGroup;
 			children = (
+				B07DAB4B1CA1311700CFE78E /* TestModel2+CoreDataProperties.h */,
+				B07DAB4C1CA1311700CFE78E /* TestModel2+CoreDataProperties.m */,
+				B07DAB4D1CA1311700CFE78E /* TestModel2.h */,
+				B07DAB4E1CA1311700CFE78E /* TestModel2.m */,
+				B07DAB4F1CA1311700CFE78E /* TestModel1+CoreDataProperties.h */,
+				B07DAB501CA1311700CFE78E /* TestModel1+CoreDataProperties.m */,
+				B07DAB511CA1311700CFE78E /* TestModel1.h */,
+				B07DAB521CA1311700CFE78E /* TestModel1.m */,
 				B0A87CB51C9A5669004FD0D7 /* LWAlchemyDemo.xcdatamodeld */,
 			);
 			name = NSManagedObject;
@@ -338,8 +358,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B07DAB531CA1311700CFE78E /* TestModel2+CoreDataProperties.m in Sources */,
 				B0A87CF71C9A58B0004FD0D7 /* LWAlchemyPropertyInfo.m in Sources */,
 				B0A87CF61C9A58B0004FD0D7 /* NSObject+LWAlchemy.m in Sources */,
+				B07DAB551CA1311700CFE78E /* TestModel1+CoreDataProperties.m in Sources */,
 				B0A87CB11C9A5669004FD0D7 /* ViewController.m in Sources */,
 				B0A87CB71C9A5669004FD0D7 /* LWAlchemyDemo.xcdatamodeld in Sources */,
 				B0C7C38D1C9FFEFA00081F08 /* LWAlchemyValueTransformer.m in Sources */,
@@ -347,6 +369,8 @@
 				B0F508FC1C9ECD160001D2ED /* StatusModel.m in Sources */,
 				013827481C9B02F6005374CA /* UserModel.m in Sources */,
 				B0A87CAB1C9A5669004FD0D7 /* main.m in Sources */,
+				B07DAB561CA1311700CFE78E /* TestModel1.m in Sources */,
+				B07DAB541CA1311700CFE78E /* TestModel2.m in Sources */,
 				0171C7AA1C9F29BE000F2D14 /* LWAlchemyCoreDataManager.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
