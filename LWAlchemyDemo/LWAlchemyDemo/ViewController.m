@@ -38,14 +38,7 @@
                            };
     LWAlchemyCoreDataManager* manager = [LWAlchemyCoreDataManager sharedManager];
     [manager insertNSManagedObjectWithObjectClass:[TestModel1 class] JSON:dict uiqueAttributesName:@"url"];
-    NSArray* results = [manager fetchNSManagedObjectWithObjectClass:[TestModel1 class] sortDescriptor:nil predicate:nil];
-//    if (results.count != 0) {
-//        TestModel1* model = results[0];
-//        NSLog(@"%@",[model.user lwDescription]);
-//    }
-
     NSManagedObject* object = [manager existingObjectForEntity:[TestModel1 class] withUniqueAttributesValue:@"http://www.waynezxcv.me"];
-
     if (object != nil) {
         NSLog(@"已经存在了。。。。%@",object);
     }

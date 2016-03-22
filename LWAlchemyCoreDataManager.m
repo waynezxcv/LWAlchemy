@@ -48,7 +48,7 @@
     self = [super init];
     if (self) {
         [self setupNotifications];
-
+        
     }
     return self;
 }
@@ -80,7 +80,9 @@
         if (!attributesName) {
             [objectClass setUniqueAttributesName:uniqueAttributesName];
         }
+        NSLog(@"insert:%@",[objectClass uniqueAttributesName]);
     }];
+    
     NSError *error = nil;
     if ([self.importContext hasChanges] && ![self.importContext save:&error]) {
         NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
@@ -90,24 +92,15 @@
 }
 
 - (NSManagedObject *)existingObjectForEntity:(Class)entity withUniqueAttributesValue:(NSString *)uniqueAttributesValue {
-    __block NSManagedObject* object = nil;
-    __weak typeof(self) weakSelf = self;
-    [self.importContext performBlockAndWait:^{
-        NSString* attributesName = [entity uniqueAttributesName];
-        NSPredicate* predicate = [NSPredicate predicateWithFormat:@"%@ == %@",attributesName,uniqueAttributesValue];
-
-        __strong typeof(weakSelf) strongSelf = weakSelf;
-        NSFetchRequest* fetchRequest = [[NSFetchRequest alloc] init];
-        NSEntityDescription* e = [NSEntityDescription entityForName:NSStringFromClass(entity)
-                                             inManagedObjectContext:strongSelf.importContext];
-        [fetchRequest setEntity:e];
-        [fetchRequest setPredicate:predicate];
-        NSError* requestError = nil;
-        NSArray* results = [strongSelf.importContext executeFetchRequest:fetchRequest error:&requestError];
-        if (results.count != 0) {
-            object = [results lastObject];
-        }
-    }];
+    NSManagedObject* object = nil;
+    NSString* attributesName = [entity uniqueAttributesName];
+    NSLog(@"%@",[entity uniqueAttributesName]);
+    NSPredicate* predicate = [NSPredicate predicateWithFormat:@"%@ == %@",attributesName,uniqueAttributesValue];
+    NSArray* results = [self fetchNSManagedObjectWithObjectClass:[entity class] sortDescriptor:nil predicate:predicate];
+    if (results.count != 0) {
+        object = [results lastObject];
+    }
+    NSLog(@"%@....%@ %@",results,attributesName,uniqueAttributesValue);
     return object;
 }
 
@@ -301,7 +294,7 @@
                                              selector:@selector(backgourndSaveContext)
                                                  name:UIApplicationWillTerminateNotification
                                                object:nil];
-
+    
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(backgourndSaveContext)
                                                  name:UIApplicationDidEnterBackgroundNotification
