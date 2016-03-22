@@ -57,7 +57,7 @@ static void* LWAlechmyMapDictionaryKey = &LWAlechmyMapDictionaryKey;
     NSObject* model = [[self alloc] init];
     if (model) {
         if (![json isKindOfClass:[NSDictionary class]]) {
-            NSDictionary* dic = [model _dictionaryWithJSON:json];
+            NSDictionary* dic = [model dictionaryWithJSON:json];
             model = [model modelWithDictionary:dic];
         }
         else {
@@ -74,7 +74,7 @@ static void* LWAlechmyMapDictionaryKey = &LWAlechmyMapDictionaryKey;
                                                                inManagedObjectContext:context];
         if (model) {
             if (![json isKindOfClass:[NSDictionary class]]) {
-                NSDictionary* dic = [model _dictionaryWithJSON:json];
+                NSDictionary* dic = [model dictionaryWithJSON:json];
                 model = [model nsManagedObject:model modelWithDictionary:dic context:context];
             }
             else {
@@ -117,7 +117,7 @@ static void* LWAlechmyMapDictionaryKey = &LWAlechmyMapDictionaryKey;
 
 #pragma mark - Private Methods
 
-- (NSDictionary *)_dictionaryWithJSON:(id)json {
+- (NSDictionary *)dictionaryWithJSON:(id)json {
     if (!json || json == (id)kCFNull) return nil;
     NSDictionary* dic = nil;
     NSData* jsonData = nil;

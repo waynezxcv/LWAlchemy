@@ -124,7 +124,7 @@
         if ([json isKindOfClass:[NSDictionary class]]) {
             object = [object nsManagedObject:object modelWithDictionary:json context:strongSelf.importContext];
         } else {
-            NSDictionary* dict = [self _dictionaryWithJSON:json];
+            NSDictionary* dict = [self dictionaryWithJSON:json];
             object = [object nsManagedObject:object modelWithDictionary:dict context:strongSelf.importContext];
         }
     }];
