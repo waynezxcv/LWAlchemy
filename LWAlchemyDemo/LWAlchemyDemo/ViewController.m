@@ -10,6 +10,9 @@
 #import "StatusModel.h"
 #import "LWAlchemy.h"
 
+
+
+
 @interface ViewController ()
 
 @end
@@ -18,43 +21,39 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    [self timeCostTest];
+    [self insertTest];
 }
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 - (void)insertTest {
-    //    NSDictionary* dict = @{@"text" : @"我们一起来使用LWAlechemy~",
-    //                           @"user" : @{
-    //                                   @"name" : @"Waynezxcv",
-    //                                   @"sign" : @"这是我的签名",
-    //                                   @"age":@(22),
-    //                                   @"website":@"http://www.waynezxcv.me",
-    //                                   @"test":@"testString"
-    //                                   },
-    //                           @"retweetedStatus" : @{
-    //                                   @"text" : @"hahaha...我们一起来使用LWAlechemy~",
-    //                                   @"user" : @{
-    //                                           @"name" : @"Wayne",
-    //                                           @"sign" : @"just do it!",
-    //                                           @"age": @(18),
-    //                                           @"website":@"http://www.baidu.com"
-    //                                           }
-    //                                   }
-    //                           };
-    //    LWAlchemyCoreDataManager* manager = [LWAlchemyCoreDataManager sharedManager];
-    //    [manager insertNSManagerObjectWithObjectClass:[CDStatusModel class] JSON:dict];
-    //    [manager backgroundSaveContext];
-    //    NSArray* results = [manager fetchNSManagerObjectWithObjectClass:[CDStatusModel class] sortDescriptor:nil predicate:nil];
-    //    NSLog(@"objectsCount:%ld",results.count);
-    //    for (NSInteger i = 0; i < results.count; i ++) {
-    //        CDStatusModel* cdStatus = [results objectAtIndex:i];
-    //        NSLog(@"=======================NSManagedObject=================================");
-    //        NSLog(@"%@",cdStatus.text);
-    //        NSLog(@"user:%@...%@...%@...%@",cdStatus.user.name,cdStatus.user.sign,cdStatus.user.age,cdStatus.user.website);
-    //        NSLog(@"retweetStatus:%@",cdStatus.retweetedStatus.text);
-    //        NSLog(@"retweetUser:%@..%@..%@...%@",cdStatus.retweetedStatus.user.name,cdStatus.retweetedStatus.user.sign,cdStatus.retweetedStatus.user.age,cdStatus.retweetedStatus.user.website);
-    //    }
+    NSDictionary* dict = @{@"url":@"http://www.waynezxcv.me",
+                           @"text" : @"我们一起来使用LWAlechemy~",
+                           @"user" : @{
+                                   @"name" : @"Waynezxcv",
+                                   @"sign" : @"这是我的签名",
+                                   @"age":@(22),
+                                   @"website":@"http://www.waynezxcv.me",
+                                   }
+                           };
+    LWAlchemyCoreDataManager* manager = [LWAlchemyCoreDataManager sharedManager];
 }
 
 
