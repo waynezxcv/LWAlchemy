@@ -70,6 +70,48 @@
     return model;
 }
 
+- (id)insertNSManagedObjectWithObjectClass:(Class)objectClass JSON:(id)json uiqueAttributesName:(NSString *)uniqueAttributesName {
+    __block NSObject* model;
+    __weak typeof(self) weakSelf = self;
+    [self.importContext performBlock:^{
+        __strong typeof(weakSelf) strongSelf = weakSelf;
+        model = [objectClass nsManagedObjectModelWithJSON:json context:strongSelf.importContext];
+        NSString* attributesName = [objectClass uniqueAttributesName];
+        if (!attributesName) {
+            [objectClass setUniqueAttributesName:uniqueAttributesName];
+        }
+    }];
+    NSError *error = nil;
+    if ([self.importContext hasChanges] && ![self.importContext save:&error]) {
+        NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
+        abort();
+    }
+    return model;
+}
+
+- (NSManagedObject *)existingObjectForEntity:(Class)entity withUniqueAttributesValue:(NSString *)uniqueAttributesValue {
+    __block NSManagedObject* object = nil;
+    __weak typeof(self) weakSelf = self;
+    [self.importContext performBlockAndWait:^{
+        NSString* attributesName = [entity uniqueAttributesName];
+        NSPredicate* predicate = [NSPredicate predicateWithFormat:@"%@ == %@",attributesName,uniqueAttributesValue];
+
+        __strong typeof(weakSelf) strongSelf = weakSelf;
+        NSFetchRequest* fetchRequest = [[NSFetchRequest alloc] init];
+        NSEntityDescription* e = [NSEntityDescription entityForName:NSStringFromClass(entity)
+                                             inManagedObjectContext:strongSelf.importContext];
+        [fetchRequest setEntity:e];
+        [fetchRequest setPredicate:predicate];
+        NSError* requestError = nil;
+        NSArray* results = [strongSelf.importContext executeFetchRequest:fetchRequest error:&requestError];
+        if (results.count != 0) {
+            object = [results lastObject];
+        }
+    }];
+    return object;
+}
+
+
 - (NSArray *)fetchNSManagedObjectWithObjectClass:(Class)objectClass
                                   sortDescriptor:(NSArray<NSSortDescriptor *> *)sortDescriptors
                                        predicate:(NSPredicate *) predicate {
@@ -79,7 +121,7 @@
         __strong typeof(weakSelf) strongSelf = weakSelf;
         NSFetchRequest* fetchRequest = [[NSFetchRequest alloc] init];
         NSEntityDescription* entity = [NSEntityDescription entityForName:NSStringFromClass(objectClass)
-                                                  inManagedObjectContext:strongSelf.managedObjectContext];
+                                                  inManagedObjectContext:strongSelf.importContext];
         [fetchRequest setEntity:entity];
         if (sortDescriptors) {
             [fetchRequest setSortDescriptors:sortDescriptors];
@@ -202,7 +244,7 @@
         return _persistentStoreCoordinator;
     }
     _persistentStoreCoordinator = [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel:[self managedObjectModel]];
-    NSString* sql = [NSString stringWithFormat:@"%@.sqlite",self.executableFile];
+    NSString* sql = [NSString stringWithFormat:@"%@_LWAlchemy.sqlite",self.executableFile];
     NSURL* storeURL = [[self applicationDocumentsDirectory] URLByAppendingPathComponent:sql];
     NSError *error = nil;
     NSString *failureReason = @"There was an error creating or loading the application's saved data.";

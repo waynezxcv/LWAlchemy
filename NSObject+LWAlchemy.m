@@ -21,7 +21,7 @@
 #import <CoreData/CoreData.h>
 
 
-
+static void* LWAlchemyUniqueAttributesKey = &LWAlchemyUniqueAttributesKey;
 static void* LWAlechmyCachedPropertyKeysKey = &LWAlechmyCachedPropertyKeysKey;
 static void* LWAlechmyMapDictionaryKey = &LWAlechmyMapDictionaryKey;
 
@@ -51,6 +51,18 @@ static void* LWAlechmyMapDictionaryKey = &LWAlechmyMapDictionaryKey;
     return propertysSet;
 }
 
+
++ (void)setUniqueAttributesName:(NSString *)uniqueAttributesName {
+    objc_setAssociatedObject(self,LWAlchemyUniqueAttributesKey, uniqueAttributesName, OBJC_ASSOCIATION_COPY);
+}
+
+
+
+
++ (NSString *)uniqueAttributesName {
+    return objc_getAssociatedObject(self, LWAlchemyUniqueAttributesKey);
+}
+
 #pragma mark - Init
 
 + (id)objectModelWithJSON:(id)json {
@@ -66,7 +78,6 @@ static void* LWAlechmyMapDictionaryKey = &LWAlechmyMapDictionaryKey;
     }
     return model;
 }
-
 
 + (id)nsManagedObjectModelWithJSON:(id)json context:(NSManagedObjectContext *)context {
     if ([self isSubclassOfClass:[NSManagedObject class]] && context) {
@@ -494,9 +505,9 @@ static void _SetOtherTypePropertyValue(__unsafe_unretained id model,
 
 
 - (void)_nsmanagedObject:(NSManagedObject *)object
-                   Setvalue:(id)value
-             WithProperty:(LWAlchemyPropertyInfo *)propertyInfo
-                 Incontext:(NSManagedObjectContext *)context {
+                Setvalue:(id)value
+            WithProperty:(LWAlchemyPropertyInfo *)propertyInfo
+               Incontext:(NSManagedObjectContext *)context {
     switch (propertyInfo.nsType) {
         case LWPropertyNSObjectTypeNSDate: {
             NSDate* date = LWNSDateFromString([NSString stringWithFormat:@"%@",value]);

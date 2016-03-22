@@ -29,6 +29,7 @@
 
 @interface NSObject(LWAlchemy)
 
+
 /**
  *  NSObject
  *
@@ -47,6 +48,12 @@
                         context:(NSManagedObjectContext *)contxt;
 
 - (NSDictionary *)dictionaryWithJSON:(id)json;
+
+
+//唯一属性名。设置一个属性为unique，来保证唯一性
++ (NSString *)uniqueAttributesName;
++ (void)setUniqueAttributesName:(NSString *)uniqueAttributesName;
+
 
 
 + (NSSet *)propertysSet;

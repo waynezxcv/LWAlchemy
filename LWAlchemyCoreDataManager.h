@@ -46,6 +46,23 @@ typedef void(^Completion)(void);
  */
 - (id)insertNSManagedObjectWithObjectClass:(Class)objectClass JSON:(id)json;
 
+
+/**
+ *  增加一条数据，并指定UniqueAttributesNAme
+ *
+ */
+- (id)insertNSManagedObjectWithObjectClass:(Class)objectClass
+                                      JSON:(id)json
+                       uiqueAttributesName:(NSString *)uniqueAttributesName;
+
+
+/**
+ *  查询是否存在UniqueAttributes值为uniqueAttributesValue的NSManagedObject
+ *
+ */
+- (NSManagedObject *)existingObjectForEntity:(Class)entity withUniqueAttributesValue:(NSString *)uniqueAttributesValue;
+
+
 /**
  *  查
  *
