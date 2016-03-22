@@ -55,7 +55,6 @@
 + (void)setUniqueAttributesName:(NSString *)uniqueAttributesName;
 
 
-
 + (NSSet *)propertysSet;
 + (NSDictionary *)mapDictionary;
 - (NSString *)lwDescription;
