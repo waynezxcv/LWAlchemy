@@ -22,13 +22,10 @@
 
 @interface LWAlchemyCoreDataManager ()
 
-@property (strong,nonatomic) NSManagedObjectModel *managedObjectModel;
-@property (strong,nonatomic) NSPersistentStoreCoordinator *persistentStoreCoordinator;
-
-@property (strong,nonatomic) NSManagedObjectContext* managedObjectContext;
-@property (strong,nonatomic) NSManagedObjectContext* parentContext;
-
-
+@property (nonatomic,strong) NSManagedObjectModel *managedObjectModel;
+@property (nonatomic,strong) NSPersistentStoreCoordinator *persistentStoreCoordinator;
+@property (nonatomic,strong) NSManagedObjectContext* managedObjectContext;
+@property (nonatomic,strong) NSManagedObjectContext* parentContext;
 @property (nonatomic,copy) NSString* executableFile;
 
 @end
@@ -36,6 +33,7 @@
 
 @implementation LWAlchemyCoreDataManager
 
+#pragma mark - Init
 + (LWAlchemyCoreDataManager *)sharedManager {
     static dispatch_once_t onceToken;
     static LWAlchemyCoreDataManager* sharedManager;
@@ -48,8 +46,26 @@
 - (id)init {
     self = [super init];
     if (self) {
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(backgroundTask)
+                                                     name:UIApplicationWillTerminateNotification
+                                                   object:nil];
+
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(backgroundTask)
+                                                     name:UIApplicationDidEnterBackgroundNotification
+                                                   object:nil];
     }
     return self;
+}
+
+- (void)dealloc {
+    [[NSNotificationCenter defaultCenter] removeObserver:self
+                                                    name:UIApplicationWillTerminateNotification
+                                                  object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self
+                                                    name:UIApplicationDidEnterBackgroundNotification
+                                                  object:nil];
 }
 
 #pragma mark - CURD
@@ -63,58 +79,70 @@
 
 - (void)insertNSManagedObjectWithObjectClass:(Class)objectClass
                                   JSONsArray:(NSArray *)JSONsArray
-                         uiqueAttributesName:(NSString *)uniqueAttributesName {
-
+                         uiqueAttributesName:(NSString *)uniqueAttributesName
+                                  completion:(Completion)completeBlock {
+    __weak typeof(self) weakSelf = self;
     NSManagedObjectContext* ctx = [self createPrivateObjectContext];
     [ctx performBlock:^{
-//        NSLog(@"查询的线程:%@",[NSThread currentThread]);
+        __strong typeof(weakSelf) strongSelf = weakSelf;
         for (id json in JSONsArray) {
             NSError* error = nil;
             NSFetchRequest* fetchRequest = [[NSFetchRequest alloc] init];
             [fetchRequest setEntity:[NSEntityDescription entityForName:NSStringFromClass(objectClass) inManagedObjectContext:ctx]];
-            NSPredicate* predicate = [NSPredicate predicateWithFormat:@"%K == %@", uniqueAttributesName, [[self dictionaryWithJSON:json]objectForKey:uniqueAttributesName]];
+            NSPredicate* predicate = [NSPredicate predicateWithFormat:@"%K == %@", uniqueAttributesName,
+                                      [[strongSelf dictionaryWithJSON:json]objectForKey:uniqueAttributesName]];
             if (predicate) {
                 [fetchRequest setPredicate:predicate];
             }
             NSArray* results = [ctx executeFetchRequest:fetchRequest error:&error];
             NSManagedObject* object = [results lastObject];
             if (object) {
-                [self.managedObjectContext performBlockAndWait:^{
-//                    NSLog(@"修改内从中内容的线程:%@",[NSThread currentThread]);
-                    [self updateNSManagedObjectWithObjectID:object.objectID JSON:json];
+                [strongSelf.managedObjectContext performBlockAndWait:^{
+                    //objectID是线程安全的
+                    [strongSelf updateNSManagedObjectWithObjectID:object.objectID JSON:json];
                 }];
             } else {
-                [self.managedObjectContext performBlockAndWait:^{
-                    [self insertNSManagedObjectWithObjectClass:objectClass JSON:json];
+                [strongSelf.managedObjectContext performBlockAndWait:^{
+                    [strongSelf insertNSManagedObjectWithObjectClass:objectClass JSON:json];
                 }];
             }
         }
+        [strongSelf.managedObjectContext performBlockAndWait:^{
+            completeBlock();
+        }];
     }];
 }
 
 - (void)insertNSManagedObjectWithObjectClass:(Class)objectClass
                                         JSON:(id)json
-                         uiqueAttributesName:(NSString *)uniqueAttributesName {
+                         uiqueAttributesName:(NSString *)uniqueAttributesName
+                                  completion:(Completion)completeBlock {
+    __weak typeof(self) weakSelf = self;
     NSManagedObjectContext* ctx = [self createPrivateObjectContext];
     [ctx performBlock:^{
+        __strong typeof(weakSelf) strongSelf = weakSelf;
         NSError* error = nil;
         NSFetchRequest* fetchRequest = [[NSFetchRequest alloc] init];
         [fetchRequest setEntity:[NSEntityDescription entityForName:NSStringFromClass(objectClass) inManagedObjectContext:ctx]];
-        NSPredicate* predicate = [NSPredicate predicateWithFormat:@"%K == %@", uniqueAttributesName, [[self dictionaryWithJSON:json]objectForKey:uniqueAttributesName]];
+        NSPredicate* predicate = [NSPredicate predicateWithFormat:@"%K == %@", uniqueAttributesName,
+                                  [[strongSelf dictionaryWithJSON:json]objectForKey:uniqueAttributesName]];
         if (predicate) {
             [fetchRequest setPredicate:predicate];
         }
         NSArray* results = [ctx executeFetchRequest:fetchRequest error:&error];
         NSManagedObject* object = [results lastObject];
         if (object) {
-            [self.managedObjectContext performBlockAndWait:^{
-                [self updateNSManagedObjectWithObjectID:object.objectID JSON:json];
+            [strongSelf.managedObjectContext performBlockAndWait:^{
+                [strongSelf updateNSManagedObjectWithObjectID:object.objectID JSON:json];
             }];
         } else {
-            [self.managedObjectContext performBlockAndWait:^{
-                [self insertNSManagedObjectWithObjectClass:objectClass JSON:json];
+            [strongSelf.managedObjectContext performBlockAndWait:^{
+                [strongSelf insertNSManagedObjectWithObjectClass:objectClass JSON:json];
             }];
         }
+        [strongSelf.managedObjectContext performBlockAndWait:^{
+            completeBlock();
+        }];
     }];
 }
 
@@ -124,11 +152,14 @@
                                 fetchOffset:(NSInteger)offset
                                  fetchLimit:(NSInteger)limit
                                 fetchReults:(FetchResults)resultsBlock {
+    __weak typeof(self) weakSelf = self;
     NSManagedObjectContext* ctx = [self createPrivateObjectContext];
     [ctx performBlock:^{
+        __strong typeof(weakSelf) strongSelf = weakSelf;
         NSError* error = nil;
         NSFetchRequest* fetchRequest = [[NSFetchRequest alloc] init];
-        [fetchRequest setEntity:[NSEntityDescription entityForName:NSStringFromClass(objectClass) inManagedObjectContext:ctx]];
+        [fetchRequest setEntity:[NSEntityDescription entityForName:NSStringFromClass(objectClass)
+                                            inManagedObjectContext:ctx]];
         if (predicate) {
             [fetchRequest setPredicate:predicate];
         }
@@ -143,12 +174,12 @@
         }
         NSArray* results = [ctx executeFetchRequest:fetchRequest error:&error];
         if (error) {
-            [self.managedObjectContext performBlock:^{
+            [strongSelf.managedObjectContext performBlock:^{
                 resultsBlock(@[],error);
             }];
         }
         if ([results count] < 1) {
-            [self.managedObjectContext performBlock:^{
+            [strongSelf.managedObjectContext performBlock:^{
                 resultsBlock(@[],nil);
             }];
         }
@@ -156,10 +187,10 @@
         for (NSManagedObject* object  in results) {
             [result_ids addObject:object.objectID];
         }
-        [self.managedObjectContext performBlockAndWait:^{
+        [strongSelf.managedObjectContext performBlockAndWait:^{
             NSMutableArray* final_results = [[NSMutableArray alloc] init];
             for (NSManagedObjectID* objectID in result_ids) {
-                [final_results addObject:[self.managedObjectContext objectWithID:objectID]];
+                [final_results addObject:[strongSelf.managedObjectContext objectWithID:objectID]];
             }
             resultsBlock(final_results, nil);
         }];
@@ -188,20 +219,37 @@
 }
 
 
+- (void)backgroundTask {
+    Class UIApplicationClass = NSClassFromString(@"UIApplication");
+    if(!UIApplicationClass || ![UIApplicationClass respondsToSelector:@selector(sharedApplication)]) {
+        return;
+    }
+    UIApplication* application = [UIApplication performSelector:@selector(sharedApplication)];
+    __block UIBackgroundTaskIdentifier bgTask = [application beginBackgroundTaskWithExpirationHandler:^{
+        [application endBackgroundTask:bgTask];
+        bgTask = UIBackgroundTaskInvalid;
+    }];
+    [self saveContext:^{
+        [application endBackgroundTask:bgTask];
+        bgTask = UIBackgroundTaskInvalid;
+    }];
+}
 
 #pragma mark - CoreData Stack
 
 - (void)saveContext:(Completion)completionBlock {
+    __weak typeof(self) weakSelf = self;
     NSError *error = nil;
     if ([self.managedObjectContext hasChanges] && ![self.managedObjectContext save:&error]) {
         NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
         abort();
     } else {
         [self.parentContext performBlock:^{
-//            NSLog(@"写入到数据库的线程:%@",[NSThread currentThread]);
+            //            NSLog(@"写入到数据库的线程:%@",[NSThread currentThread]);
+            __strong typeof(weakSelf) strongSelf = weakSelf;
             __block NSError* inner_error = nil;
-            [self.parentContext save:&inner_error];
-            [self.managedObjectContext performBlock:^{
+            [strongSelf.parentContext save:&inner_error];
+            [strongSelf.managedObjectContext performBlock:^{
                 completionBlock();
             }];
         }];
@@ -210,8 +258,10 @@
 
 - (NSManagedObjectContext *)createPrivateObjectContext {
     NSManagedObjectContext *ctx = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
+    __weak typeof(self) weakSelf = self;
     [ctx performBlockAndWait:^{
-        [ctx setParentContext:self.managedObjectContext];
+        __strong typeof(weakSelf) strongSelf = weakSelf;
+        [ctx setParentContext:strongSelf.managedObjectContext];
     }];
     return ctx;
 }
@@ -267,17 +317,21 @@
     return _managedObjectContext;
 }
 
+
 - (NSManagedObjectContext *)parentContext {
     if (!_parentContext) {
         _parentContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
+        __weak typeof(self) weakSelf = self;
         [_parentContext performBlockAndWait:^{
-            [_parentContext setPersistentStoreCoordinator:self.persistentStoreCoordinator];
+            __strong typeof(weakSelf) strongSelf = weakSelf;
+            [_parentContext setPersistentStoreCoordinator:strongSelf.persistentStoreCoordinator];
             [_parentContext setMergePolicy:NSMergeByPropertyObjectTrumpMergePolicy];
             [_parentContext setUndoManager:nil];
         }];
 
     }
     return _parentContext;
-    
 }
+
+
 @end

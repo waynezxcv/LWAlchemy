@@ -36,8 +36,8 @@ typedef void(^ExistingObject)(NSManagedObject* existedObject);
 @property (readonly, strong, nonatomic) NSManagedObjectModel* managedObjectModel;
 @property (readonly, strong, nonatomic) NSPersistentStoreCoordinator* persistentStoreCoordinator;
 
-@property (readonly, strong, nonatomic) NSManagedObjectContext* managedObjectContext;//主线程Context，用户增，改，删。
-@property (readonly, strong, nonatomic) NSManagedObjectContext* parentContext;//用来保存到persistentStoreCoordinator的Context
+@property (readonly, strong, nonatomic) NSManagedObjectContext* managedObjectContext;//主线程Context，用户增，改，删（在内存中操作）。
+@property (readonly, strong, nonatomic) NSManagedObjectContext* parentContext;//用来写入数据到SQLite的Context，在一个后台线程中操作。
 
 
 + (LWAlchemyCoreDataManager *)sharedManager;
@@ -50,21 +50,24 @@ typedef void(^ExistingObject)(NSManagedObject* existedObject);
 
 
 /**
- *  增加一条数据，并指定UniqueAttributesName，若存在则重复插入，改为更新数据
+ *  增加一条数据，并指定UniqueAttributesName，若存在则重复插入，改为更新数据(每增加一条会新开一个线程)
  *
  */
 - (void)insertNSManagedObjectWithObjectClass:(Class)objectClass
                                         JSON:(id)json
-                         uiqueAttributesName:(NSString *)uniqueAttributesName;
+                         uiqueAttributesName:(NSString *)uniqueAttributesName
+                                  completion:(Completion)completeBlock;
+
 
 
 /**
- *  批量增加数据，并指定UniqueAttributesName，若存在则重复插入，改为更新数据
+ *  批量增加数据，并指定UniqueAttributesName，若存在则重复插入，改为更新数据（总共新开一个线程）
  *
  */
 - (void)insertNSManagedObjectWithObjectClass:(Class)objectClass
                                   JSONsArray:(NSArray *)JSONsArray
-                         uiqueAttributesName:(NSString *)uniqueAttributesName;
+                         uiqueAttributesName:(NSString *)uniqueAttributesName
+                                  completion:(Completion)completeBlock;
 
 /**
  *  查
@@ -75,12 +78,10 @@ typedef void(^ExistingObject)(NSManagedObject* existedObject);
                                 fetchOffset:(NSInteger)offset
                                  fetchLimit:(NSInteger)limit
                                 fetchReults:(FetchResults)resultsBlock;
-
 /**
  *  删
  */
 - (void)deleteNSManagedObjectWithObjectWithObjectIdsArray:(NSArray<NSManagedObjectID *> *)objectIDs;
-
 
 
 /**

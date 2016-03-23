@@ -79,7 +79,6 @@ static void* LWAlechmyMapDictionaryKey = &LWAlechmyMapDictionaryKey;
     if ([self isSubclassOfClass:[NSManagedObject class]] && context) {
         NSManagedObject* model = [NSEntityDescription insertNewObjectForEntityForName:NSStringFromClass(self)
                                                                inManagedObjectContext:context];
-        
         if (model) {
             if (![json isKindOfClass:[NSDictionary class]]) {
                 NSDictionary* dic = [model dictionaryWithJSON:json];
@@ -501,6 +500,7 @@ static void _SetOtherTypePropertyValue(__unsafe_unretained id model,
 }
 
 
+
 - (void)_nsmanagedObject:(NSManagedObject *)object
                 Setvalue:(id)value
             WithProperty:(LWAlchemyPropertyInfo *)propertyInfo
@@ -514,11 +514,19 @@ static void _SetOtherTypePropertyValue(__unsafe_unretained id model,
             NSURL* URL = [NSURL URLWithString:[NSString stringWithFormat:@"%@",value]];
             [object setValue:URL forKey:propertyInfo.propertyName];
         }break;
-        case LWPropertyNSObjectTypeNSString:
+        case LWPropertyNSObjectTypeNSString:{
+            [object setValue:[NSString stringWithFormat:@"%@",value] forKey:propertyInfo.propertyName];
+        }break;
+        case LWPropertyNSObjectTypeNSNumber:{
+            NSNumber* number = NSNumberCreateFromIDType(value);
+            [object setValue:number forKey:propertyInfo.propertyName];
+        }break;
+        case LWPropertyNSObjectTypeNSDecimalNumber: {
+            NSDecimalNumber* number = (NSDecimalNumber*) NSNumberCreateFromIDType(value);
+            [object setValue:number forKey:propertyInfo.propertyName];
+        }break;
         case LWPropertyNSObjectTypeNSMutableString:
         case LWPropertyNSObjectTypeNSValue:
-        case LWPropertyNSObjectTypeNSNumber:
-        case LWPropertyNSObjectTypeNSDecimalNumber:
         case LWPropertyNSObjectTypeNSData:
         case LWPropertyNSObjectTypeNSMutableData:
         case LWPropertyNSObjectTypeNSArray:
@@ -546,6 +554,62 @@ static void _SetOtherTypePropertyValue(__unsafe_unretained id model,
         }break;
     }
 }
+
+
+static NSNumber* NSNumberCreateFromIDType(__unsafe_unretained id value) {
+    static NSCharacterSet *dot;
+    static NSDictionary *dic;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        dot = [NSCharacterSet characterSetWithRange:NSMakeRange('.', 1)];
+        dic = @{@"TRUE" :   @(YES),
+                @"True" :   @(YES),
+                @"true" :   @(YES),
+                @"FALSE" :  @(NO),
+                @"False" :  @(NO),
+                @"false" :  @(NO),
+                @"YES" :    @(YES),
+                @"Yes" :    @(YES),
+                @"yes" :    @(YES),
+                @"NO" :     @(NO),
+                @"No" :     @(NO),
+                @"no" :     @(NO),
+                @"NIL" :    (id)kCFNull,
+                @"Nil" :    (id)kCFNull,
+                @"nil" :    (id)kCFNull,
+                @"NULL" :   (id)kCFNull,
+                @"Null" :   (id)kCFNull,
+                @"null" :   (id)kCFNull,
+                @"(NULL)" : (id)kCFNull,
+                @"(Null)" : (id)kCFNull,
+                @"(null)" : (id)kCFNull,
+                @"<NULL>" : (id)kCFNull,
+                @"<Null>" : (id)kCFNull,
+                @"<null>" : (id)kCFNull};
+    });
+    if (!value || value == (id)kCFNull) return nil;
+    if ([value isKindOfClass:[NSNumber class]]) return value;
+    if ([value isKindOfClass:[NSString class]]) {
+        NSNumber *num = dic[value];
+        if (num) {
+            if (num == (id)kCFNull) return nil;
+            return num;
+        }
+        if ([(NSString *)value rangeOfCharacterFromSet:dot].location != NSNotFound) {
+            const char *cstring = ((NSString *)value).UTF8String;
+            if (!cstring) return nil;
+            double num = atof(cstring);
+            if (isnan(num) || isinf(num)) return nil;
+            return @(num);
+        } else {
+            const char *cstring = ((NSString *)value).UTF8String;
+            if (!cstring) return nil;
+            return @(atoll(cstring));
+        }
+    }
+    return nil;
+}
+
 
 static inline NSDate* LWNSDateFromString(__unsafe_unretained NSString *string) {
     NSTimeInterval timeInterval = [string floatValue];
