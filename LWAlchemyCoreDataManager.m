@@ -64,6 +64,7 @@
 - (void)insertNSManagedObjectWithObjectClass:(Class)objectClass
                                         JSON:(id)json
                          uiqueAttributesName:(NSString *)uniqueAttributesName {
+<<<<<<< HEAD
     NSManagedObjectContext* ctx = [self createPrivateObjectContext];
     [ctx performBlock:^{
         NSError* error = nil;
@@ -88,6 +89,17 @@
                 [self insertNSManagedObjectWithObjectClass:objectClass JSON:json];
                 [self saveContext:^{}];
             }];
+=======
+    [self existingObjectForEntity:objectClass
+          withUniquAttributesName:uniqueAttributesName
+            uniqueAttributesValue:[[self dictionaryWithJSON:json]objectForKey:uniqueAttributesName]
+                    existedObject:^(NSManagedObject *existedObject) {
+        if (existedObject) {
+            [self updateNSManagedObjectWithObjectID:existedObject.objectID JSON:json];
+        }
+        else {
+            [self insertNSManagedObjectWithObjectClass:objectClass JSON:json];
+>>>>>>> e55b48ab6aba96e01b014558a4c4973d11ac1c95
         }
     }];
 }
@@ -117,6 +129,10 @@
         }
         NSArray* results = [ctx executeFetchRequest:fetchRequest error:&error];
         if (error) {
+<<<<<<< HEAD
+=======
+            NSLog(@"error: %@", error);
+>>>>>>> e55b48ab6aba96e01b014558a4c4973d11ac1c95
             [self.managedObjectContext performBlock:^{
                 resultsBlock(@[],error);
             }];
@@ -130,7 +146,10 @@
         for (NSManagedObject* object  in results) {
             [result_ids addObject:object.objectID];
         }
+<<<<<<< HEAD
         NSLog(@"fetch:%@",[NSThread currentThread]);
+=======
+>>>>>>> e55b48ab6aba96e01b014558a4c4973d11ac1c95
         [self.managedObjectContext performBlockAndWait:^{
             NSMutableArray* final_results = [[NSMutableArray alloc] init];
             for (NSManagedObjectID* objectID in result_ids) {
@@ -139,6 +158,7 @@
             resultsBlock(final_results, nil);
         }];
     }];
+<<<<<<< HEAD
 }
 
 
@@ -183,6 +203,73 @@
     }
 }
 
+=======
+}
+
+- (void)existingObjectForEntity:(Class)objectClass
+        withUniquAttributesName:(NSString *)uniqueAttributesName
+          uniqueAttributesValue:(id)uniqueAttributesValue
+                  existedObject:(ExistingObject)existedBlock {
+    
+    
+    if (!uniqueAttributesName || !uniqueAttributesValue) {
+        return;
+    }
+    NSPredicate* predicate = [NSPredicate predicateWithFormat:@"%K == %@", uniqueAttributesName, uniqueAttributesValue];
+    [self fetchNSManagedObjectWithObjectClass:objectClass predicate:predicate sortDescriptor:nil fetchOffset:0 fetchLimit:0 fetchReults:^(NSArray *results, NSError *error) {
+        if (results.count == 0) {
+            NSManagedObject* existedObject = [results lastObject];
+            existedBlock(existedObject);
+        } else {
+            existedBlock(nil);
+        }
+    }];
+}
+
+
+- (void)updateNSManagedObjectWithObjectID:(NSManagedObjectID *)objectID JSON:(id)json {
+    NSManagedObject* object = [self.managedObjectContext objectWithID:objectID];
+    if ([json isKindOfClass:[NSDictionary class]]) {
+        object = [object nsManagedObject:object modelWithDictionary:json context:self.managedObjectContext];
+    } else {
+        NSDictionary* dict = [self dictionaryWithJSON:json];
+        object = [object nsManagedObject:object modelWithDictionary:dict context:self.managedObjectContext];
+    }
+}
+
+
+- (void)deleteNSManagedObjectWithObjectWithObjectIdsArray:(NSArray<NSManagedObjectID *> *)objectIDs {
+    for (NSManagedObjectID* objectID in objectIDs) {
+        NSManagedObject* object = [self.managedObjectContext objectWithID:objectID];
+        if (object) {
+            [self.managedObjectContext deleteObject:object];
+        }
+    }
+}
+
+
+
+#pragma mark - CoreData Stack
+
+- (NSError *)commit:(SaveOperationResult)handler{
+    NSError *error;
+    if ([self.managedObjectContext hasChanges]) {
+        [self.managedObjectContext save:&error];
+        [self.parentContext performBlock:^{
+            __block NSError *inner_error = nil;
+            [self.parentContext save:&inner_error];
+            if (handler){
+                [self.managedObjectContext performBlock:^{
+                    handler(error);
+                }];
+            }
+        }];
+    }
+    return error;
+}
+
+
+>>>>>>> e55b48ab6aba96e01b014558a4c4973d11ac1c95
 - (NSManagedObjectContext *)createPrivateObjectContext {
     NSManagedObjectContext *ctx = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
     [ctx setParentContext:self.managedObjectContext];
@@ -248,7 +335,11 @@
             [_parentContext setMergePolicy:NSMergeByPropertyObjectTrumpMergePolicy];
             [_parentContext setUndoManager:nil];
         }];
+<<<<<<< HEAD
 
+=======
+        
+>>>>>>> e55b48ab6aba96e01b014558a4c4973d11ac1c95
     }
     return _parentContext;
     

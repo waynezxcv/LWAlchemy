@@ -25,11 +25,19 @@
 @class NSManagedObjectID;
 @class NSManagedObject;
 @class NSFetchRequest;
+<<<<<<< HEAD
 
 typedef void(^Completion)(void);
 typedef void(^FetchResults)(NSArray* results, NSError *error);
 typedef void(^ExistingObject)(NSManagedObject* existedObject);
 
+=======
+
+typedef void(^SaveOperationResult)(NSError* error);
+typedef void(^FetchResults)(NSArray* results, NSError *error);
+typedef void(^ExistingObject)(NSManagedObject* existedObject);
+
+>>>>>>> e55b48ab6aba96e01b014558a4c4973d11ac1c95
 
 @interface LWAlchemyCoreDataManager : NSObject
 
@@ -64,13 +72,33 @@ typedef void(^ExistingObject)(NSManagedObject* existedObject);
                                 fetchOffset:(NSInteger)offset
                                  fetchLimit:(NSInteger)limit
                                 fetchReults:(FetchResults)resultsBlock;
+<<<<<<< HEAD
+=======
 
+>>>>>>> e55b48ab6aba96e01b014558a4c4973d11ac1c95
+
+/**
+ *  删
+ */
+<<<<<<< HEAD
+=======
+- (void)existingObjectForEntity:(Class)objectClass
+                     withUniquAttributesName:(NSString *)uniqueAttributesName
+                       uniqueAttributesValue:(id)uniqueAttributesValue
+                  existedObject:(ExistingObject)existedBlock;
+>>>>>>> e55b48ab6aba96e01b014558a4c4973d11ac1c95
+
+- (void)deleteNSManagedObjectWithObjectWithObjectIdsArray:(NSArray<NSManagedObjectID *> *)objectIDs;
+
+<<<<<<< HEAD
+=======
 /**
  *  删
  */
 
 - (void)deleteNSManagedObjectWithObjectWithObjectIdsArray:(NSArray<NSManagedObjectID *> *)objectIDs;
 
+>>>>>>> e55b48ab6aba96e01b014558a4c4973d11ac1c95
 
 
 /**
@@ -84,6 +112,10 @@ typedef void(^ExistingObject)(NSManagedObject* existedObject);
  *  提交修改
  *
  */
+<<<<<<< HEAD
 - (void)saveContext:(Completion)completionBlock;
+=======
+- (NSError *)commit:(SaveOperationResult)handler;
+>>>>>>> e55b48ab6aba96e01b014558a4c4973d11ac1c95
 
 @end

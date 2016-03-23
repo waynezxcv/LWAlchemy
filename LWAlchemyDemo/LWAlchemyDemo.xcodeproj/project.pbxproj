@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		013827481C9B02F6005374CA /* UserModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 013827471C9B02F6005374CA /* UserModel.m */; };
 		0171C7AA1C9F29BE000F2D14 /* LWAlchemyCoreDataManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 0171C7A91C9F29BE000F2D14 /* LWAlchemyCoreDataManager.m */; };
+		01F51A161CA1B76400463571 /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 01F51A151CA1B76400463571 /* CoreData.framework */; };
 		B07DAB531CA1311700CFE78E /* TestModel2+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = B07DAB4C1CA1311700CFE78E /* TestModel2+CoreDataProperties.m */; };
 		B07DAB541CA1311700CFE78E /* TestModel2.m in Sources */ = {isa = PBXBuildFile; fileRef = B07DAB4E1CA1311700CFE78E /* TestModel2.m */; };
 		B07DAB551CA1311700CFE78E /* TestModel1+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = B07DAB501CA1311700CFE78E /* TestModel1+CoreDataProperties.m */; };
@@ -51,6 +52,7 @@
 		0171C7A71C9F29BE000F2D14 /* LWAlchemy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LWAlchemy.h; path = ../LWAlchemy.h; sourceTree = "<group>"; };
 		0171C7A81C9F29BE000F2D14 /* LWAlchemyCoreDataManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LWAlchemyCoreDataManager.h; path = ../LWAlchemyCoreDataManager.h; sourceTree = "<group>"; };
 		0171C7A91C9F29BE000F2D14 /* LWAlchemyCoreDataManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = LWAlchemyCoreDataManager.m; path = ../LWAlchemyCoreDataManager.m; sourceTree = "<group>"; };
+		01F51A151CA1B76400463571 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
 		B07DAB4B1CA1311700CFE78E /* TestModel2+CoreDataProperties.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "TestModel2+CoreDataProperties.h"; path = "../TestModel2+CoreDataProperties.h"; sourceTree = "<group>"; };
 		B07DAB4C1CA1311700CFE78E /* TestModel2+CoreDataProperties.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "TestModel2+CoreDataProperties.m"; path = "../TestModel2+CoreDataProperties.m"; sourceTree = "<group>"; };
 		B07DAB4D1CA1311700CFE78E /* TestModel2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TestModel2.h; path = ../TestModel2.h; sourceTree = "<group>"; };
@@ -91,6 +93,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				01F51A161CA1B76400463571 /* CoreData.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -150,6 +153,7 @@
 		B0A87C9D1C9A5669004FD0D7 = {
 			isa = PBXGroup;
 			children = (
+				01F51A151CA1B76400463571 /* CoreData.framework */,
 				B0A87CDF1C9A5679004FD0D7 /* LWAlchemy */,
 				B0A87CA81C9A5669004FD0D7 /* LWAlchemyDemo */,
 				B0A87CC51C9A5669004FD0D7 /* LWAlchemyDemoTests */,
