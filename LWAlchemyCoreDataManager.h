@@ -18,24 +18,26 @@
 
 #import <UIKit/UIKit.h>
 
+
+@class NSPersistentStoreCoordinator;
 @class NSManagedObjectContext;
 @class NSManagedObjectModel;
-@class NSPersistentStoreCoordinator;
 @class NSManagedObjectID;
 @class NSManagedObject;
+@class NSFetchRequest;
 
 typedef void(^Completion)(void);
+typedef void(^FetchResults)(NSArray* results, NSError *error);
+typedef void(^ExistingObject)(NSManagedObject* existedObject);
+
 
 @interface LWAlchemyCoreDataManager : NSObject
 
 @property (readonly, strong, nonatomic) NSManagedObjectModel* managedObjectModel;
 @property (readonly, strong, nonatomic) NSPersistentStoreCoordinator* persistentStoreCoordinator;
 
-@property (readonly, strong, nonatomic) NSManagedObjectContext* managedObjectContext;//主线程Context
+@property (readonly, strong, nonatomic) NSManagedObjectContext* managedObjectContext;//主线程Context，用户增，改，删。
 @property (readonly, strong, nonatomic) NSManagedObjectContext* parentContext;//用来保存到persistentStoreCoordinator的Context
-@property (readonly, strong, nonatomic) NSManagedObjectContext* importContext;//插入数据的Context
-
-
 
 
 + (LWAlchemyCoreDataManager *)sharedManager;
@@ -48,44 +50,40 @@ typedef void(^Completion)(void);
 
 
 /**
- *  增加一条数据，并指定UniqueAttributesNAme
+ *  增加一条数据，并指定UniqueAttributesName，若存在则重复插入，改为更新数据
  *
  */
-- (id)insertNSManagedObjectWithObjectClass:(Class)objectClass
-                                      JSON:(id)json
-                       uiqueAttributesName:(NSString *)uniqueAttributesName;
+- (void)insertNSManagedObjectWithObjectClass:(Class)objectClass
+                                        JSON:(id)json
+                         uiqueAttributesName:(NSString *)uniqueAttributesName;
 
-
-/**
- *  查询是否存在UniqueAttributes值为uniqueAttributesValue的NSManagedObject
- *
- */
-- (NSManagedObject *)existingObjectForEntity:(Class)entity withUniqueAttributesValue:(NSString *)uniqueAttributesValue;
-
-
-/**
- *  查
- *
- */
-- (NSArray *)fetchNSManagedObjectWithObjectClass:(Class)objectClass
-                                  sortDescriptor:(NSArray<NSSortDescriptor *> *)sortDescriptor
-                                       predicate:(NSPredicate *) predicate;
+//查
+- (void)fetchNSManagedObjectWithObjectClass:(Class)objectClass
+                                  predicate:(NSPredicate *)predicate
+                             sortDescriptor:(NSArray<NSSortDescriptor *> *)sortDescriptors
+                                fetchOffset:(NSInteger)offset
+                                 fetchLimit:(NSInteger)limit
+                                fetchReults:(FetchResults)resultsBlock;
 
 /**
  *  删
  */
 
-- (BOOL)deleteNSManagedObjectWithObjectWithObjectIdsArray:(NSArray<NSManagedObjectID *> *)objectIDs;
+- (void)deleteNSManagedObjectWithObjectWithObjectIdsArray:(NSArray<NSManagedObjectID *> *)objectIDs;
+
+
 
 /**
  *  改
  *
  */
-- (NSManagedObject *)updateNSManagedObjectWithObjectID:(NSManagedObjectID *)objectID JSON:(id)json;
+- (void)updateNSManagedObjectWithObjectID:(NSManagedObjectID *)objectID JSON:(id)json;
+
 
 /**
- *  保存NSManagedObjectContext中的内容到SQLite
+ *  提交修改
+ *
  */
-- (void)commitContextCompletion:(Completion)completeBlock;
+- (void)saveContext:(Completion)completionBlock;
 
 @end

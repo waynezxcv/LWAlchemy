@@ -51,13 +51,9 @@ static void* LWAlechmyMapDictionaryKey = &LWAlechmyMapDictionaryKey;
     return propertysSet;
 }
 
-
 + (void)setUniqueAttributesName:(NSString *)uniqueAttributesName {
     objc_setAssociatedObject(self,LWAlchemyUniqueAttributesKey, uniqueAttributesName, OBJC_ASSOCIATION_COPY);
 }
-
-
-
 
 + (NSString *)uniqueAttributesName {
     return objc_getAssociatedObject(self, LWAlchemyUniqueAttributesKey);
@@ -81,8 +77,13 @@ static void* LWAlechmyMapDictionaryKey = &LWAlechmyMapDictionaryKey;
 
 + (id)nsManagedObjectModelWithJSON:(id)json context:(NSManagedObjectContext *)context {
     if ([self isSubclassOfClass:[NSManagedObject class]] && context) {
+        
+        NSEntityDescription* description = [NSEntityDescription entityForName:NSStringFromClass(self) inManagedObjectContext:context];
+//        description.uniquenessConstraints =
+        
         NSManagedObject* model = [NSEntityDescription insertNewObjectForEntityForName:NSStringFromClass(self)
                                                                inManagedObjectContext:context];
+        
         if (model) {
             if (![json isKindOfClass:[NSDictionary class]]) {
                 NSDictionary* dic = [model dictionaryWithJSON:json];
@@ -125,9 +126,6 @@ static void* LWAlechmyMapDictionaryKey = &LWAlechmyMapDictionaryKey;
     return self;
 }
 
-
-#pragma mark - Private Methods
-
 - (NSDictionary *)dictionaryWithJSON:(id)json {
     if (!json || json == (id)kCFNull) return nil;
     NSDictionary* dic = nil;
@@ -146,6 +144,9 @@ static void* LWAlechmyMapDictionaryKey = &LWAlechmyMapDictionaryKey;
     return dic;
 }
 
+
+
+#pragma mark - Private Methods
 
 - (void)_enumeratePropertiesUsingBlock:(void (^)(objc_property_t property, BOOL *stop))block {
     Class cls = [self class];
