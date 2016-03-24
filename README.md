@@ -14,7 +14,6 @@ LWAlchemy 快速、高性能的iOS ORM框架。<br>
 * 支持CoreData设置Unique约束。
 * 轻量级，代码入侵少。
 
-## 使用方法
 
 ### API Quickstart
 * **Class**
@@ -27,12 +26,9 @@ LWAlchemy 快速、高性能的iOS ORM框架。<br>
 |LWAlchemyValueTransformer|继承NSValueTransformer提供更方便使用的API|
 
 
+## 使用方法
 
-
-* **Example**
-例如试下如图布局
-
-## 简单的模型映射
+* **模型映射**
 
 ```objc
 NSDictionary* dict = @{@"liked":@NO,
