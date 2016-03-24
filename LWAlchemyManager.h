@@ -49,7 +49,16 @@ typedef void(^ExistingObject)(NSManagedObject* existedObject);
 
 
 /**
- *  增加一条数据，并指定UniqueAttributesName，若存在则重复插入，改为更新数据(每增加一条会新开一个线程)
+ *  批量插入数据
+ *
+ */
+- (void)insertNSManagedObjectWithObjectClass:(Class)objectClass
+                                  JSONsArray:(NSArray *)JSONsArray
+                                  completion:(Completion)completeBlock;
+
+
+/**
+ *  插入一条数据，并指定UniqueAttributesName，若存在则重复插入，改为更新数据(每增加一条会新开一个线程)
  *
  */
 - (void)insertNSManagedObjectWithObjectClass:(Class)objectClass
@@ -60,7 +69,7 @@ typedef void(^ExistingObject)(NSManagedObject* existedObject);
 
 
 /**
- *  批量增加数据，并指定UniqueAttributesName，若存在则重复插入，改为更新数据（总共新开一个线程）
+ *  批量插入数据，并指定UniqueAttributesName，若存在则重复插入，改为更新数据（总共新开一个线程）
  *
  */
 - (void)insertNSManagedObjectWithObjectClass:(Class)objectClass

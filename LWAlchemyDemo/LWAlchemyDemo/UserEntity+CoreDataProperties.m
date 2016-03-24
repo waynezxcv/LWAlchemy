@@ -13,13 +13,15 @@
 //  https://github.com/waynezxcv/LWAlchemy
 //  See LICENSE for this sample’s licensing information
 //
-#import "UserModel.h"
 
-@implementation UserModel
-+ (NSDictionary *)mapper {
-    return @{@"name":@"c_name",
-             @"sign":@"c_sign"};
-}
+#import "UserEntity+CoreDataProperties.h"
 
+@implementation UserEntity (CoreDataProperties)
+
+@dynamic name;
+@dynamic sign;
+@dynamic age;
+@dynamic website;
+@dynamic test;
 
 @end

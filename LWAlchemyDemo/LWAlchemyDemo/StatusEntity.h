@@ -13,13 +13,19 @@
 //  https://github.com/waynezxcv/LWAlchemy
 //  See LICENSE for this sample’s licensing information
 //
-#import "UserModel.h"
+#import <Foundation/Foundation.h>
+#import <CoreData/CoreData.h>
 
-@implementation UserModel
-+ (NSDictionary *)mapper {
-    return @{@"name":@"c_name",
-             @"sign":@"c_sign"};
-}
+@class UserEntity;
 
+NS_ASSUME_NONNULL_BEGIN
+
+@interface StatusEntity : NSManagedObject
+
+// Insert code here to declare functionality of your managed object subclass
 
 @end
+
+NS_ASSUME_NONNULL_END
+
+#import "StatusEntity+CoreDataProperties.h"

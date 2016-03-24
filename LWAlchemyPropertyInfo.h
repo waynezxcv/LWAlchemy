@@ -68,7 +68,7 @@ typedef NS_ENUM (NSUInteger, LWPropertyNSObjectType) {
 
 @property (nonatomic,assign,readonly) objc_property_t property;
 @property (nonatomic,strong,readonly) NSString* propertyName;
-@property (nonatomic,strong,readonly) NSString* customMapperPropertyName;
+@property (nonatomic,strong,readonly) NSString* mapperName;
 @property (nonatomic,strong,readonly) NSString* ivarName;
 @property (nonatomic,assign,readonly) Ivar ivar;
 @property (nonatomic,assign,readonly) LWPropertyType type;

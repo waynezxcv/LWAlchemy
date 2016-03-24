@@ -13,13 +13,11 @@
 //  https://github.com/waynezxcv/LWAlchemy
 //  See LICENSE for this sample’s licensing information
 //
-#import "UserModel.h"
 
-@implementation UserModel
-+ (NSDictionary *)mapper {
-    return @{@"name":@"c_name",
-             @"sign":@"c_sign"};
-}
+#import "TestEntity.h"
 
+@implementation TestEntity
+
+// Insert code here to add functionality to your managed object subclass
 
 @end

@@ -22,7 +22,7 @@
 
 @property (nonatomic,assign) objc_property_t property;
 @property (nonatomic,strong) NSString* propertyName;
-@property (nonatomic,strong) NSString* customMapperPropertyName;
+@property (nonatomic,strong) NSString* mapperName;
 @property (nonatomic,strong) NSString* ivarName;
 @property (nonatomic,assign) LWPropertyType type;
 @property (nonatomic,assign) LWPropertyNSObjectType nsType;
@@ -103,9 +103,9 @@
             attributes = NULL;
         }
         self.propertyName =  @(property_getName(property));
-        self.customMapperPropertyName = @(property_getName(property));
-        if (mapper[self.customMapperPropertyName]) {
-            self.customMapperPropertyName = mapper[self.customMapperPropertyName];
+        self.mapperName = @(property_getName(property));
+        if (mapper[self.mapperName]) {
+            self.mapperName = mapper[self.mapperName];
         }
         if (self.propertyName) {
             if (!self.getter) {

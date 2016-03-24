@@ -61,7 +61,6 @@ static void* LWAlechmyMapDictionaryKey = &LWAlechmyMapDictionaryKey;
 }
 
 + (id)managedObjectModelWithJSON:(id)json context:(NSManagedObjectContext *)context {
-    
     if ([self isSubclassOfClass:[NSManagedObject class]] && context) {
         NSManagedObject* model = [NSEntityDescription insertNewObjectForEntityForName:NSStringFromClass(self)
                                                                inManagedObjectContext:context];
@@ -85,7 +84,7 @@ static void* LWAlechmyMapDictionaryKey = &LWAlechmyMapDictionaryKey;
     if (![dictionary isKindOfClass:[NSDictionary class]]) return nil;
     NSSet* propertysSet = self.class.propertysSet;
     [propertysSet enumerateObjectsUsingBlock:^(LWAlchemyPropertyInfo* propertyInfo, BOOL * _Nonnull stop) {
-        id value = dictionary[propertyInfo.customMapperPropertyName];
+        id value = dictionary[propertyInfo.mapperName];
         if (value != nil && ![value isEqual:[NSNull null]]) {
             _SetPropertyValue(self,propertyInfo,value);
         }
@@ -100,7 +99,7 @@ static void* LWAlechmyMapDictionaryKey = &LWAlechmyMapDictionaryKey;
     if (![dictionary isKindOfClass:[NSDictionary class]]) return nil;
     NSSet* propertysSet = self.class.propertysSet;
     [propertysSet enumerateObjectsUsingBlock:^(LWAlchemyPropertyInfo* propertyInfo, BOOL * _Nonnull stop) {
-        id value = dictionary[propertyInfo.customMapperPropertyName];
+        id value = dictionary[propertyInfo.mapperName];
         if (value != nil && ![value isEqual:[NSNull null]]) {
             [self _nsmanagedObject:(NSManagedObject *)object Setvalue:value WithProperty:propertyInfo Incontext:contxt];
         }

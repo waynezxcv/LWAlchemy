@@ -13,13 +13,20 @@
 //  https://github.com/waynezxcv/LWAlchemy
 //  See LICENSE for this sample’s licensing information
 //
-#import "UserModel.h"
+#import "StatusEntity+CoreDataProperties.h"
 
-@implementation UserModel
-+ (NSDictionary *)mapper {
-    return @{@"name":@"c_name",
-             @"sign":@"c_sign"};
-}
+@implementation StatusEntity (CoreDataProperties)
 
+@dynamic liked;
+@dynamic statusId;
+@dynamic percent;
+@dynamic text;
+@dynamic website;
+@dynamic likedCount;
+@dynamic imgs;
+@dynamic profileDict;
+@dynamic timeStamp;
+@dynamic user;
+@dynamic retweetedStatus;
 
 @end

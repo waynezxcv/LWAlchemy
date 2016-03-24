@@ -9,12 +9,18 @@
 /* Begin PBXBuildFile section */
 		013827481C9B02F6005374CA /* UserModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 013827471C9B02F6005374CA /* UserModel.m */; };
 		0167E8211CA44404004EA72C /* TestModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 0167E8201CA44404004EA72C /* TestModel.m */; };
+		0167E82E1CA45D47004EA72C /* UserEntity+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = 0167E8231CA45D47004EA72C /* UserEntity+CoreDataProperties.m */; };
+		0167E82F1CA45D47004EA72C /* UserEntity.m in Sources */ = {isa = PBXBuildFile; fileRef = 0167E8251CA45D47004EA72C /* UserEntity.m */; };
+		0167E8301CA45D47004EA72C /* StatusEntity+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = 0167E8271CA45D47004EA72C /* StatusEntity+CoreDataProperties.m */; };
+		0167E8311CA45D47004EA72C /* StatusEntity.m in Sources */ = {isa = PBXBuildFile; fileRef = 0167E8291CA45D47004EA72C /* StatusEntity.m */; };
+		0167E8321CA45D47004EA72C /* TestEntity+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = 0167E82B1CA45D47004EA72C /* TestEntity+CoreDataProperties.m */; };
+		0167E8331CA45D47004EA72C /* TestEntity.m in Sources */ = {isa = PBXBuildFile; fileRef = 0167E82D1CA45D47004EA72C /* TestEntity.m */; };
+		0167E8351CA4661B004EA72C /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = 0167E8341CA4661B004EA72C /* LICENSE */; };
+		0167E8381CA46930004EA72C /* SendViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0167E8371CA46930004EA72C /* SendViewController.m */; };
 		0171C7AA1C9F29BE000F2D14 /* LWAlchemyManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 0171C7A91C9F29BE000F2D14 /* LWAlchemyManager.m */; };
-		01F51A161CA1B76400463571 /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 01F51A151CA1B76400463571 /* CoreData.framework */; };
 		B0A87CAB1C9A5669004FD0D7 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = B0A87CAA1C9A5669004FD0D7 /* main.m */; };
 		B0A87CAE1C9A5669004FD0D7 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = B0A87CAD1C9A5669004FD0D7 /* AppDelegate.m */; };
 		B0A87CB11C9A5669004FD0D7 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B0A87CB01C9A5669004FD0D7 /* ViewController.m */; };
-		B0A87CB41C9A5669004FD0D7 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B0A87CB21C9A5669004FD0D7 /* Main.storyboard */; };
 		B0A87CB71C9A5669004FD0D7 /* LWAlchemyDemo.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = B0A87CB51C9A5669004FD0D7 /* LWAlchemyDemo.xcdatamodeld */; };
 		B0A87CB91C9A5669004FD0D7 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B0A87CB81C9A5669004FD0D7 /* Assets.xcassets */; };
 		B0A87CBC1C9A5669004FD0D7 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B0A87CBA1C9A5669004FD0D7 /* LaunchScreen.storyboard */; };
@@ -48,17 +54,30 @@
 		013827471C9B02F6005374CA /* UserModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UserModel.m; sourceTree = "<group>"; };
 		0167E81F1CA44404004EA72C /* TestModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TestModel.h; sourceTree = "<group>"; };
 		0167E8201CA44404004EA72C /* TestModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TestModel.m; sourceTree = "<group>"; };
+		0167E8221CA45D47004EA72C /* UserEntity+CoreDataProperties.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UserEntity+CoreDataProperties.h"; sourceTree = "<group>"; };
+		0167E8231CA45D47004EA72C /* UserEntity+CoreDataProperties.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UserEntity+CoreDataProperties.m"; sourceTree = "<group>"; };
+		0167E8241CA45D47004EA72C /* UserEntity.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UserEntity.h; sourceTree = "<group>"; };
+		0167E8251CA45D47004EA72C /* UserEntity.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UserEntity.m; sourceTree = "<group>"; };
+		0167E8261CA45D47004EA72C /* StatusEntity+CoreDataProperties.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "StatusEntity+CoreDataProperties.h"; sourceTree = "<group>"; };
+		0167E8271CA45D47004EA72C /* StatusEntity+CoreDataProperties.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "StatusEntity+CoreDataProperties.m"; sourceTree = "<group>"; };
+		0167E8281CA45D47004EA72C /* StatusEntity.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StatusEntity.h; sourceTree = "<group>"; };
+		0167E8291CA45D47004EA72C /* StatusEntity.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StatusEntity.m; sourceTree = "<group>"; };
+		0167E82A1CA45D47004EA72C /* TestEntity+CoreDataProperties.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "TestEntity+CoreDataProperties.h"; sourceTree = "<group>"; };
+		0167E82B1CA45D47004EA72C /* TestEntity+CoreDataProperties.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "TestEntity+CoreDataProperties.m"; sourceTree = "<group>"; };
+		0167E82C1CA45D47004EA72C /* TestEntity.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TestEntity.h; sourceTree = "<group>"; };
+		0167E82D1CA45D47004EA72C /* TestEntity.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TestEntity.m; sourceTree = "<group>"; };
+		0167E8341CA4661B004EA72C /* LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = LICENSE; path = ../../LWAsyncDisplayView/LICENSE; sourceTree = "<group>"; };
+		0167E8361CA46930004EA72C /* SendViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SendViewController.h; sourceTree = "<group>"; };
+		0167E8371CA46930004EA72C /* SendViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SendViewController.m; sourceTree = "<group>"; };
 		0171C7A71C9F29BE000F2D14 /* LWAlchemy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LWAlchemy.h; path = ../LWAlchemy.h; sourceTree = "<group>"; };
 		0171C7A81C9F29BE000F2D14 /* LWAlchemyManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LWAlchemyManager.h; path = ../LWAlchemyManager.h; sourceTree = "<group>"; };
 		0171C7A91C9F29BE000F2D14 /* LWAlchemyManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = LWAlchemyManager.m; path = ../LWAlchemyManager.m; sourceTree = "<group>"; };
-		01F51A151CA1B76400463571 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
 		B0A87CA61C9A5669004FD0D7 /* LWAlchemyDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LWAlchemyDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B0A87CAA1C9A5669004FD0D7 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		B0A87CAC1C9A5669004FD0D7 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		B0A87CAD1C9A5669004FD0D7 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		B0A87CAF1C9A5669004FD0D7 /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
 		B0A87CB01C9A5669004FD0D7 /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
-		B0A87CB31C9A5669004FD0D7 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		B0A87CB61C9A5669004FD0D7 /* LWAlchemyDemo.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = LWAlchemyDemo.xcdatamodel; sourceTree = "<group>"; };
 		B0A87CB81C9A5669004FD0D7 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		B0A87CBB1C9A5669004FD0D7 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
@@ -84,7 +103,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				01F51A161CA1B76400463571 /* CoreData.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -117,6 +135,18 @@
 		0171C7A11C9F120B000F2D14 /* NSManagedObject */ = {
 			isa = PBXGroup;
 			children = (
+				0167E8221CA45D47004EA72C /* UserEntity+CoreDataProperties.h */,
+				0167E8231CA45D47004EA72C /* UserEntity+CoreDataProperties.m */,
+				0167E8241CA45D47004EA72C /* UserEntity.h */,
+				0167E8251CA45D47004EA72C /* UserEntity.m */,
+				0167E8261CA45D47004EA72C /* StatusEntity+CoreDataProperties.h */,
+				0167E8271CA45D47004EA72C /* StatusEntity+CoreDataProperties.m */,
+				0167E8281CA45D47004EA72C /* StatusEntity.h */,
+				0167E8291CA45D47004EA72C /* StatusEntity.m */,
+				0167E82A1CA45D47004EA72C /* TestEntity+CoreDataProperties.h */,
+				0167E82B1CA45D47004EA72C /* TestEntity+CoreDataProperties.m */,
+				0167E82C1CA45D47004EA72C /* TestEntity.h */,
+				0167E82D1CA45D47004EA72C /* TestEntity.m */,
 				B0A87CB51C9A5669004FD0D7 /* LWAlchemyDemo.xcdatamodeld */,
 			);
 			name = NSManagedObject;
@@ -138,7 +168,6 @@
 		B0A87C9D1C9A5669004FD0D7 = {
 			isa = PBXGroup;
 			children = (
-				01F51A151CA1B76400463571 /* CoreData.framework */,
 				B0A87CDF1C9A5679004FD0D7 /* LWAlchemy */,
 				B0A87CA81C9A5669004FD0D7 /* LWAlchemyDemo */,
 				B0A87CC51C9A5669004FD0D7 /* LWAlchemyDemoTests */,
@@ -165,6 +194,8 @@
 				B0A87CAD1C9A5669004FD0D7 /* AppDelegate.m */,
 				B0A87CAF1C9A5669004FD0D7 /* ViewController.h */,
 				B0A87CB01C9A5669004FD0D7 /* ViewController.m */,
+				0167E8361CA46930004EA72C /* SendViewController.h */,
+				0167E8371CA46930004EA72C /* SendViewController.m */,
 				B0A87CA91C9A5669004FD0D7 /* Supporting Files */,
 			);
 			path = LWAlchemyDemo;
@@ -173,7 +204,6 @@
 		B0A87CA91C9A5669004FD0D7 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
-				B0A87CB21C9A5669004FD0D7 /* Main.storyboard */,
 				B0A87CB81C9A5669004FD0D7 /* Assets.xcassets */,
 				B0A87CBA1C9A5669004FD0D7 /* LaunchScreen.storyboard */,
 				B0A87CBD1C9A5669004FD0D7 /* Info.plist */,
@@ -203,6 +233,7 @@
 		B0A87CDF1C9A5679004FD0D7 /* LWAlchemy */ = {
 			isa = PBXGroup;
 			children = (
+				0167E8341CA4661B004EA72C /* LICENSE */,
 				0171C7A71C9F29BE000F2D14 /* LWAlchemy.h */,
 				B0A87CF21C9A58B0004FD0D7 /* NSObject+LWAlchemy.h */,
 				B0A87CF31C9A58B0004FD0D7 /* NSObject+LWAlchemy.m */,
@@ -322,7 +353,7 @@
 			files = (
 				B0A87CBC1C9A5669004FD0D7 /* LaunchScreen.storyboard in Resources */,
 				B0A87CB91C9A5669004FD0D7 /* Assets.xcassets in Resources */,
-				B0A87CB41C9A5669004FD0D7 /* Main.storyboard in Resources */,
+				0167E8351CA4661B004EA72C /* LICENSE in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -347,16 +378,23 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0167E8381CA46930004EA72C /* SendViewController.m in Sources */,
 				B0A87CF71C9A58B0004FD0D7 /* LWAlchemyPropertyInfo.m in Sources */,
 				B0A87CF61C9A58B0004FD0D7 /* NSObject+LWAlchemy.m in Sources */,
+				0167E8321CA45D47004EA72C /* TestEntity+CoreDataProperties.m in Sources */,
 				B0A87CB11C9A5669004FD0D7 /* ViewController.m in Sources */,
+				0167E82F1CA45D47004EA72C /* UserEntity.m in Sources */,
 				B0A87CB71C9A5669004FD0D7 /* LWAlchemyDemo.xcdatamodeld in Sources */,
 				0167E8211CA44404004EA72C /* TestModel.m in Sources */,
 				B0C7C38D1C9FFEFA00081F08 /* LWAlchemyValueTransformer.m in Sources */,
 				B0A87CAE1C9A5669004FD0D7 /* AppDelegate.m in Sources */,
 				B0F508FC1C9ECD160001D2ED /* StatusModel.m in Sources */,
+				0167E8311CA45D47004EA72C /* StatusEntity.m in Sources */,
 				013827481C9B02F6005374CA /* UserModel.m in Sources */,
+				0167E82E1CA45D47004EA72C /* UserEntity+CoreDataProperties.m in Sources */,
 				B0A87CAB1C9A5669004FD0D7 /* main.m in Sources */,
+				0167E8331CA45D47004EA72C /* TestEntity.m in Sources */,
+				0167E8301CA45D47004EA72C /* StatusEntity+CoreDataProperties.m in Sources */,
 				0171C7AA1C9F29BE000F2D14 /* LWAlchemyManager.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -393,14 +431,6 @@
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
-		B0A87CB21C9A5669004FD0D7 /* Main.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				B0A87CB31C9A5669004FD0D7 /* Base */,
-			);
-			name = Main.storyboard;
-			sourceTree = "<group>";
-		};
 		B0A87CBA1C9A5669004FD0D7 /* LaunchScreen.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (
@@ -499,7 +529,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				INFOPLIST_FILE = LWAlchemyDemo/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.warmjar.LWAlchemyDemo;
+				PRODUCT_BUNDLE_IDENTIFIER = com.Waynezxcv.LWAlchemyDemo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -511,7 +541,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				INFOPLIST_FILE = LWAlchemyDemo/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.warmjar.LWAlchemyDemo;
+				PRODUCT_BUNDLE_IDENTIFIER = com.Waynezxcv.LWAlchemyDemo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;

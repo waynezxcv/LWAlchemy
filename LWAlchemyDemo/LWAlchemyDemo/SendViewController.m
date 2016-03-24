@@ -13,12 +13,35 @@
 //  https://github.com/waynezxcv/LWAlchemy
 //  See LICENSE for this sample’s licensing information
 //
-#import "UserModel.h"
 
-@implementation UserModel
-+ (NSDictionary *)mapper {
-    return @{@"name":@"c_name",
-             @"sign":@"c_sign"};
+#import "SendViewController.h"
+
+@interface SendViewController ()
+
+@property (nonatomic,strong) UILabel* label;
+
+@end
+
+@implementation SendViewController
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    self.view.backgroundColor = [UIColor whiteColor];
+    [self.view addSubview:self.label];
+}
+
+
+- (UILabel *)label {
+    if (_label) {
+        return _label;
+    }
+    
+    _label = [[UILabel alloc] initWithFrame:CGRectMake(0, self.view.bounds.size.height/2 - 20, self.view.bounds.size.width, 40)];
+    _label.textColor = [UIColor blackColor];
+    _label.font = [UIFont systemFontOfSize:18];
+    _label.textAlignment = NSTextAlignmentCenter;
+    _label.text = self.user.name;
+    return _label;
 }
 
 

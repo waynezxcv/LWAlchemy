@@ -13,13 +13,25 @@
 //  https://github.com/waynezxcv/LWAlchemy
 //  See LICENSE for this sample’s licensing information
 //
-#import "UserModel.h"
 
-@implementation UserModel
-+ (NSDictionary *)mapper {
-    return @{@"name":@"c_name",
-             @"sign":@"c_sign"};
-}
+#import "StatusEntity.h"
 
+NS_ASSUME_NONNULL_BEGIN
+
+@interface StatusEntity (CoreDataProperties)
+
+@property (nullable, nonatomic, retain) NSNumber *liked;
+@property (nullable, nonatomic, retain) NSNumber *statusId;
+@property (nullable, nonatomic, retain) NSNumber *percent;
+@property (nullable, nonatomic, retain) NSString *text;
+@property (nullable, nonatomic, retain) NSURL* website;
+@property (nullable, nonatomic, retain) NSNumber *likedCount;
+@property (nullable, nonatomic, retain) NSArray* imgs;
+@property (nullable, nonatomic, retain) NSDictionary* profileDict;
+@property (nullable, nonatomic, retain) NSDate *timeStamp;
+@property (nullable, nonatomic, retain) UserEntity *user;
+@property (nullable, nonatomic, retain) StatusEntity *retweetedStatus;
 
 @end
+
+NS_ASSUME_NONNULL_END

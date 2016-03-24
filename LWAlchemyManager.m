@@ -50,7 +50,7 @@
                                                  selector:@selector(backgroundTask)
                                                      name:UIApplicationWillTerminateNotification
                                                    object:nil];
-
+        
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(backgroundTask)
                                                      name:UIApplicationDidEnterBackgroundNotification
@@ -72,10 +72,19 @@
 
 - (id)insertNSManagedObjectWithObjectClass:(Class)objectClass JSON:(id)json {
     NSManagedObject* model = [objectClass managedObjectModelWithJSON:json
-                                                               context:self.managedObjectContext];
+                                                             context:self.managedObjectContext];
     return model;
 }
 
+
+- (void)insertNSManagedObjectWithObjectClass:(Class)objectClass
+                                  JSONsArray:(NSArray *)JSONsArray
+                                  completion:(Completion)completeBlock {
+    for (id json in JSONsArray) {
+        [self insertNSManagedObjectWithObjectClass:objectClass JSON:json];
+    }
+    completeBlock();
+}
 
 - (void)insertNSManagedObjectWithObjectClass:(Class)objectClass
                                   JSONsArray:(NSArray *)JSONsArray
@@ -89,6 +98,9 @@
             NSError* error = nil;
             NSFetchRequest* fetchRequest = [[NSFetchRequest alloc] init];
             [fetchRequest setEntity:[NSEntityDescription entityForName:NSStringFromClass(objectClass) inManagedObjectContext:ctx]];
+            if (uniqueAttributesName == nil) {
+                return ;
+            }
             NSPredicate* predicate = [NSPredicate predicateWithFormat:@"%K == %@", uniqueAttributesName,
                                       [[strongSelf dictionaryWithJSON:json]objectForKey:uniqueAttributesName]];
             if (predicate) {
@@ -317,7 +329,6 @@
     return _managedObjectContext;
 }
 
-
 - (NSManagedObjectContext *)parentContext {
     if (!_parentContext) {
         _parentContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
@@ -328,7 +339,7 @@
             [_parentContext setMergePolicy:NSMergeByPropertyObjectTrumpMergePolicy];
             [_parentContext setUndoManager:nil];
         }];
-
+        
     }
     return _parentContext;
 }

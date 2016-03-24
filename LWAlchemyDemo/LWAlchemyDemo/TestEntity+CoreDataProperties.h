@@ -13,13 +13,14 @@
 //  https://github.com/waynezxcv/LWAlchemy
 //  See LICENSE for this sample’s licensing information
 //
-#import "UserModel.h"
+#import "TestEntity.h"
 
-@implementation UserModel
-+ (NSDictionary *)mapper {
-    return @{@"name":@"c_name",
-             @"sign":@"c_sign"};
-}
+NS_ASSUME_NONNULL_BEGIN
 
+@interface TestEntity (CoreDataProperties)
+
+@property (nullable, nonatomic, retain) NSString *content;
 
 @end
+
+NS_ASSUME_NONNULL_END

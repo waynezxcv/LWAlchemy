@@ -1,0 +1,30 @@
+{
+  "DVTSourceControlWorkspaceBlueprintPrimaryRemoteRepositoryKey" : "7CCF96871F89F5BBA1B11DAA60302308E9B2FA38",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyRepositoryLocationsKey" : {
+
+  },
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyStatesKey" : {
+    "64F6FBB0DA620EF0916B5AA010BB305D37292503" : 0,
+    "7CCF96871F89F5BBA1B11DAA60302308E9B2FA38" : 0
+  },
+  "DVTSourceControlWorkspaceBlueprintIdentifierKey" : "40AD492E-DC5F-41BA-AD68-54E8A2569FDD",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyPathsKey" : {
+    "64F6FBB0DA620EF0916B5AA010BB305D37292503" : "LWAsyncDisplayView\/",
+    "7CCF96871F89F5BBA1B11DAA60302308E9B2FA38" : "LWAlchemy\/"
+  },
+  "DVTSourceControlWorkspaceBlueprintNameKey" : "LWAlchemyDemo",
+  "DVTSourceControlWorkspaceBlueprintVersion" : 204,
+  "DVTSourceControlWorkspaceBlueprintRelativePathToProjectKey" : "LWAlchemyDemo\/LWAlchemyDemo.xcodeproj",
+  "DVTSourceControlWorkspaceBlueprintRemoteRepositoriesKey" : [
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "github.com:waynezxcv\/LWAsyncDisplayView.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "64F6FBB0DA620EF0916B5AA010BB305D37292503"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "github.com:waynezxcv\/LWAlchemy.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "7CCF96871F89F5BBA1B11DAA60302308E9B2FA38"
+    }
+  ]
+}

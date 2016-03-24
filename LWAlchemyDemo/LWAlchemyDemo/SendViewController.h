@@ -13,13 +13,13 @@
 //  https://github.com/waynezxcv/LWAlchemy
 //  See LICENSE for this sample’s licensing information
 //
-#import "UserModel.h"
 
-@implementation UserModel
-+ (NSDictionary *)mapper {
-    return @{@"name":@"c_name",
-             @"sign":@"c_sign"};
-}
 
+#import <UIKit/UIKit.h>
+#import "UserEntity.h"
+
+@interface SendViewController : UIViewController
+
+@property (nonatomic,strong) UserEntity* user;
 
 @end
