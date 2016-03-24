@@ -35,7 +35,6 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     [self.view addSubview:self.tableView];
-    [self coredataUniqBatchInsert];
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]
                                               initWithBarButtonSystemItem:UIBarButtonSystemItemAdd
                                               target:self
@@ -60,7 +59,7 @@
                                              }
                                };
         [fakeData addObject:dict];
-    }    
+    }
     __weak typeof(self) wself = self;
     LWAlchemyManager* manager = [LWAlchemyManager sharedManager];
     [manager insertNSManagedObjectWithObjectClass:[StatusEntity class]
@@ -86,7 +85,6 @@
                                            }];
                                        }];
 }
-
 
 //CoreData批量插入
 //- (void)coredataBatchInsert {
