@@ -9,6 +9,7 @@
 #import <Foundation/Foundation.h>
 #import "UserModel.h"
 #import <UIKit/UIKit.h>
+#import "LWAlchemy.h"
 
 @interface StatusModel : NSObject
 

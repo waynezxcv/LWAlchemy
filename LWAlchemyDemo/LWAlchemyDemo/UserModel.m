@@ -9,7 +9,10 @@
 #import "UserModel.h"
 
 @implementation UserModel
-
++ (NSDictionary *)mapper {
+    return @{@"name":@"c_name",
+             @"sign":@"c_sign"};
+}
 
 
 @end

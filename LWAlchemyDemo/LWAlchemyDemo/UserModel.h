@@ -7,6 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "TestModel.h"
 
 @interface UserModel : NSObject
 
@@ -14,5 +15,6 @@
 @property (nonatomic,copy) NSString* sign;
 @property (nonatomic,assign) NSInteger age;
 @property (nonatomic,strong) NSURL* website;
+@property (nonatomic,strong) TestModel* test;
 
 @end

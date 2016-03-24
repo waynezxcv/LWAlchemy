@@ -9,9 +9,6 @@
 #import "ViewController.h"
 #import "StatusModel.h"
 #import "LWAlchemy.h"
-#import "TestModel1.h"
-#import "TestModel2.h"
-
 
 
 @interface ViewController ()
@@ -22,70 +19,76 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    [self insertTest];
-}
-
-- (void)insertTest {
-    NSDictionary* dict = @{@"url":@"http://www.waynezxcv.me",
-                           @"text" :@"我们一起来使用LWAlechemy~",
-                           @"timeStampe":@1458628616,
-                           @"user" : @{
-                                   @"name" : @"Waynezxcv",
-                                   @"sign" : @"这是我的签名",
-                                   @"age":@(22),
-                                   @"website":@"http://www.waynezxcv.me",
-                                   }
-                           };
-    LWAlchemyCoreDataManager* manager = [LWAlchemyCoreDataManager sharedManager];
-    for (NSInteger i = 0; i < 10; i ++) {
-//        [manager insertNSManagedObjectWithObjectClass:[TestModel1 class] JSON:dict];
-        [manager insertNSManagedObjectWithObjectClass:[TestModel1 class] JSON:dict uiqueAttributesName:@"text"];
-    }
-    NSLog(@"%ld",[manager fetchNSManagedObjectWithObjectClass:[TestModel1 class] sortDescriptor:nil predicate:nil].count);
+    [self nsObjectModel];
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
-/**
- *  测试时间消耗
- */
-- (void)timeCostTest {
+- (void)nsmanagedContextObjectModel {
     NSMutableArray* tmp = [[NSMutableArray alloc] init];
     for (NSInteger i = 0; i < 10000; i ++) {
         NSDictionary* dict = @{@"liked":@NO,
                                @"statusId":@123456,
                                @"percent":@"3.1415926",
-                               @"text" : @"我们一起来使用LWAlechemy~",
-                               @"website":@"www.waynezxcv.me",
+                               @"text" : @"使用LWAlchemy",
+                               @"website":@"www.google.com",
                                @"likedCount":@9999,
                                @"imgs":@[@"1111",@"2222",@"3333"],
                                @"profileDict":@{@"key":@"value"},
                                @"timeStamp":@1458628616,
                                @"idContent":@"this is void* ",
-                               @"user" : @{
-                                       @"name" : @"Waynezxcv",
-                                       @"sign" : @"这是我的签名",
+                               @"c_user" : @{
+                                       @"c_name" : @"Waynezxcv",
+                                       @"c_sign" : @"这是我的签名",
                                        @"age":@(22),
                                        @"website":@"http://www.waynezxcv.me",
-                                       @"test":@"testString"
+                                       @"test":@{@"content":@"第三级映射。。。"}
                                        },
                                @"retweetedStatus" : @{
-                                       @"text" : @"hahaha...我们一起来使用LWAlechemy~",
+                                       @"text" : @"LWAlchemy ORM",
                                        @"user" : @{
                                                @"name" : @"Wayne",
                                                @"sign" : @"just do it!",
                                                @"age": @(18),
-                                               @"website":@"http://www.baidu.com"
+                                               @"website":@"www.apple.com"
+                                               }
+                                       }
+                               };
+        [tmp addObject:dict];
+    }
+    
+    
+    
+    
+}
+
+
+- (void)nsObjectModel {
+    NSMutableArray* tmp = [[NSMutableArray alloc] init];
+    for (NSInteger i = 0; i < 10000; i ++) {
+        NSDictionary* dict = @{@"liked":@NO,
+                               @"statusId":@123456,
+                               @"percent":@"3.1415926",
+                               @"text" : @"使用LWAlchemy",
+                               @"website":@"www.google.com",
+                               @"likedCount":@9999,
+                               @"imgs":@[@"1111",@"2222",@"3333"],
+                               @"profileDict":@{@"key":@"value"},
+                               @"timeStamp":@1458628616,
+                               @"idContent":@"this is void* ",
+                               @"c_user" : @{
+                                       @"c_name" : @"Waynezxcv",
+                                       @"c_sign" : @"这是我的签名",
+                                       @"age":@(22),
+                                       @"website":@"http://www.waynezxcv.me",
+                                       @"test":@{@"content":@"第三级映射。。。"}
+                                       },
+                               @"retweetedStatus" : @{
+                                       @"text" : @"LWAlchemy ORM",
+                                       @"user" : @{
+                                               @"name" : @"Wayne",
+                                               @"sign" : @"just do it!",
+                                               @"age": @(18),
+                                               @"website":@"www.apple.com"
                                                }
                                        }
                                };
@@ -95,14 +98,11 @@
      *  LWAlchemy Test Duration
      */
     NSDate* startTime = [NSDate date];
-    NSMutableArray* results = [[NSMutableArray alloc] init];
     for (NSDictionary* dict in tmp) {
         // 将字典转为Status模型
         StatusModel* status = [StatusModel objectModelWithJSON:dict];
-        [results addObject:status];
     }
-    NSLog(@"LWAlchemy 花费时间为: %f", -[startTime timeIntervalSinceNow]);
+    NSLog(@"时间消耗: %f", -[startTime timeIntervalSinceNow]);
 }
-
 
 @end

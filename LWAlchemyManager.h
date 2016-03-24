@@ -31,16 +31,15 @@ typedef void(^FetchResults)(NSArray* results, NSError *error);
 typedef void(^ExistingObject)(NSManagedObject* existedObject);
 
 
-@interface LWAlchemyCoreDataManager : NSObject
+@interface LWAlchemyManager : NSObject
 
 @property (readonly, strong, nonatomic) NSManagedObjectModel* managedObjectModel;
 @property (readonly, strong, nonatomic) NSPersistentStoreCoordinator* persistentStoreCoordinator;
-
 @property (readonly, strong, nonatomic) NSManagedObjectContext* managedObjectContext;//主线程Context，用户增，改，删（在内存中操作）。
 @property (readonly, strong, nonatomic) NSManagedObjectContext* parentContext;//用来写入数据到SQLite的Context，在一个后台线程中操作。
 
 
-+ (LWAlchemyCoreDataManager *)sharedManager;
++ (LWAlchemyManager *)sharedManager;
 
 /**
  *  增
@@ -92,7 +91,7 @@ typedef void(^ExistingObject)(NSManagedObject* existedObject);
 
 
 /**
- *  提交修改
+ *  保存
  *
  */
 - (void)saveContext:(Completion)completionBlock;

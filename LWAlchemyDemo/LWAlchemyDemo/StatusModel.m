@@ -10,8 +10,8 @@
 
 @implementation StatusModel
 
-
-
-
++ (NSDictionary *)mapper {
+    return @{@"user":@"c_user"};
+}
 
 @end

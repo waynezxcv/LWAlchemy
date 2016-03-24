@@ -15,14 +15,13 @@
 //
 
 
-#import "LWAlchemyCoreDataManager.h"
+#import "LWAlchemyManager.h"
 #import <CoreData/CoreData.h>
 #import "NSObject+LWAlchemy.h"
-#import "AppDelegate.h"
 
-@interface LWAlchemyCoreDataManager ()
+@interface LWAlchemyManager ()
 
-@property (nonatomic,strong) NSManagedObjectModel *managedObjectModel;
+@property (nonatomic,strong) NSManagedObjectModel* managedObjectModel;
 @property (nonatomic,strong) NSPersistentStoreCoordinator *persistentStoreCoordinator;
 @property (nonatomic,strong) NSManagedObjectContext* managedObjectContext;
 @property (nonatomic,strong) NSManagedObjectContext* parentContext;
@@ -31,14 +30,15 @@
 @end
 
 
-@implementation LWAlchemyCoreDataManager
+@implementation LWAlchemyManager
 
 #pragma mark - Init
-+ (LWAlchemyCoreDataManager *)sharedManager {
+
++ (LWAlchemyManager *)sharedManager {
     static dispatch_once_t onceToken;
-    static LWAlchemyCoreDataManager* sharedManager;
+    static LWAlchemyManager* sharedManager;
     dispatch_once(&onceToken, ^{
-        sharedManager = [[LWAlchemyCoreDataManager alloc] init];
+        sharedManager = [[LWAlchemyManager alloc] init];
     });
     return sharedManager;
 }
@@ -71,7 +71,7 @@
 #pragma mark - CURD
 
 - (id)insertNSManagedObjectWithObjectClass:(Class)objectClass JSON:(id)json {
-    NSManagedObject* model = [objectClass nsManagedObjectModelWithJSON:json
+    NSManagedObject* model = [objectClass managedObjectModelWithJSON:json
                                                                context:self.managedObjectContext];
     return model;
 }
@@ -183,7 +183,7 @@
                 resultsBlock(@[],nil);
             }];
         }
-        NSMutableArray *result_ids = [[NSMutableArray alloc] init];
+        NSMutableArray* result_ids = [[NSMutableArray alloc] init];
         for (NSManagedObject* object  in results) {
             [result_ids addObject:object.objectID];
         }
@@ -201,10 +201,10 @@
 - (void)updateNSManagedObjectWithObjectID:(NSManagedObjectID *)objectID JSON:(id)json {
     NSManagedObject* object = [self.managedObjectContext objectWithID:objectID];
     if ([json isKindOfClass:[NSDictionary class]]) {
-        object = [object nsManagedObject:object modelWithDictionary:json context:self.managedObjectContext];
+        object = [object managedObject:object modelWithDictionary:json context:self.managedObjectContext];
     } else {
         NSDictionary* dict = [self dictionaryWithJSON:json];
-        object = [object nsManagedObject:object modelWithDictionary:dict context:self.managedObjectContext];
+        object = [object managedObject:object modelWithDictionary:dict context:self.managedObjectContext];
     }
 }
 

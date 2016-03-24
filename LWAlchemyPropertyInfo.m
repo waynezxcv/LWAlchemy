@@ -22,6 +22,7 @@
 
 @property (nonatomic,assign) objc_property_t property;
 @property (nonatomic,strong) NSString* propertyName;
+@property (nonatomic,strong) NSString* customMapperPropertyName;
 @property (nonatomic,strong) NSString* ivarName;
 @property (nonatomic,assign) LWPropertyType type;
 @property (nonatomic,assign) LWPropertyNSObjectType nsType;
@@ -38,9 +39,10 @@
 
 @end
 
+
 @implementation LWAlchemyPropertyInfo
 
-- (id)initWithProperty:(objc_property_t)property {
+- (id)initWithProperty:(objc_property_t)property customMapper:(NSDictionary *)mapper {
     self = [super init];
     if (self) {
         self.readonly = NO;
@@ -88,11 +90,9 @@
                     }
                 }break;
                 case 'R': {
-                    self.type |= LWPropertyReadonly;
                     self.readonly = YES;
                 } break;
                 case 'D': {
-                    self.type |= LWPropertyDynamic;
                     self.dynamic = YES;
                 } break;
                 default:break;
@@ -103,6 +103,10 @@
             attributes = NULL;
         }
         self.propertyName =  @(property_getName(property));
+        self.customMapperPropertyName = @(property_getName(property));
+        if (mapper[self.customMapperPropertyName]) {
+            self.customMapperPropertyName = mapper[self.customMapperPropertyName];
+        }
         if (self.propertyName) {
             if (!self.getter) {
                 self.getter = self.propertyName;

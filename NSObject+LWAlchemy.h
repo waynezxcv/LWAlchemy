@@ -16,47 +16,21 @@
 
 #import <Foundation/Foundation.h>
 
-
-
-@protocol LWAlchemyDelegate <NSObject>
-
-+ (NSDictionary *)mapDictionary;
-
-@end
-
 @class NSManagedObject;
 @class NSManagedObjectContext;
 
 @interface NSObject(LWAlchemy)
 
-
-/**
- *  NSObject
- *
- */
 + (id)objectModelWithJSON:(id)json;
-+ (id)nsManagedObjectModelWithJSON:(id)json context:(NSManagedObjectContext *)context;
++ (id)managedObjectModelWithJSON:(id)json context:(NSManagedObjectContext *)context;
 
-/**
- *  NSManagedObject
- *
- */
 - (instancetype)modelWithDictionary:(NSDictionary *)dictionary;
-
-- (instancetype)nsManagedObject:(NSManagedObject *)object
+- (instancetype)managedObject:(NSManagedObject *)object
             modelWithDictionary:(NSDictionary *)dictionary
                         context:(NSManagedObjectContext *)contxt;
 
++ (NSDictionary *)mapper;
 - (NSDictionary *)dictionaryWithJSON:(id)json;
-
-
-//唯一属性名。设置一个属性为unique，来保证唯一性
-+ (NSString *)uniqueAttributesName;
-+ (void)setUniqueAttributesName:(NSString *)uniqueAttributesName;
-
-
-+ (NSSet *)propertysSet;
-+ (NSDictionary *)mapDictionary;
 - (NSString *)lwDescription;
 
 @end

@@ -20,8 +20,6 @@
 #import <objc/message.h>
 #import <CoreData/CoreData.h>
 
-
-static void* LWAlchemyUniqueAttributesKey = &LWAlchemyUniqueAttributesKey;
 static void* LWAlechmyCachedPropertyKeysKey = &LWAlechmyCachedPropertyKeysKey;
 static void* LWAlechmyMapDictionaryKey = &LWAlechmyMapDictionaryKey;
 
@@ -30,11 +28,6 @@ static void* LWAlechmyMapDictionaryKey = &LWAlechmyMapDictionaryKey;
 
 #pragma mark - Associate
 
-+ (NSDictionary *)mapDictionary {
-    //TODO:
-    return nil;
-}
-
 + (NSSet *)propertysSet {
     NSSet* cachedKeys = objc_getAssociatedObject(self, LWAlechmyCachedPropertyKeysKey);
     if (cachedKeys != nil) {
@@ -42,21 +35,13 @@ static void* LWAlechmyMapDictionaryKey = &LWAlechmyMapDictionaryKey;
     }
     NSMutableSet* propertysSet = [NSMutableSet set];
     [self _enumeratePropertiesUsingBlock:^(objc_property_t property, BOOL *stop) {
-        LWAlchemyPropertyInfo* propertyInfo = [[LWAlchemyPropertyInfo alloc] initWithProperty:property];
+        LWAlchemyPropertyInfo* propertyInfo = [[LWAlchemyPropertyInfo alloc] initWithProperty:property customMapper:[self mapper]];
         if (propertyInfo.propertyName && !propertyInfo.isReadonly) {
             [propertysSet addObject:propertyInfo];
         }
     }];
     objc_setAssociatedObject(self,LWAlechmyCachedPropertyKeysKey, propertysSet, OBJC_ASSOCIATION_COPY);
     return propertysSet;
-}
-
-+ (void)setUniqueAttributesName:(NSString *)uniqueAttributesName {
-    objc_setAssociatedObject(self,LWAlchemyUniqueAttributesKey, uniqueAttributesName, OBJC_ASSOCIATION_COPY);
-}
-
-+ (NSString *)uniqueAttributesName {
-    return objc_getAssociatedObject(self, LWAlchemyUniqueAttributesKey);
 }
 
 #pragma mark - Init
@@ -75,17 +60,18 @@ static void* LWAlechmyMapDictionaryKey = &LWAlechmyMapDictionaryKey;
     return model;
 }
 
-+ (id)nsManagedObjectModelWithJSON:(id)json context:(NSManagedObjectContext *)context {
++ (id)managedObjectModelWithJSON:(id)json context:(NSManagedObjectContext *)context {
+    
     if ([self isSubclassOfClass:[NSManagedObject class]] && context) {
         NSManagedObject* model = [NSEntityDescription insertNewObjectForEntityForName:NSStringFromClass(self)
                                                                inManagedObjectContext:context];
         if (model) {
             if (![json isKindOfClass:[NSDictionary class]]) {
                 NSDictionary* dic = [model dictionaryWithJSON:json];
-                model = [model nsManagedObject:model modelWithDictionary:dic context:context];
+                model = [model managedObject:model modelWithDictionary:dic context:context];
             }
             else {
-                model = [model nsManagedObject:model modelWithDictionary:json context:context];
+                model = [model managedObject:model modelWithDictionary:json context:context];
             }
         }
         return model;
@@ -93,12 +79,13 @@ static void* LWAlechmyMapDictionaryKey = &LWAlechmyMapDictionaryKey;
     return [self objectModelWithJSON:json];
 }
 
+
 - (instancetype)modelWithDictionary:(NSDictionary *)dictionary {
     if (!dictionary || dictionary == (id)kCFNull) return nil;
     if (![dictionary isKindOfClass:[NSDictionary class]]) return nil;
     NSSet* propertysSet = self.class.propertysSet;
     [propertysSet enumerateObjectsUsingBlock:^(LWAlchemyPropertyInfo* propertyInfo, BOOL * _Nonnull stop) {
-        id value = dictionary[propertyInfo.propertyName];
+        id value = dictionary[propertyInfo.customMapperPropertyName];
         if (value != nil && ![value isEqual:[NSNull null]]) {
             _SetPropertyValue(self,propertyInfo,value);
         }
@@ -106,14 +93,14 @@ static void* LWAlechmyMapDictionaryKey = &LWAlechmyMapDictionaryKey;
     return self;
 }
 
-- (instancetype)nsManagedObject:(NSManagedObject *)object
+- (instancetype)managedObject:(NSManagedObject *)object
             modelWithDictionary:(NSDictionary *)dictionary
                         context:(NSManagedObjectContext *)contxt {
     if (!dictionary || dictionary == (id)kCFNull) return nil;
     if (![dictionary isKindOfClass:[NSDictionary class]]) return nil;
     NSSet* propertysSet = self.class.propertysSet;
     [propertysSet enumerateObjectsUsingBlock:^(LWAlchemyPropertyInfo* propertyInfo, BOOL * _Nonnull stop) {
-        id value = dictionary[propertyInfo.propertyName];
+        id value = dictionary[propertyInfo.customMapperPropertyName];
         if (value != nil && ![value isEqual:[NSNull null]]) {
             [self _nsmanagedObject:(NSManagedObject *)object Setvalue:value WithProperty:propertyInfo Incontext:contxt];
         }
@@ -160,8 +147,6 @@ static void* LWAlechmyMapDictionaryKey = &LWAlechmyMapDictionaryKey;
         }
     }
 }
-
-
 
 static void _SetPropertyValue(__unsafe_unretained id model,
                               __unsafe_unretained LWAlchemyPropertyInfo* propertyInfo,
@@ -297,16 +282,21 @@ static void _SetObjectTypePropertyValue(__unsafe_unretained id model,
         }break;
         case LWPropertyNSObjectTypeNSNumber:{
             if ([value isKindOfClass:[NSNumber class]]) {
-                NSNumber* num = (NSNumber *)value;
+                NSNumber* number = (NSNumber *)value;
                 void (*objc_msgSendToSetter)(id, SEL,NSNumber*) = (void*)objc_msgSend;
-                objc_msgSendToSetter((id)model, setterSelector, num);
+                objc_msgSendToSetter((id)model, setterSelector, number);
+            }
+            else {
+                NSNumber* number = NSNumberCreateFromIDType(value);
+                void (*objc_msgSendToSetter)(id, SEL,NSNumber*) = (void*)objc_msgSend;
+                objc_msgSendToSetter((id)model, setterSelector, number);
             }
         }break;
         case LWPropertyNSObjectTypeNSDecimalNumber:{
             if ([value isKindOfClass:[NSDecimalNumber class]]) {
-                NSDecimalNumber* num = (NSDecimalNumber *)value;
+                NSDecimalNumber* number = (NSDecimalNumber *)value;
                 void (*objc_msgSendToSetter)(id, SEL,NSDecimalNumber*) = (void*)objc_msgSend;
-                objc_msgSendToSetter((id)model, setterSelector, num);
+                objc_msgSendToSetter((id)model, setterSelector, number);
             }
         }break;
         case LWPropertyNSObjectTypeNSData:{
@@ -499,8 +489,6 @@ static void _SetOtherTypePropertyValue(__unsafe_unretained id model,
     }
 }
 
-
-
 - (void)_nsmanagedObject:(NSManagedObject *)object
                 Setvalue:(id)value
             WithProperty:(LWAlchemyPropertyInfo *)propertyInfo
@@ -521,10 +509,7 @@ static void _SetOtherTypePropertyValue(__unsafe_unretained id model,
             NSNumber* number = NSNumberCreateFromIDType(value);
             [object setValue:number forKey:propertyInfo.propertyName];
         }break;
-        case LWPropertyNSObjectTypeNSDecimalNumber: {
-            NSDecimalNumber* number = (NSDecimalNumber*) NSNumberCreateFromIDType(value);
-            [object setValue:number forKey:propertyInfo.propertyName];
-        }break;
+        case LWPropertyNSObjectTypeNSDecimalNumber:
         case LWPropertyNSObjectTypeNSMutableString:
         case LWPropertyNSObjectTypeNSValue:
         case LWPropertyNSObjectTypeNSData:
@@ -543,12 +528,8 @@ static void _SetOtherTypePropertyValue(__unsafe_unretained id model,
             } else {
                 if (propertyInfo.cls) {
                     Class cls = propertyInfo.cls;
-                    if ([cls isSubclassOfClass:[NSManagedObject class]]) {
-                        NSManagedObject* one = [NSEntityDescription insertNewObjectForEntityForName:NSStringFromClass(cls)
-                                                                             inManagedObjectContext:context];
-                        [one nsManagedObject:one modelWithDictionary:value context:context];
-                        [object setValue:one forKey:propertyInfo.propertyName];
-                    }
+                    NSManagedObject* one = [cls managedObjectModelWithJSON:value context:context];
+                    [object setValue:one forKey:propertyInfo.propertyName];
                 }
             }
         }break;
@@ -557,8 +538,8 @@ static void _SetOtherTypePropertyValue(__unsafe_unretained id model,
 
 
 static NSNumber* NSNumberCreateFromIDType(__unsafe_unretained id value) {
-    static NSCharacterSet *dot;
-    static NSDictionary *dic;
+    static NSCharacterSet* dot;
+    static NSDictionary* dic;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         dot = [NSCharacterSet characterSetWithRange:NSMakeRange('.', 1)];
@@ -590,19 +571,19 @@ static NSNumber* NSNumberCreateFromIDType(__unsafe_unretained id value) {
     if (!value || value == (id)kCFNull) return nil;
     if ([value isKindOfClass:[NSNumber class]]) return value;
     if ([value isKindOfClass:[NSString class]]) {
-        NSNumber *num = dic[value];
+        NSNumber* num = dic[value];
         if (num) {
             if (num == (id)kCFNull) return nil;
             return num;
         }
         if ([(NSString *)value rangeOfCharacterFromSet:dot].location != NSNotFound) {
-            const char *cstring = ((NSString *)value).UTF8String;
+            const char* cstring = ((NSString *)value).UTF8String;
             if (!cstring) return nil;
             double num = atof(cstring);
             if (isnan(num) || isinf(num)) return nil;
             return @(num);
         } else {
-            const char *cstring = ((NSString *)value).UTF8String;
+            const char* cstring = ((NSString *)value).UTF8String;
             if (!cstring) return nil;
             return @(atoll(cstring));
         }
@@ -640,6 +621,11 @@ static inline Class LWNSBlockClass() {
         [des appendString:d];
     }];
     return des;
+}
+
+
++ (NSDictionary *)mapper {
+    return nil;
 }
 
 @end
