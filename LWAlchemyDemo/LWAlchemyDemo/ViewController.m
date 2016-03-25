@@ -42,7 +42,6 @@
     self.refreshCount = 0;
 }
 
-
 #pragma mark - LWAlchemy
 
 //插入entity并设置unique 当unique对应的值已经存在时，不再重复插入，而是更新数据
@@ -50,7 +49,7 @@
     self.refreshCount ++;//刷新的次数
     NSMutableArray* fakeData = [[NSMutableArray alloc] init];
     NSInteger index = 0;
-    for (NSInteger i = 0; i < 1000; i ++) {
+    for (NSInteger i = 0; i < 500; i ++) {
         NSString* text =  [NSString stringWithFormat:@"这是ID为%ld的数据第%ld次更新",index + i,self.refreshCount];//更新的内容。
         NSDictionary* dict = @{@"statusId":@(index + i),
                                @"text":text,
@@ -62,124 +61,73 @@
     }
     __weak typeof(self) wself = self;
     LWAlchemyManager* manager = [LWAlchemyManager sharedManager];
-    [manager insertNSManagedObjectWithObjectClass:[StatusEntity class]
-                                       JSONsArray:fakeData
-                              uiqueAttributesName:@"statusId"
-                                       completion:^{
-                                           //保存
-                                           [manager saveContext:^{
-                                               //查询
-                                               NSSortDescriptor* sort = [NSSortDescriptor sortDescriptorWithKey:@"statusId" ascending:YES];
-                                               [manager fetchNSManagedObjectWithObjectClass:[StatusEntity class] predicate:nil sortDescriptor:@[sort] fetchOffset:0 fetchLimit:0 fetchReults:^(NSArray *results, NSError *error) {
-                                                   __strong typeof(wself) swself = wself;
-                                                   dispatch_async(dispatch_get_global_queue(0, 0), ^{
-                                                       [swself.dataSource removeAllObjects];
-                                                       for (StatusEntity* entity in results) {
-                                                           [swself.dataSource addObject:entity];
-                                                       }
-                                                       dispatch_async(dispatch_get_main_queue(), ^{
-                                                           [swself.tableView reloadData];
-                                                       });
-                                                   });
-                                               }];
-                                           }];
-                                       }];
+    [manager insertEntitysWithClass:[StatusEntity class]
+                         JSONsArray:fakeData
+                uiqueAttributesName:@"statusId"
+                               save:YES completion:^{
+                                   //查询
+                                   NSSortDescriptor* sort = [NSSortDescriptor sortDescriptorWithKey:@"statusId" ascending:YES];
+                                   [manager fetchNSManagedObjectWithObjectClass:[StatusEntity class] predicate:nil
+                                                                 sortDescriptor:@[sort]
+                                                                    fetchOffset:0
+                                                                     fetchLimit:0
+                                                                    fetchReults:^(NSArray *results, NSError *error) {
+                                                                        __strong typeof(wself) swself = wself;
+                                                                        dispatch_async(dispatch_get_global_queue(0, 0), ^{
+                                                                            [swself.dataSource removeAllObjects];
+                                                                            for (StatusEntity* entity in results) {
+                                                                                [swself.dataSource addObject:entity];
+                                                                            }
+                                                                            dispatch_async(dispatch_get_main_queue(), ^{
+                                                                                [swself.tableView reloadData];
+                                                                            });
+                                                                        });
+                                                                    }];
+                               }];
 }
 
-//CoreData批量插入
-//- (void)coredataBatchInsert {
-//    NSMutableArray* tmp = [[NSMutableArray alloc] init];
-//    for (NSInteger i = 0; i < 10000; i ++) {
-//        NSDictionary* dict = @{@"liked":@NO,
-//                               @"statusId":@123456,
-//                               @"percent":@"3.1415926",
-//                               @"text" : @"使用LWAlchemy",
-//                               @"website":@"www.google.com",
-//                               @"likedCount":@9999,
-//                               @"imgs":@[@"1111",@"2222",@"3333"],
-//                               @"profileDict":@{@"key":@"value"},
-//                               @"timeStamp":@1458628616,
-//                               @"idContent":@"this is content",
-//                               @"c_user" : @{
-//                                       @"c_name" : @"Waynezxcv",
-//                                       @"c_sign" : @"这是我的签名",
-//                                       @"age":@(22),
-//                                       @"website":@"http://www.waynezxcv.me",
-//                                       @"test":@{@"content":@"第三级映射。。。"}
-//                                       },
-//                               @"retweetedStatus" : @{
-//                                       @"text" : @"LWAlchemy ORM",
-//                                       @"user" : @{
-//                                               @"name" : @"Wayne",
-//                                               @"sign" : @"just do it!",
-//                                               @"age": @(18),
-//                                               @"website":@"www.apple.com"
-//                                               }
-//                                       }
-//                               };
-//        [tmp addObject:dict];
-//    }
-//    NSDate* startTime = [NSDate date];
-//    LWAlchemyManager* manager = [LWAlchemyManager sharedManager];
-//    //批量插入
-//    [manager insertNSManagedObjectWithObjectClass:[StatusEntity class]
-//                                       JSONsArray:tmp completion:^{
-//                                           //查询
-//                                           [manager fetchNSManagedObjectWithObjectClass:[StatusEntity class]
-//                                                                              predicate:nil
-//                                                                         sortDescriptor:nil
-//                                                                            fetchOffset:0
-//                                                                             fetchLimit:0 fetchReults:^(NSArray *results, NSError *error) {
-//                                                                                 //保存
-//                                                                                 [manager saveContext:^{
-//                                                                                     NSLog(@"%ld",results.count);
-//                                                                                     NSLog(@"时间消耗: %f", -[startTime timeIntervalSinceNow]);
-//                                                                                 }];
-//                                                                             }];
-//                                       }];
-//}
 
 //生成Model
-//- (void)modelWithJson {
-//    NSMutableArray* tmp = [[NSMutableArray alloc] init];
-//    for (NSInteger i = 0; i < 10000; i ++) {
-//        NSDictionary* dict = @{@"liked":@NO,
-//                               @"statusId":@123456,
-//                               @"percent":@"3.1415926",
-//                               @"text" : @"使用LWAlchemy",
-//                               @"website":@"www.google.com",
-//                               @"likedCount":@9999,
-//                               @"imgs":@[@"1111",@"2222",@"3333"],
-//                               @"profileDict":@{@"key":@"value"},
-//                               @"timeStamp":@1458628616,
-//                               @"idContent":@"this is void* ",
-//                               @"c_user" : @{
-//                                       @"c_name" : @"Waynezxcv",
-//                                       @"c_sign" : @"这是我的签名",
-//                                       @"age":@(22),
-//                                       @"website":@"http://www.waynezxcv.me",
-//                                       @"test":@{@"content":@"第三级映射。。。"}
-//                                       },
-//                               @"retweetedStatus" : @{
-//                                       @"text" : @"LWAlchemy ORM",
-//                                       @"user" : @{
-//                                               @"name" : @"Wayne",
-//                                               @"sign" : @"just do it!",
-//                                               @"age": @(18),
-//                                               @"website":@"www.apple.com"
-//                                               }
-//                                       }
-//                               };
-//        [tmp addObject:dict];
-//    }
-//
-//    NSDate* startTime = [NSDate date];
-//    for (NSDictionary* dict in tmp) {
-//        // 将字典转为Status模型
-//        StatusModel* status = [StatusModel objectModelWithJSON:dict];
-//    }
-//    NSLog(@"时间消耗: %f", -[startTime timeIntervalSinceNow]);
-//}
+- (void)modelWithJson {
+    NSMutableArray* tmp = [[NSMutableArray alloc] init];
+    for (NSInteger i = 0; i < 1; i ++) {
+        NSDictionary* dict = @{@"liked":@NO,
+                               @"statusId":@123456,
+                               @"percent":@"3.1415926",
+                               @"text" : @"使用LWAlchemy",
+                               @"website":@"www.google.com",
+                               @"likedCount":@9999,
+                               @"imgs":@[@"1111",@"2222",@"3333"],
+                               @"profileDict":@{@"key":@"value"},
+                               @"timeStamp":@1458628616,
+                               @"idContent":@"this is void* ",
+                               @"c_user" : @{
+                                       @"c_name" : @"Waynezxcv",
+                                       @"c_sign" : @"这是我的签名",
+                                       @"age":@(22),
+                                       @"website":@"http://www.waynezxcv.me",
+                                       @"test":@{@"content":@"第三级映射。。。"}
+                                       },
+                               @"retweetedStatus" : @{
+                                       @"text" : @"LWAlchemy ORM",
+                                       @"user" : @{
+                                               @"name" : @"Wayne",
+                                               @"sign" : @"just do it!",
+                                               @"age": @(18),
+                                               @"website":@"www.apple.com"
+                                               }
+                                       }
+                               };
+        [tmp addObject:dict];
+    }
+
+    NSDate* startTime = [NSDate date];
+    for (NSDictionary* dict in tmp) {
+        // 将字典转为Status模型
+        StatusModel* status = [StatusModel objectModelWithJSON:dict];
+    }
+    NSLog(@"时间消耗: %f", -[startTime timeIntervalSinceNow]);
+}
 
 #pragma mark ---
 

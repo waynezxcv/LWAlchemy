@@ -32,72 +32,50 @@
 
 @implementation LWAlchemyManager
 
-#pragma mark - Init
-
-+ (LWAlchemyManager *)sharedManager {
-    static dispatch_once_t onceToken;
-    static LWAlchemyManager* sharedManager;
-    dispatch_once(&onceToken, ^{
-        sharedManager = [[LWAlchemyManager alloc] init];
-    });
-    return sharedManager;
-}
-
-- (id)init {
-    self = [super init];
-    if (self) {
-        [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:@selector(backgroundTask)
-                                                     name:UIApplicationWillTerminateNotification
-                                                   object:nil];
-        
-        [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:@selector(backgroundTask)
-                                                     name:UIApplicationDidEnterBackgroundNotification
-                                                   object:nil];
-    }
-    return self;
-}
-
-- (void)dealloc {
-    [[NSNotificationCenter defaultCenter] removeObserver:self
-                                                    name:UIApplicationWillTerminateNotification
-                                                  object:nil];
-    [[NSNotificationCenter defaultCenter] removeObserver:self
-                                                    name:UIApplicationDidEnterBackgroundNotification
-                                                  object:nil];
-}
 
 #pragma mark - CURD
 
-- (id)insertNSManagedObjectWithObjectClass:(Class)objectClass JSON:(id)json {
-    NSManagedObject* model = [objectClass managedObjectModelWithJSON:json
-                                                             context:self.managedObjectContext];
-    return model;
+- (void)insertEntityWithClass:(Class)cls JSON:(id)json save:(BOOL)saved completion:(Completion)completeBlock {
+    [cls managedObjectModelWithJSON:json context:self.managedObjectContext];
+    if (!saved) {
+        completeBlock();
+        return;
+    }
+    [self saveContext:completeBlock];
 }
 
 
-- (void)insertNSManagedObjectWithObjectClass:(Class)objectClass
-                                  JSONsArray:(NSArray *)JSONsArray
-                                  completion:(Completion)completeBlock {
-    for (id json in JSONsArray) {
-        [self insertNSManagedObjectWithObjectClass:objectClass JSON:json];
-    }
+- (void)insertEntityWithClass:(Class)cls JSON:(id)json completion:(Completion)completeBlock {
+    [cls managedObjectModelWithJSON:json context:self.managedObjectContext];
     completeBlock();
 }
 
-- (void)insertNSManagedObjectWithObjectClass:(Class)objectClass
-                                  JSONsArray:(NSArray *)JSONsArray
-                         uiqueAttributesName:(NSString *)uniqueAttributesName
-                                  completion:(Completion)completeBlock {
+
+- (void)insertEntitysWithClass:(Class)cls JSONsArray:(NSArray *)jsonArray save:(BOOL)isSave completion:(Completion)completeBlock {
+    for (id json in jsonArray) {
+        [cls managedObjectModelWithJSON:json context:self.managedObjectContext];
+    }
+    if (!isSave) {
+        completeBlock();
+        return;
+    }
+    [self saveContext:completeBlock];
+}
+
+
+- (void)insertEntitysWithClass:(Class)cls
+                    JSONsArray:(NSArray *)jsonArray
+           uiqueAttributesName:(NSString *)uniqueAttributesName
+                          save:(BOOL)isSave
+                    completion:(Completion)completeBlock {
     __weak typeof(self) weakSelf = self;
     NSManagedObjectContext* ctx = [self createPrivateObjectContext];
     [ctx performBlock:^{
         __strong typeof(weakSelf) strongSelf = weakSelf;
-        for (id json in JSONsArray) {
+        for (id json in jsonArray) {
             NSError* error = nil;
             NSFetchRequest* fetchRequest = [[NSFetchRequest alloc] init];
-            [fetchRequest setEntity:[NSEntityDescription entityForName:NSStringFromClass(objectClass) inManagedObjectContext:ctx]];
+            [fetchRequest setEntity:[NSEntityDescription entityForName:NSStringFromClass(cls) inManagedObjectContext:ctx]];
             if (uniqueAttributesName == nil) {
                 return ;
             }
@@ -115,48 +93,23 @@
                 }];
             } else {
                 [strongSelf.managedObjectContext performBlockAndWait:^{
-                    [strongSelf insertNSManagedObjectWithObjectClass:objectClass JSON:json];
+                    [cls managedObjectModelWithJSON:json context:strongSelf.managedObjectContext];
                 }];
             }
         }
+        if (!isSave) {
+            [strongSelf.managedObjectContext performBlockAndWait:^{
+                completeBlock();
+                return ;
+            }];
+        }
         [strongSelf.managedObjectContext performBlockAndWait:^{
-            completeBlock();
+            [strongSelf saveContext:completeBlock];
         }];
     }];
 }
 
-- (void)insertNSManagedObjectWithObjectClass:(Class)objectClass
-                                        JSON:(id)json
-                         uiqueAttributesName:(NSString *)uniqueAttributesName
-                                  completion:(Completion)completeBlock {
-    __weak typeof(self) weakSelf = self;
-    NSManagedObjectContext* ctx = [self createPrivateObjectContext];
-    [ctx performBlock:^{
-        __strong typeof(weakSelf) strongSelf = weakSelf;
-        NSError* error = nil;
-        NSFetchRequest* fetchRequest = [[NSFetchRequest alloc] init];
-        [fetchRequest setEntity:[NSEntityDescription entityForName:NSStringFromClass(objectClass) inManagedObjectContext:ctx]];
-        NSPredicate* predicate = [NSPredicate predicateWithFormat:@"%K == %@", uniqueAttributesName,
-                                  [[strongSelf dictionaryWithJSON:json]objectForKey:uniqueAttributesName]];
-        if (predicate) {
-            [fetchRequest setPredicate:predicate];
-        }
-        NSArray* results = [ctx executeFetchRequest:fetchRequest error:&error];
-        NSManagedObject* object = [results lastObject];
-        if (object) {
-            [strongSelf.managedObjectContext performBlockAndWait:^{
-                [strongSelf updateNSManagedObjectWithObjectID:object.objectID JSON:json];
-            }];
-        } else {
-            [strongSelf.managedObjectContext performBlockAndWait:^{
-                [strongSelf insertNSManagedObjectWithObjectClass:objectClass JSON:json];
-            }];
-        }
-        [strongSelf.managedObjectContext performBlockAndWait:^{
-            completeBlock();
-        }];
-    }];
-}
+
 
 - (void)fetchNSManagedObjectWithObjectClass:(Class)objectClass
                                   predicate:(NSPredicate *)predicate
@@ -246,6 +199,44 @@
         bgTask = UIBackgroundTaskInvalid;
     }];
 }
+
+
+#pragma mark - Init
+
++ (LWAlchemyManager *)sharedManager {
+    static dispatch_once_t onceToken;
+    static LWAlchemyManager* sharedManager;
+    dispatch_once(&onceToken, ^{
+        sharedManager = [[LWAlchemyManager alloc] init];
+    });
+    return sharedManager;
+}
+
+- (id)init {
+    self = [super init];
+    if (self) {
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(backgroundTask)
+                                                     name:UIApplicationWillTerminateNotification
+                                                   object:nil];
+
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(backgroundTask)
+                                                     name:UIApplicationDidEnterBackgroundNotification
+                                                   object:nil];
+    }
+    return self;
+}
+
+- (void)dealloc {
+    [[NSNotificationCenter defaultCenter] removeObserver:self
+                                                    name:UIApplicationWillTerminateNotification
+                                                  object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self
+                                                    name:UIApplicationDidEnterBackgroundNotification
+                                                  object:nil];
+}
+
 
 #pragma mark - CoreData Stack
 
@@ -339,7 +330,7 @@
             [_parentContext setMergePolicy:NSMergeByPropertyObjectTrumpMergePolicy];
             [_parentContext setUndoManager:nil];
         }];
-        
+
     }
     return _parentContext;
 }
