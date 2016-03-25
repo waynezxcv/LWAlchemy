@@ -55,8 +55,7 @@
                                @"text":text,
                                @"c_user" : @{@"c_name" :[NSString stringWithFormat:@"这是ID为%ld 的第二级Model",index + i],
                                              @"test":@{@"content":@"第三级映射。。。"}
-                                             }
-                               };
+                                             }};
         [fakeData addObject:dict];
     }
     __weak typeof(self) wself = self;
@@ -120,7 +119,6 @@
                                };
         [tmp addObject:dict];
     }
-
     NSDate* startTime = [NSDate date];
     for (NSDictionary* dict in tmp) {
         // 将字典转为Status模型
@@ -149,7 +147,6 @@
     _dataSource = [[NSMutableArray alloc] init];
     return _dataSource;
 }
-
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     return self.dataSource.count;
