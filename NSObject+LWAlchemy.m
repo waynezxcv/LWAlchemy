@@ -46,7 +46,7 @@ static void* LWAlechmyMapDictionaryKey = &LWAlechmyMapDictionaryKey;
 
 #pragma mark - Init
 
-+ (id)objectModelWithJSON:(id)json {
++ (id)modelWithJSON:(id)json {
     NSObject* model = [[self alloc] init];
     if (model) {
         if (![json isKindOfClass:[NSDictionary class]]) {
@@ -60,22 +60,22 @@ static void* LWAlechmyMapDictionaryKey = &LWAlechmyMapDictionaryKey;
     return model;
 }
 
-+ (id)managedObjectModelWithJSON:(id)json context:(NSManagedObjectContext *)context {
++ (id)entityWithJSON:(id)json context:(NSManagedObjectContext *)context {
     if ([self isSubclassOfClass:[NSManagedObject class]] && context) {
         NSManagedObject* model = [NSEntityDescription insertNewObjectForEntityForName:NSStringFromClass(self)
                                                                inManagedObjectContext:context];
         if (model) {
             if (![json isKindOfClass:[NSDictionary class]]) {
                 NSDictionary* dic = [model dictionaryWithJSON:json];
-                model = [model managedObject:model modelWithDictionary:dic context:context];
+                model = [model entity:model modelWithDictionary:dic context:context];
             }
             else {
-                model = [model managedObject:model modelWithDictionary:json context:context];
+                model = [model entity:model modelWithDictionary:json context:context];
             }
         }
         return model;
     }
-    return [self objectModelWithJSON:json];
+    return [self modelWithJSON:json];
 }
 
 
@@ -92,9 +92,9 @@ static void* LWAlechmyMapDictionaryKey = &LWAlechmyMapDictionaryKey;
     return self;
 }
 
-- (instancetype)managedObject:(NSManagedObject *)object
-            modelWithDictionary:(NSDictionary *)dictionary
-                        context:(NSManagedObjectContext *)contxt {
+- (instancetype)entity:(NSManagedObject *)object
+   modelWithDictionary:(NSDictionary *)dictionary
+               context:(NSManagedObjectContext *)contxt {
     if (!dictionary || dictionary == (id)kCFNull) return nil;
     if (![dictionary isKindOfClass:[NSDictionary class]]) return nil;
     NSSet* propertysSet = self.class.propertysSet;
@@ -527,7 +527,7 @@ static void _SetOtherTypePropertyValue(__unsafe_unretained id model,
             } else {
                 if (propertyInfo.cls) {
                     Class cls = propertyInfo.cls;
-                    NSManagedObject* one = [cls managedObjectModelWithJSON:value context:context];
+                    NSManagedObject* one = [cls entityWithJSON:value context:context];
                     [object setValue:one forKey:propertyInfo.propertyName];
                 }
             }

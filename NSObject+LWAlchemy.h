@@ -21,16 +21,50 @@
 
 @interface NSObject(LWAlchemy)
 
-+ (id)objectModelWithJSON:(id)json;
-+ (id)managedObjectModelWithJSON:(id)json context:(NSManagedObjectContext *)context;
+/**
+ *  由JSON生成model
+ *
+ */
++ (id)modelWithJSON:(id)json;
 
+/**
+ *  由JSON生成entity（CoreData）
+ *
+ */
++ (id)entityWithJSON:(id)json context:(NSManagedObjectContext *)context;
+
+/**
+ *  由NSDictionary生成Model
+ *
+ */
 - (instancetype)modelWithDictionary:(NSDictionary *)dictionary;
-- (instancetype)managedObject:(NSManagedObject *)object
-            modelWithDictionary:(NSDictionary *)dictionary
-                        context:(NSManagedObjectContext *)contxt;
 
-+ (NSDictionary *)mapper;
+/**
+ *  由NSDictionary生成Entity（CoreData）
+ *
+ */
+- (instancetype)entity:(NSManagedObject *)object
+   modelWithDictionary:(NSDictionary *)dictionary
+               context:(NSManagedObjectContext *)contxt;
+
+/**
+ *  由JSON生成NSDictionary
+ *
+ */
 - (NSDictionary *)dictionaryWithJSON:(id)json;
+
+
+/**
+ *  自定义的映射
+ *
+ */
++ (NSDictionary *)mapper;
+
+
+/**
+ *  获取对象的描述
+ *
+ */
 - (NSString *)lwDescription;
 
 @end

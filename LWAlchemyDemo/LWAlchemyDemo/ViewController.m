@@ -63,7 +63,8 @@
     [manager insertEntitysWithClass:[StatusEntity class]
                          JSONsArray:fakeData
                 uiqueAttributesName:@"statusId"
-                               save:YES completion:^{
+                               save:YES
+                         completion:^{
                                    //查询
                                    NSSortDescriptor* sort = [NSSortDescriptor sortDescriptorWithKey:@"statusId" ascending:YES];
                                    [manager fetchNSManagedObjectWithObjectClass:[StatusEntity class] predicate:nil
@@ -122,7 +123,7 @@
     NSDate* startTime = [NSDate date];
     for (NSDictionary* dict in tmp) {
         // 将字典转为Status模型
-        StatusModel* status = [StatusModel objectModelWithJSON:dict];
+        StatusModel* status = [StatusModel modelWithJSON:dict];
     }
     NSLog(@"时间消耗: %f", -[startTime timeIntervalSinceNow]);
 }

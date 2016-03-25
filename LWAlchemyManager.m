@@ -36,7 +36,7 @@
 #pragma mark - CURD
 
 - (void)insertEntityWithClass:(Class)cls JSON:(id)json save:(BOOL)saved completion:(Completion)completeBlock {
-    [cls managedObjectModelWithJSON:json context:self.managedObjectContext];
+    [cls entityWithJSON:json context:self.managedObjectContext];
     if (!saved) {
         completeBlock();
         return;
@@ -46,14 +46,14 @@
 
 
 - (void)insertEntityWithClass:(Class)cls JSON:(id)json completion:(Completion)completeBlock {
-    [cls managedObjectModelWithJSON:json context:self.managedObjectContext];
+    [cls entityWithJSON:json context:self.managedObjectContext];
     completeBlock();
 }
 
 
 - (void)insertEntitysWithClass:(Class)cls JSONsArray:(NSArray *)jsonArray save:(BOOL)isSave completion:(Completion)completeBlock {
     for (id json in jsonArray) {
-        [cls managedObjectModelWithJSON:json context:self.managedObjectContext];
+        [cls entityWithJSON:json context:self.managedObjectContext];
     }
     if (!isSave) {
         completeBlock();
@@ -61,7 +61,6 @@
     }
     [self saveContext:completeBlock];
 }
-
 
 - (void)insertEntitysWithClass:(Class)cls
                     JSONsArray:(NSArray *)jsonArray
@@ -93,7 +92,7 @@
                 }];
             } else {
                 [strongSelf.managedObjectContext performBlockAndWait:^{
-                    [cls managedObjectModelWithJSON:json context:strongSelf.managedObjectContext];
+                    [cls entityWithJSON:json context:strongSelf.managedObjectContext];
                 }];
             }
         }
@@ -166,10 +165,10 @@
 - (void)updateNSManagedObjectWithObjectID:(NSManagedObjectID *)objectID JSON:(id)json {
     NSManagedObject* object = [self.managedObjectContext objectWithID:objectID];
     if ([json isKindOfClass:[NSDictionary class]]) {
-        object = [object managedObject:object modelWithDictionary:json context:self.managedObjectContext];
+        object = [object entity:object modelWithDictionary:json context:self.managedObjectContext];
     } else {
         NSDictionary* dict = [self dictionaryWithJSON:json];
-        object = [object managedObject:object modelWithDictionary:dict context:self.managedObjectContext];
+        object = [object entity:object modelWithDictionary:dict context:self.managedObjectContext];
     }
 }
 
@@ -182,7 +181,6 @@
         }
     }
 }
-
 
 - (void)backgroundTask {
     Class UIApplicationClass = NSClassFromString(@"UIApplication");

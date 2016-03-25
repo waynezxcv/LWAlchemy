@@ -42,6 +42,9 @@
 
 @implementation LWAlchemyPropertyInfo
 
+
+
+
 - (id)initWithProperty:(objc_property_t)property customMapper:(NSDictionary *)mapper {
     self = [super init];
     if (self) {
