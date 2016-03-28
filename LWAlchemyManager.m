@@ -44,7 +44,6 @@
     [self saveContext:completeBlock];
 }
 
-
 - (void)insertEntityWithClass:(Class)cls JSON:(id)json completion:(Completion)completeBlock {
     [cls entityWithJSON:json context:self.managedObjectContext];
     completeBlock();
