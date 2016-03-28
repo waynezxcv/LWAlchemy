@@ -199,9 +199,6 @@ static LWPropertyType _GetPropertyInfoType(LWAlchemyPropertyInfo* propertyInfo, 
                 if (len == 1) {
                     propertyInfo.idType = YES;
                 }
-                else {
-                    propertyInfo.idType = NO;
-                }
                 return LWPropertyTypeObject;
             }
         }
