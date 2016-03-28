@@ -42,9 +42,6 @@
 
 @implementation LWAlchemyPropertyInfo
 
-
-
-
 - (id)initWithProperty:(objc_property_t)property customMapper:(NSDictionary *)mapper {
     self = [super init];
     if (self) {
@@ -61,8 +58,7 @@
             switch (attributes[i].name[0]) {
                 case 'T': {
                     if (attributes[i].value) {
-                        LWPropertyType type = _GetPropertyInfoType(self, attributes[i].value);
-                        self.type = type;
+                        self.type = _GetPropertyInfoType(self, attributes[i].value);
                         if (self.type == LWPropertyTypeObject) {
                             self.cls = _GetPropertyInfoClass(attributes[i].value);
                             self.nsType = _GetObjectNSType(self.cls);
@@ -72,8 +68,6 @@
                             else {
                                 self.foundationType = NO;
                             }
-                        } else {
-                            self.cls = nil;
                         }
                     }
                 } break;

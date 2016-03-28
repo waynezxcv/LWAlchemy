@@ -22,7 +22,7 @@
 @interface LWAlchemyManager ()
 
 @property (nonatomic,strong) NSManagedObjectModel* managedObjectModel;
-@property (nonatomic,strong) NSPersistentStoreCoordinator *persistentStoreCoordinator;
+@property (nonatomic,strong) NSPersistentStoreCoordinator* persistentStoreCoordinator;
 @property (nonatomic,strong) NSManagedObjectContext* managedObjectContext;
 @property (nonatomic,strong) NSManagedObjectContext* parentContext;
 @property (nonatomic,copy) NSString* executableFile;
@@ -75,7 +75,7 @@
             NSFetchRequest* fetchRequest = [[NSFetchRequest alloc] init];
             [fetchRequest setEntity:[NSEntityDescription entityForName:NSStringFromClass(cls) inManagedObjectContext:ctx]];
             if (uniqueAttributesName == nil) {
-                return ;
+                return;
             }
             NSPredicate* predicate = [NSPredicate predicateWithFormat:@"%K == %@", uniqueAttributesName,
                                       [[strongSelf dictionaryWithJSON:json]objectForKey:uniqueAttributesName]];
@@ -106,8 +106,6 @@
         }];
     }];
 }
-
-
 
 - (void)fetchNSManagedObjectWithObjectClass:(Class)objectClass
                                   predicate:(NSPredicate *)predicate
