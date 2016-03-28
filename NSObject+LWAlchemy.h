@@ -27,6 +27,7 @@
  */
 + (id)modelWithJSON:(id)json;
 
+
 /**
  *  由JSON生成entity（CoreData）
  *

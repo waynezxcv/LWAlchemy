@@ -40,6 +40,9 @@
                                               target:self
                                               action:@selector(coredataUniqBatchInsert)];
     self.refreshCount = 0;
+
+
+    [self modelWithJson];
 }
 
 #pragma mark - LWAlchemy
@@ -65,25 +68,25 @@
                 uiqueAttributesName:@"statusId"
                                save:YES
                          completion:^{
-                                   //查询
-                                   NSSortDescriptor* sort = [NSSortDescriptor sortDescriptorWithKey:@"statusId" ascending:YES];
-                                   [manager fetchNSManagedObjectWithObjectClass:[StatusEntity class] predicate:nil
-                                                                 sortDescriptor:@[sort]
-                                                                    fetchOffset:0
-                                                                     fetchLimit:0
-                                                                    fetchReults:^(NSArray *results, NSError *error) {
-                                                                        __strong typeof(wself) swself = wself;
-                                                                        dispatch_async(dispatch_get_global_queue(0, 0), ^{
-                                                                            [swself.dataSource removeAllObjects];
-                                                                            for (StatusEntity* entity in results) {
-                                                                                [swself.dataSource addObject:entity];
-                                                                            }
-                                                                            dispatch_async(dispatch_get_main_queue(), ^{
-                                                                                [swself.tableView reloadData];
-                                                                            });
-                                                                        });
-                                                                    }];
-                               }];
+                             //查询
+                             NSSortDescriptor* sort = [NSSortDescriptor sortDescriptorWithKey:@"statusId" ascending:YES];
+                             [manager fetchNSManagedObjectWithObjectClass:[StatusEntity class] predicate:nil
+                                                           sortDescriptor:@[sort]
+                                                              fetchOffset:0
+                                                               fetchLimit:0
+                                                              fetchReults:^(NSArray *results, NSError *error) {
+                                                                  __strong typeof(wself) swself = wself;
+                                                                  dispatch_async(dispatch_get_global_queue(0, 0), ^{
+                                                                      [swself.dataSource removeAllObjects];
+                                                                      for (StatusEntity* entity in results) {
+                                                                          [swself.dataSource addObject:entity];
+                                                                      }
+                                                                      dispatch_async(dispatch_get_main_queue(), ^{
+                                                                          [swself.tableView reloadData];
+                                                                      });
+                                                                  });
+                                                              }];
+                         }];
 }
 
 
@@ -101,9 +104,9 @@
                                @"profileDict":@{@"key":@"value"},
                                @"timeStamp":@1458628616,
                                @"idContent":@"this is void* ",
-                               @"c_user" : @{
+                               @"user" : @{
                                        @"c_name" : @"Waynezxcv",
-                                       @"c_sign" : @"这是我的签名",
+                                       @"c_sign" :@{@"name": @"这是我的签名"},
                                        @"age":@(22),
                                        @"website":@"http://www.waynezxcv.me",
                                        @"test":@{@"content":@"第三级映射。。。"}
@@ -124,6 +127,8 @@
     for (NSDictionary* dict in tmp) {
         // 将字典转为Status模型
         StatusModel* status = [StatusModel modelWithJSON:dict];
+        NSLog(@"%@",status.user.name);
+        NSLog(@"%@",status.idContent);
     }
     NSLog(@"时间消耗: %f", -[startTime timeIntervalSinceNow]);
 }

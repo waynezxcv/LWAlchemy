@@ -84,7 +84,15 @@ static void* LWAlechmyMapDictionaryKey = &LWAlechmyMapDictionaryKey;
     if (![dictionary isKindOfClass:[NSDictionary class]]) return nil;
     NSSet* propertysSet = self.class.propertysSet;
     [propertysSet enumerateObjectsUsingBlock:^(LWAlchemyPropertyInfo* propertyInfo, BOOL * _Nonnull stop) {
-        id value = dictionary[propertyInfo.mapperName];
+        id value = nil;
+        NSDictionary* tmp = [dictionary copy];
+        for (NSInteger i = 0; i < propertyInfo.mapperName.count; i ++) {
+            NSString* mapperName = propertyInfo.mapperName[i];
+            value = tmp[mapperName];
+            if ([value isKindOfClass:[NSDictionary class]]) {
+                tmp = value;
+            }
+        }
         if (value != nil && ![value isEqual:[NSNull null]]) {
             _SetPropertyValue(self,propertyInfo,value);
         }
@@ -99,9 +107,20 @@ static void* LWAlechmyMapDictionaryKey = &LWAlechmyMapDictionaryKey;
     if (![dictionary isKindOfClass:[NSDictionary class]]) return nil;
     NSSet* propertysSet = self.class.propertysSet;
     [propertysSet enumerateObjectsUsingBlock:^(LWAlchemyPropertyInfo* propertyInfo, BOOL * _Nonnull stop) {
-        id value = dictionary[propertyInfo.mapperName];
+        id value = nil;
+        NSDictionary* tmp = [dictionary copy];
+        for (NSInteger i = 0; i < propertyInfo.mapperName.count; i ++) {
+            NSString* mapperName = propertyInfo.mapperName[i];
+            value = tmp[mapperName];
+            if ([value isKindOfClass:[NSDictionary class]]) {
+                tmp = value;
+            }
+        }
         if (value != nil && ![value isEqual:[NSNull null]]) {
-            [self _nsmanagedObject:(NSManagedObject *)object Setvalue:value WithProperty:propertyInfo Incontext:contxt];
+            [self _nsmanagedObject:(NSManagedObject *)object
+                          Setvalue:value
+                      WithProperty:propertyInfo
+                         Incontext:contxt];
         }
     }];
     return self;
@@ -621,7 +640,6 @@ static inline Class LWNSBlockClass() {
     }];
     return des;
 }
-
 
 + (NSDictionary *)mapper {
     return nil;

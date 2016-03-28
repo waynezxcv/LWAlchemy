@@ -20,7 +20,7 @@
 @implementation StatusModel
 
 + (NSDictionary *)mapper {
-    return @{@"user":@"c_user"};
+    return @{@"idContent":@"user.test.content"};
 }
 
 @end

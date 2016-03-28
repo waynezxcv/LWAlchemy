@@ -22,7 +22,7 @@
 
 @property (nonatomic,assign) objc_property_t property;
 @property (nonatomic,strong) NSString* propertyName;
-@property (nonatomic,strong) NSString* mapperName;
+@property (nonatomic,strong) NSArray* mapperName;
 @property (nonatomic,strong) NSString* ivarName;
 @property (nonatomic,assign) LWPropertyType type;
 @property (nonatomic,assign) LWPropertyNSObjectType nsType;
@@ -52,6 +52,7 @@
         self.objectType = NO;
         self.foundationType = NO;
         self.property = property;
+
         unsigned int attrCount;
         objc_property_attribute_t* attributes = property_copyAttributeList(property, &attrCount);
         for (unsigned int i = 0; i < attrCount; i++) {
@@ -97,9 +98,18 @@
             attributes = NULL;
         }
         self.propertyName =  @(property_getName(property));
-        self.mapperName = @(property_getName(property));
-        if (mapper[self.mapperName]) {
-            self.mapperName = mapper[self.mapperName];
+        self.mapperName = @[@(property_getName(property))];
+        if (mapper[self.propertyName]) {
+            NSMutableArray* mappedToKeyArray = [[NSMutableArray alloc] init];
+            NSArray* keyPath = [mapper[self.propertyName] componentsSeparatedByString:@"."];
+            if (keyPath.count > 1) {
+                for (NSString* oneKey in keyPath) {
+                    [mappedToKeyArray addObject:oneKey];
+                }
+            } else {
+                [mappedToKeyArray addObject:mapper[self.propertyName]];
+            }
+            self.mapperName = mappedToKeyArray;
         }
         if (self.propertyName) {
             if (!self.getter) {
