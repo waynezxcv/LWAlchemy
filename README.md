@@ -39,23 +39,29 @@ LWAlchemy 快速、高性能的iOS ORM框架。<br>
 
 
 - (void)simpleJsonToModel {
-NSDictionary* dict = @{@"statusId":@"0755",
-@"text":@"LWAlchemy,a fast and lightweight ORM framework for Cocoa and Cocoa Touch",
-@"website":@"www.apple.com",
-@"imgs":@[@"img1",@"img2",@"img3"],
-@"timeStamp":@"",
-@"user":@{
-@"name":@"Waynezxcv",
-@"sign":@"this is wayne's sign",
-@"age":@18,
-@"avatar":@"https://avatars0.githubusercontent.com/u/8408918?v=3&s=460",
-@"detail":@{
-@"detailDescription":@"this is Wayne's detail description."
+        NSDictionary* dict = @{@"statusId":@"0755",
+            @"text":@"LWAlchemy,a fast and lightweight ORM framework for Cocoa and Cocoa Touch",
+            @"website":@"www.apple.com",
+            @"imgs":@[@"img1",@"img2",@"img3"],
+            @"timeStamp":@"",
+            @"user":@{
+            @"name":@"Waynezxcv",
+            @"sign":@"this is wayne's sign",
+            @"age":@18,
+            @"avatar":@"https://avatars0.githubusercontent.com/u/8408918?v=3&s=460",
+            @"detail":@{
+            @"detailDescription":@"this is Wayne's detail description."
+            }
+        }
+    };
+    StatusModel* status = [StatusModel modelWithJSON:dict];
 }
-}
-};
-StatusModel* status = [StatusModel modelWithJSON:dict];
-}
+
+
+/**
+*  自定义映射路径的JSON生成model
+*
+*/
 
 
 ```
