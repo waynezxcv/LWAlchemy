@@ -31,34 +31,32 @@ LWAlchemy 快速、高性能的iOS ORM框架。<br>
 * **模型映射**
 
 ```objc
-NSDictionary* dict = @{@"liked":@NO,
-@"statusId":@123456,
-@"percent":@"3.1415926",
-@"text" : @"使用LWAlchemy",
-@"website":@"www.google.com",
-@"likedCount":@9999,
-@"imgs":@[@"1111",@"2222",@"3333"],
-@"profileDict":@{@"key":@"value"},
-@"timeStamp":@1458628616,
-@"idContent":@"this is void* ",
-@"c_user" : @{
-@"c_name" : @"Waynezxcv",
-@"c_sign" : @"这是我的签名",
-@"age":@(22),
-@"website":@"http://www.waynezxcv.me",
-@"test":@{@"content":@"第三级映射。。。"}
-},
-@"retweetedStatus" : @{
-@"text" : @"LWAlchemy ORM",
-@"user" : @{
-@"name" : @"Wayne",
-@"sign" : @"just do it!",
-@"age": @(18),
-@"website":@"www.apple.com"
+
+/**
+*  简单的由JSON生成model
+*
+*/
+
+
+- (void)simpleJsonToModel {
+NSDictionary* dict = @{@"statusId":@"0755",
+@"text":@"LWAlchemy,a fast and lightweight ORM framework for Cocoa and Cocoa Touch",
+@"website":@"www.apple.com",
+@"imgs":@[@"img1",@"img2",@"img3"],
+@"timeStamp":@"",
+@"user":@{
+@"name":@"Waynezxcv",
+@"sign":@"this is wayne's sign",
+@"age":@18,
+@"avatar":@"https://avatars0.githubusercontent.com/u/8408918?v=3&s=460",
+@"detail":@{
+@"detailDescription":@"this is Wayne's detail description."
 }
 }
 };
-StatusModel* status = [StatusModel objectModelWithJSON:dict];
+StatusModel* status = [StatusModel modelWithJSON:dict];
+}
+
 
 ```
 

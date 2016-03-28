@@ -17,21 +17,16 @@
 #import <Foundation/Foundation.h>
 #import "UserModel.h"
 #import <UIKit/UIKit.h>
-#import "LWAlchemy.h"
+
+
 
 @interface StatusModel : NSObject
 
-@property (nonatomic,assign,getter=isLiked) BOOL liked;
 @property (nonatomic,assign) NSInteger statusId;
-@property (nonatomic,assign) CGFloat percent;
 @property (nonatomic,copy) NSString* text;
 @property (nonatomic,strong) NSURL* website;
-@property (nonatomic,strong) NSNumber* likedCount;
 @property (nonatomic,strong) NSArray* imgs;
-@property (nonatomic,strong) NSDictionary* profileDict;
 @property (nonatomic,strong) NSDate* timeStamp;
 @property (nonatomic,strong) UserModel* user;
-@property (nonatomic,strong) id idContent;
-@property (nonatomic,strong) StatusModel* retweetedStatus;
 
 @end

@@ -42,7 +42,7 @@
     self.refreshCount = 0;
 
 
-    [self modelWithJson];
+    [self simpleJsonToModel];
 }
 
 #pragma mark - LWAlchemy
@@ -89,48 +89,27 @@
                          }];
 }
 
-
-//生成Model
-- (void)modelWithJson {
-    NSMutableArray* tmp = [[NSMutableArray alloc] init];
-    for (NSInteger i = 0; i < 1; i ++) {
-        NSDictionary* dict = @{@"liked":@NO,
-                               @"statusId":@123456,
-                               @"percent":@"3.1415926",
-                               @"text" : @"使用LWAlchemy",
-                               @"website":@"www.google.com",
-                               @"likedCount":@9999,
-                               @"imgs":@[@"1111",@"2222",@"3333"],
-                               @"profileDict":@{@"key":@"value"},
-                               @"timeStamp":@1458628616,
-                               @"idContent":@"this is void* ",
-                               @"user" : @{
-                                       @"c_name" : @"Waynezxcv",
-                                       @"c_sign" :@{@"name": @"这是我的签名"},
-                                       @"age":@(22),
-                                       @"website":@"http://www.waynezxcv.me",
-                                       @"test":@{@"content":@"第三级映射。。。"}
-                                       },
-                               @"retweetedStatus" : @{
-                                       @"text" : @"LWAlchemy ORM",
-                                       @"user" : @{
-                                               @"name" : @"Wayne",
-                                               @"sign" : @"just do it!",
-                                               @"age": @(18),
-                                               @"website":@"www.apple.com"
-                                               }
-                                       }
-                               };
-        [tmp addObject:dict];
-    }
-    NSDate* startTime = [NSDate date];
-    for (NSDictionary* dict in tmp) {
-        // 将字典转为Status模型
-        StatusModel* status = [StatusModel modelWithJSON:dict];
-        NSLog(@"%@",status.user.name);
-        NSLog(@"%@",status.idContent);
-    }
-    NSLog(@"时间消耗: %f", -[startTime timeIntervalSinceNow]);
+/**
+ *  简单的由JSON生成model
+ *
+ */
+- (void)simpleJsonToModel {
+    NSDictionary* dict = @{@"statusId":@"0755",
+                           @"text":@"LWAlchemy,a fast and lightweight ORM framework for Cocoa and Cocoa Touch",
+                           @"website":@"www.apple.com",
+                           @"imgs":@[@"img1",@"img2",@"img3"],
+                           @"timeStamp":@"",
+                           @"user":@{
+                                   @"name":@"Waynezxcv",
+                                   @"sign":@"this is wayne's sign",
+                                   @"age":@18,
+                                   @"avatar":@"https://avatars0.githubusercontent.com/u/8408918?v=3&s=460",
+                                   @"detail":@{
+                                           @"detailDescription":@"this is Wayne's detail description."
+                                           }
+                                   }
+                           };
+    StatusModel* status = [StatusModel modelWithJSON:dict];
 }
 
 #pragma mark ---
