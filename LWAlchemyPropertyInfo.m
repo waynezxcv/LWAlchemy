@@ -65,9 +65,6 @@
                             if (self.nsType != LWPropertyNSObjectTypeNSUnknown) {
                                 self.foundationType = YES;
                             }
-                            else {
-                                self.foundationType = NO;
-                            }
                         }
                     }
                 } break;
