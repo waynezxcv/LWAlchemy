@@ -16,8 +16,17 @@
 
 
 #import "StatusModel.h"
+#import "LWAlchemy.h"
 
 @implementation StatusModel
 
++ (NSDictionary *)mapper {
+    return @{@"statusId":@"c_statusId",
+             @"text":@"c_text",
+             @"website":@"c_website",
+             @"imgs":@"c_imgs",
+             @"timeStamp":@"c_timeStamp",
+             @"user":@"c_user"};
+}
 
 @end

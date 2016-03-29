@@ -40,9 +40,8 @@
                                               target:self
                                               action:@selector(coredataUniqBatchInsert)];
     self.refreshCount = 0;
+    [self parse];
 
-
-    [self simpleJsonToModel];
 }
 
 #pragma mark - LWAlchemy
@@ -98,8 +97,31 @@
                            @"text":@"LWAlchemy,a fast and lightweight ORM framework for Cocoa and Cocoa Touch",
                            @"website":@"www.apple.com",
                            @"imgs":@[@"img1",@"img2",@"img3"],
-                           @"timeStamp":@"",
+                           @"timeStamp":@"1459242514",
                            @"user":@{
+                                   @"name":@"Waynezxcv",
+                                   @"sign":@"this is wayne's sign",
+                                   @"age":@18,
+                                   @"avatar":@"https://avatars0.githubusercontent.com/u/8408918?v=3&s=460",
+                                   @"detail":@{
+                                           @"detailDescription":@"this is Wayne's detail description."
+                                           }
+                                   }
+                           };
+    StatusModel* status = [StatusModel modelWithJSON:dict];
+}
+
+/**
+ *  自定义映射路径的JSON生成model
+ *
+ */
+- (void)parse {
+    NSDictionary* dict = @{@"c_statusId":@"0755",
+                           @"c_text":@"LWAlchemy,a fast and lightweight ORM framework for Cocoa and Cocoa Touch",
+                           @"c_website":@"www.apple.com",
+                           @"c_imgs":@[@"img1",@"img2",@"img3"],
+                           @"c_timeStamp":@"1459242514",
+                           @"c_user":@{
                                    @"name":@"Waynezxcv",
                                    @"sign":@"this is wayne's sign",
                                    @"age":@18,
