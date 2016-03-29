@@ -127,6 +127,8 @@ LWAlchemy 快速、高性能的iOS ORM框架。<br>
 
 * **CoreData的CURD**
 
+```objc
+
 //插入entity并设置unique 当unique对应的值已经存在时，不再重复插入，而是更新数据
 - (void)coredataUniqBatchInsert {
     self.refreshCount ++;//刷新的次数
