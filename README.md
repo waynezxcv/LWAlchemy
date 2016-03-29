@@ -127,6 +127,51 @@ LWAlchemy 快速、高性能的iOS ORM框架。<br>
 
 * **CoreData的CURD**
 
+//插入entity并设置unique 当unique对应的值已经存在时，不再重复插入，而是更新数据
+- (void)coredataUniqBatchInsert {
+    self.refreshCount ++;//刷新的次数
+    NSMutableArray* fakeData = [[NSMutableArray alloc] init];
+    NSInteger index = 0;
+    for (NSInteger i = 0; i < 500; i ++) {
+        NSString* text =  [NSString stringWithFormat:@"这是ID为%ld的数据第%ld次更新",index + i,self.refreshCount];//更新的内容。
+        NSDictionary* dict = @{@"statusId":@(index + i),
+        @"text":text,
+        @"c_user" : @{@"c_name" :[NSString stringWithFormat:@"这是ID为%ld 的第二级Model",index + i],
+        @"test":@{@"content":@"第三级映射。。。"}}
+        };
+        [fakeData addObject:dict];
+    }
+    __weak typeof(self) wself = self;
+    LWAlchemyManager* manager = [LWAlchemyManager sharedManager];
+    [manager insertEntitysWithClass:[StatusEntity class]
+    JSONsArray:fakeData
+    uiqueAttributesName:@"statusId"
+    save:YES
+    completion:^{
+    //查询
+        NSSortDescriptor* sort = [NSSortDescriptor sortDescriptorWithKey:@"statusId" ascending:YES];
+        [manager fetchNSManagedObjectWithObjectClass:[StatusEntity class]
+        predicate:nil
+        sortDescriptor:@[sort]
+        fetchOffset:0
+        fetchLimit:0
+        fetchReults:^(NSArray *results, NSError *error) {
+        __strong typeof(wself) swself = wself;
+        dispatch_async(dispatch_get_global_queue(0, 0), ^{
+        [swself.dataSource removeAllObjects];
+        for (StatusEntity* entity in results) {
+        [swself.dataSource addObject:entity];
+        }
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [swself.tableView reloadData];
+                });
+            });
+        }];
+    }];
+}
 
 
+```
+
+更多用法请看头文件。
 

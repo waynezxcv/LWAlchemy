@@ -69,7 +69,8 @@
                          completion:^{
                              //查询
                              NSSortDescriptor* sort = [NSSortDescriptor sortDescriptorWithKey:@"statusId" ascending:YES];
-                             [manager fetchNSManagedObjectWithObjectClass:[StatusEntity class] predicate:nil
+                             [manager fetchNSManagedObjectWithObjectClass:[StatusEntity class]
+                                                                predicate:nil
                                                            sortDescriptor:@[sort]
                                                               fetchOffset:0
                                                                fetchLimit:0
@@ -87,6 +88,9 @@
                                                               }];
                          }];
 }
+
+
+
 
 /**
  *  简单的由JSON生成model
