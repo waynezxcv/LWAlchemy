@@ -35,7 +35,28 @@ typedef void(^ExistingObject)(NSManagedObject* existedObject);
 @property (readonly, strong, nonatomic) NSManagedObjectContext* managedObjectContext;//主线程Context，用户增，改，删（在内存中操作）。
 @property (readonly, strong, nonatomic) NSManagedObjectContext* parentContext;//用来写入数据到SQLite的Context，在一个后台线程中操作。
 
+
+
+
 + (LWAlchemyManager *)sharedManager;
+
+
+/**
+ *  批量插入数据，并指定UniqueAttributesName，
+ *  若存在则重复插入，改为更新数据（总共新开一个线程）
+ *
+ *  @param cls                  Entity的类(如：[Student Class])
+ *  @param jsonArray            包含JSON的数组
+ *  @param uniqueAttributesName unique约束的属性名
+ *  @param isSave               是否保存
+ *  @param completeBlock        完成回调
+ */
+- (void)insertEntitysWithClass:(Class)cls
+                    JSONsArray:(NSArray *)jsonArray
+           uiqueAttributesName:(NSString *)uniqueAttributesName
+                          save:(BOOL)isSave
+                    completion:(Completion)completeBlock;
+
 
 /**
  *  增入一条数据。
@@ -56,17 +77,6 @@ typedef void(^ExistingObject)(NSManagedObject* existedObject);
                           save:(BOOL)isSave
                     completion:(Completion)completeBlock;
 
-
-/**
- *  批量插入数据，并指定UniqueAttributesName，
- *  若存在则重复插入，改为更新数据（总共新开一个线程）
- *
- */
-- (void)insertEntitysWithClass:(Class)cls
-                    JSONsArray:(NSArray *)jsonArray
-           uiqueAttributesName:(NSString *)uniqueAttributesName
-                          save:(BOOL)isSave
-                    completion:(Completion)completeBlock;
 
 /**
  *  查
