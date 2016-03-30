@@ -40,8 +40,6 @@
                                               target:self
                                               action:@selector(coredataUniqBatchInsert)];
     self.refreshCount = 0;
-    [self parse];
-
 }
 
 #pragma mark - LWAlchemy
