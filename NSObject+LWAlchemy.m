@@ -193,7 +193,6 @@ static void _SetNumberPropertyValue(__unsafe_unretained id model,
     SEL setterSelector = NSSelectorFromString(propertyInfo.setter);
     switch (propertyInfo.type) {
         case LWPropertyTypeBool: {
-            //定义一个函数指针
             NSNumber* num = (NSNumber *)value;
             void (*objc_msgSendToSetter)(id, SEL, bool) = (void*)objc_msgSend;
             objc_msgSendToSetter((id)model, setterSelector, num.boolValue);
