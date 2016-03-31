@@ -20,7 +20,7 @@
 #import "StatusEntity.h"
 #import "UserEntity.h"
 #import "TestEntity.h"
-#import "SendViewController.h"
+#import "SecondViewController.h"
 
 
 @interface ViewController ()<UITableViewDataSource,UITableViewDelegate>
@@ -177,7 +177,7 @@
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     StatusEntity* entity = [self.dataSource objectAtIndex:indexPath.row];
     UserEntity* user = entity.user;
-    SendViewController* vc = [[SendViewController alloc] init];
+    SecondViewController* vc = [[SecondViewController alloc] init];
     vc.user = user;
     [self.navigationController pushViewController:vc animated:YES];
 }

@@ -14,15 +14,15 @@
 //  See LICENSE for this sample’s licensing information
 //
 
-#import "SendViewController.h"
+#import "SecondViewController.h"
 
-@interface SendViewController ()
+@interface SecondViewController ()
 
 @property (nonatomic,strong) UILabel* label;
 
 @end
 
-@implementation SendViewController
+@implementation SecondViewController
 
 - (void)viewDidLoad {
     [super viewDidLoad];

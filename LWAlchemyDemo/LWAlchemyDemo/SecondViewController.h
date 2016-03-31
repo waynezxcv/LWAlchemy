@@ -18,7 +18,7 @@
 #import <UIKit/UIKit.h>
 #import "UserEntity.h"
 
-@interface SendViewController : UIViewController
+@interface SecondViewController : UIViewController
 
 @property (nonatomic,strong) UserEntity* user;
 
