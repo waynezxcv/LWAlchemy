@@ -126,6 +126,7 @@ static void* LWAlechmyMapDictionaryKey = &LWAlechmyMapDictionaryKey;
     return self;
 }
 
+
 - (NSDictionary *)dictionaryWithJSON:(id)json {
     if (!json || json == (id)kCFNull) return nil;
     NSDictionary* dic = nil;
@@ -143,8 +144,6 @@ static void* LWAlechmyMapDictionaryKey = &LWAlechmyMapDictionaryKey;
     }
     return dic;
 }
-
-
 
 #pragma mark - Private Methods
 
@@ -193,78 +192,78 @@ static void _SetNumberPropertyValue(__unsafe_unretained id model,
     SEL setterSelector = NSSelectorFromString(propertyInfo.setter);
     switch (propertyInfo.type) {
         case LWPropertyTypeBool: {
-            NSNumber* num = (NSNumber *)value;
+            NSNumber* num = NSNumberCreateFromIDType(value);
             void (*objc_msgSendToSetter)(id, SEL, bool) = (void*)objc_msgSend;
             objc_msgSendToSetter((id)model, setterSelector, num.boolValue);
         }break;
         case LWPropertyTypeInt8:{
-            NSNumber* num = (NSNumber *)value;
+            NSNumber* num = NSNumberCreateFromIDType(value);
             void (*objc_msgSendToSetter)(id, SEL, int8_t) = (void*)objc_msgSend;
             objc_msgSendToSetter((id)model, setterSelector, (int8_t)num.charValue);
         }break;
         case LWPropertyTypeUInt8: {
-            NSNumber* num = (NSNumber *)value;
+            NSNumber* num = NSNumberCreateFromIDType(value);
             void (*objc_msgSendToSetter)(id, SEL, uint8_t) = (void*)objc_msgSend;
             objc_msgSendToSetter((id)model, setterSelector, (uint8_t)num.unsignedCharValue);
         }break;
         case LWPropertyTypeInt16: {
-            NSNumber* num = (NSNumber *)value;
+            NSNumber* num = NSNumberCreateFromIDType(value);
             void (*objc_msgSendToSetter)(id, SEL, int16_t) = (void*)objc_msgSend;
             objc_msgSendToSetter((id)model, setterSelector, (int16_t)num.shortValue);
         }break;
         case LWPropertyTypeUInt16: {
-            NSNumber* num = (NSNumber *)value;
+            NSNumber* num = NSNumberCreateFromIDType(value);
             void (*objc_msgSendToSetter)(id, SEL, uint16_t) = (void*)objc_msgSend;
             objc_msgSendToSetter((id)model, setterSelector, (uint16_t)num.unsignedShortValue);
         }break;
         case LWPropertyTypeInt32: {
-            NSNumber* num = (NSNumber *)value;
+            NSNumber* num = NSNumberCreateFromIDType(value);
             void (*objc_msgSendToSetter)(id, SEL, int32_t) = (void*)objc_msgSend;
             objc_msgSendToSetter((id)model, setterSelector, (int32_t)num.intValue);
         }break;
         case LWPropertyTypeUInt32: {
-            NSNumber* num = (NSNumber *)value;
+            NSNumber* num = NSNumberCreateFromIDType(value);
             void (*objc_msgSendToSetter)(id, SEL, uint32_t) = (void*)objc_msgSend;
             objc_msgSendToSetter((id)model, setterSelector, (uint32_t)num.unsignedIntValue);
         }break;
         case LWPropertyTypeInt64: {
             if ([value isKindOfClass:[NSDecimalNumber class]]) {
-                NSNumber* num = (NSDecimalNumber *)value;
+                NSNumber* num = NSNumberCreateFromIDType(value);
                 void (*objc_msgSendToSetter)(id, SEL, int64_t) = (void*)objc_msgSend;
                 objc_msgSendToSetter((id)model, setterSelector, (int64_t)num.stringValue.longLongValue);
             } else {
-                NSNumber* num = (NSNumber *)value;
+                NSNumber* num = NSNumberCreateFromIDType(value);
                 void (*objc_msgSendToSetter)(id, SEL, int64_t) = (void*)objc_msgSend;
                 objc_msgSendToSetter((id)model, setterSelector, (int64_t)num.longLongValue);
             }
         }break;
         case LWPropertyTypeUInt64:{
             if ([value isKindOfClass:[NSDecimalNumber class]]) {
-                NSNumber* num = (NSDecimalNumber *)value;
+                NSNumber* num = NSNumberCreateFromIDType(value);
                 void (*objc_msgSendToSetter)(id, SEL, uint64_t) = (void*)objc_msgSend;
                 objc_msgSendToSetter((id)model, setterSelector, (uint64_t)num.stringValue.longLongValue);
             } else {
-                NSNumber* num = (NSNumber *)value;
+                NSNumber* num = NSNumberCreateFromIDType(value);
                 void (*objc_msgSendToSetter)(id, SEL, uint64_t) = (void*)objc_msgSend;
                 objc_msgSendToSetter((id)model, setterSelector, (uint64_t)num.longLongValue);
             }
         }break;
         case LWPropertyTypeFloat: {
-            NSNumber* num = (NSNumber *)value;
+            NSNumber* num = NSNumberCreateFromIDType(value);
             float f = num.floatValue;
             if (isnan(f) || isinf(f)) f = 0;
             void (*objc_msgSendToSetter)(id, SEL, float) = (void*)objc_msgSend;
             objc_msgSendToSetter((id)model, setterSelector, f);
         }break;
         case LWPropertyTypeDouble:{
-            NSNumber* num = (NSNumber *)value;
+            NSNumber* num = NSNumberCreateFromIDType(value);
             double d = num.doubleValue;
             if (isnan(d) || isinf(d)) d = 0;
             void (*objc_msgSendToSetter)(id, SEL, double) = (void*)objc_msgSend;
             objc_msgSendToSetter((id)model, setterSelector, d);
         }break;
         case LWPropertyTypeLongDouble: {
-            NSNumber* num = (NSNumber *)value;
+            NSNumber* num = NSNumberCreateFromIDType(value);
             long double d = num.doubleValue;
             if (isnan(d) || isinf(d)) d = 0;
             void (*objc_msgSendToSetter)(id, SEL, long double) = (void*)objc_msgSend;

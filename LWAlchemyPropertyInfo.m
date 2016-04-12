@@ -17,7 +17,6 @@
 
 #import "LWAlchemyPropertyInfo.h"
 
-
 @interface LWAlchemyPropertyInfo ()
 
 @property (nonatomic,assign) objc_property_t property;
@@ -39,7 +38,6 @@
 
 @end
 
-
 @implementation LWAlchemyPropertyInfo
 
 - (id)initWithProperty:(objc_property_t)property customMapper:(NSDictionary *)mapper {
@@ -52,7 +50,6 @@
         self.objectType = NO;
         self.foundationType = NO;
         self.property = property;
-
         unsigned int attrCount;
         objc_property_attribute_t* attributes = property_copyAttributeList(property, &attrCount);
         for (unsigned int i = 0; i < attrCount; i++) {
