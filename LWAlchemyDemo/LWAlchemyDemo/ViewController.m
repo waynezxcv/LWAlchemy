@@ -23,7 +23,10 @@
 #import "SecondViewController.h"
 
 
-@interface ViewController ()<UITableViewDataSource,UITableViewDelegate>
+@interface ViewController ()
+
+<UITableViewDataSource,UITableViewDelegate>
+
 @property (nonatomic,assign) NSInteger refreshCount;
 @property (nonatomic,strong) UITableView* tableView;
 @property (nonatomic,strong) NSMutableArray* dataSource;
@@ -160,7 +163,6 @@
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     return self.dataSource.count;
 }
-
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     static NSString* cellIdentifier = @"cell";

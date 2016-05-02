@@ -14,7 +14,6 @@
 		0167E8311CA45D47004EA72C /* StatusEntity.m in Sources */ = {isa = PBXBuildFile; fileRef = 0167E8291CA45D47004EA72C /* StatusEntity.m */; };
 		0167E8321CA45D47004EA72C /* TestEntity+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = 0167E82B1CA45D47004EA72C /* TestEntity+CoreDataProperties.m */; };
 		0167E8331CA45D47004EA72C /* TestEntity.m in Sources */ = {isa = PBXBuildFile; fileRef = 0167E82D1CA45D47004EA72C /* TestEntity.m */; };
-		0167E8351CA4661B004EA72C /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = 0167E8341CA4661B004EA72C /* LICENSE */; };
 		0167E8381CA46930004EA72C /* SecondViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0167E8371CA46930004EA72C /* SecondViewController.m */; };
 		0171C7AA1C9F29BE000F2D14 /* LWAlchemyManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 0171C7A91C9F29BE000F2D14 /* LWAlchemyManager.m */; };
 		B0A87CAB1C9A5669004FD0D7 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = B0A87CAA1C9A5669004FD0D7 /* main.m */; };
@@ -64,7 +63,6 @@
 		0167E82B1CA45D47004EA72C /* TestEntity+CoreDataProperties.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "TestEntity+CoreDataProperties.m"; sourceTree = "<group>"; };
 		0167E82C1CA45D47004EA72C /* TestEntity.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TestEntity.h; sourceTree = "<group>"; };
 		0167E82D1CA45D47004EA72C /* TestEntity.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TestEntity.m; sourceTree = "<group>"; };
-		0167E8341CA4661B004EA72C /* LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = LICENSE; path = ../../LWAsyncDisplayView/LICENSE; sourceTree = "<group>"; };
 		0167E8361CA46930004EA72C /* SecondViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SecondViewController.h; sourceTree = "<group>"; };
 		0167E8371CA46930004EA72C /* SecondViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SecondViewController.m; sourceTree = "<group>"; };
 		0171C7A71C9F29BE000F2D14 /* LWAlchemy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LWAlchemy.h; path = ../LWAlchemy.h; sourceTree = "<group>"; };
@@ -233,7 +231,6 @@
 		B0A87CDF1C9A5679004FD0D7 /* LWAlchemy */ = {
 			isa = PBXGroup;
 			children = (
-				0167E8341CA4661B004EA72C /* LICENSE */,
 				0171C7A71C9F29BE000F2D14 /* LWAlchemy.h */,
 				B0A87CF21C9A58B0004FD0D7 /* NSObject+LWAlchemy.h */,
 				B0A87CF31C9A58B0004FD0D7 /* NSObject+LWAlchemy.m */,
@@ -353,7 +350,6 @@
 			files = (
 				B0A87CBC1C9A5669004FD0D7 /* LaunchScreen.storyboard in Resources */,
 				B0A87CB91C9A5669004FD0D7 /* Assets.xcassets in Resources */,
-				0167E8351CA4661B004EA72C /* LICENSE in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
