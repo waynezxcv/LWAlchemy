@@ -2,7 +2,6 @@
 [![License MIT](https://img.shields.io/badge/license-MIT-green.svg?style=flat)](https://github.com/waynezxcv/LWAlchemy/blob/master/LICENSE)&nbsp;
 
 
-
 # LWAlchemy V1.0
 LWAlchemy 快速、高性能的iOS ORM框架。<br>
 
@@ -175,4 +174,4 @@ LWAlchemy 快速、高性能的iOS ORM框架。<br>
 
 ```
 
-更多用法请看Demo
+更多用法请看Demo.
