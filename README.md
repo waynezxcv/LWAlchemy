@@ -3,7 +3,7 @@
 
 
 # LWAlchemy V1.0
-LWAlchemy 快速、高性能的iOS ORM框架。<br>
+LWAlchemy 快速、高性能的支持CoreDta的iOS ORM框架。<br>
 
 
 ## 特性
