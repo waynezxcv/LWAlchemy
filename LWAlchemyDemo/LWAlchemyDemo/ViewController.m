@@ -23,10 +23,7 @@
 #import "SecondViewController.h"
 
 
-@interface ViewController ()
-
-<UITableViewDataSource,UITableViewDelegate>
-
+@interface ViewController ()<UITableViewDataSource,UITableViewDelegate>
 @property (nonatomic,assign) NSInteger refreshCount;
 @property (nonatomic,strong) UITableView* tableView;
 @property (nonatomic,strong) NSMutableArray* dataSource;
@@ -36,13 +33,36 @@
 @implementation ViewController
 
 - (void)viewDidLoad {
+
     [super viewDidLoad];
+
     [self.view addSubview:self.tableView];
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]
                                               initWithBarButtonSystemItem:UIBarButtonSystemItemAdd
                                               target:self
                                               action:@selector(coredataUniqBatchInsert)];
     self.refreshCount = 0;
+
+    //查询
+    __weak typeof(self) wself = self;
+    NSSortDescriptor* sort = [NSSortDescriptor sortDescriptorWithKey:@"statusId" ascending:YES];
+    [[LWAlchemyManager sharedManager] lw_fetchEntityWithClass:[StatusEntity class]
+                                                    predicate:nil
+                                               sortDescriptor:@[sort]
+                                                  fetchOffset:0
+                                                   fetchLimit:0
+                                                  fetchReults:^(NSArray *results, NSError *error) {
+                                                      __strong typeof(wself) swself = wself;
+                                                      dispatch_async(dispatch_get_global_queue(0, 0), ^{
+                                                          [swself.dataSource removeAllObjects];
+                                                          for (StatusEntity* entity in results) {
+                                                              [swself.dataSource addObject:entity];
+                                                          }
+                                                          dispatch_sync(dispatch_get_main_queue(), ^{
+                                                              [swself.tableView reloadData];
+                                                          });
+                                                      });
+                                                  }];
 }
 
 #pragma mark - LWAlchemy
@@ -52,45 +72,45 @@
     self.refreshCount ++;//刷新的次数
     NSMutableArray* fakeData = [[NSMutableArray alloc] init];
     NSInteger index = 0;
-    for (NSInteger i = 0; i < 500; i ++) {
+    for (NSInteger i = 0; i < 200; i ++) {
         NSString* text =  [NSString stringWithFormat:@"这是ID为%ld的数据第%ld次更新",index + i,self.refreshCount];//更新的内容。
         NSDictionary* dict = @{@"statusId":@(index + i),
                                @"text":text,
                                @"c_user" : @{@"c_name" :[NSString stringWithFormat:@"这是ID为%ld 的第二级Model",index + i],
-                                             @"test":@{@"content":@"第三级映射。。。"}}};
+                                             @"test":@{@"content":@"第三级映射。。。"}}
+                               };
         [fakeData addObject:dict];
     }
     __weak typeof(self) wself = self;
     LWAlchemyManager* manager = [LWAlchemyManager sharedManager];
-    [manager insertEntitysWithClass:[StatusEntity class]
-                         JSONsArray:fakeData
-                uiqueAttributesName:@"statusId"
-                               save:YES
-                         completion:^{
-                             //查询
-                             NSSortDescriptor* sort = [NSSortDescriptor sortDescriptorWithKey:@"statusId" ascending:YES];
-                             [manager fetchNSManagedObjectWithObjectClass:[StatusEntity class]
-                                                                predicate:nil
-                                                           sortDescriptor:@[sort]
-                                                              fetchOffset:0
-                                                               fetchLimit:0
-                                                              fetchReults:^(NSArray *results, NSError *error) {
-                                                                  __strong typeof(wself) swself = wself;
-                                                                  dispatch_async(dispatch_get_global_queue(0, 0), ^{
-                                                                      [swself.dataSource removeAllObjects];
-                                                                      for (StatusEntity* entity in results) {
-                                                                          [swself.dataSource addObject:entity];
-                                                                      }
-                                                                      dispatch_async(dispatch_get_main_queue(), ^{
-                                                                          [swself.tableView reloadData];
-                                                                      });
-                                                                  });
-                                                              }];
-                         }];
+    [manager lw_insertEntitysWithClass:[StatusEntity class]
+                            JSONsArray:fakeData
+                   uiqueAttributesName:@"statusId"
+                            completion:^{
+                                //查询
+                                NSSortDescriptor* sort = [NSSortDescriptor sortDescriptorWithKey:@"statusId" ascending:YES];
+                                [manager lw_fetchEntityWithClass:[StatusEntity class]
+                                                       predicate:nil
+                                                  sortDescriptor:@[sort]
+                                                     fetchOffset:0
+                                                      fetchLimit:0
+                                                     fetchReults:^(NSArray *results, NSError *error) {
+                                                         __strong typeof(wself) swself = wself;
+                                                         dispatch_async(dispatch_get_global_queue(0, 0), ^{
+                                                             [swself.dataSource removeAllObjects];
+                                                             for (StatusEntity* entity in results) {
+                                                                 [swself.dataSource addObject:entity];
+                                                             }
+                                                             dispatch_sync(dispatch_get_main_queue(), ^{
+                                                                 [swself.tableView reloadData];
+                                                             });
+                                                         });
+                                                     }];
+                            }];
 }
 
 
-
+/************** example   ****************/
 
 /**
  *  简单的由JSON生成model
@@ -163,14 +183,17 @@
     return self.dataSource.count;
 }
 
+
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     static NSString* cellIdentifier = @"cell";
     UITableViewCell* cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
     if (!cell) {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellIdentifier];
     }
-    StatusEntity* entity = [self.dataSource objectAtIndex:indexPath.row];
-    cell.textLabel.text = entity.text;
+    if (self.dataSource.count > indexPath.row) {
+        StatusEntity* entity = [self.dataSource objectAtIndex:indexPath.row];
+        cell.textLabel.text = entity.text;
+    }
     return cell;
 }
 

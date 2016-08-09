@@ -1,18 +1,27 @@
-//
-//  The MIT License (MIT)
-//  Copyright (c) 2016 Wayne Liu <liuweiself@126.com>
-//
-//  Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
-//　　The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-//  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-//
-//
-//
-//
-//  Copyright © 2016年 Wayne Liu. All rights reserved.
-//  https://github.com/waynezxcv/LWAlchemy
-//  See LICENSE for this sample’s licensing information
-//
+/*
+ https://github.com/waynezxcv/LWAlchemy
+
+ Copyright (c) 2016 waynezxcv <liuweiself@126.com>
+
+ Permission is hereby granted, free of charge, to any person obtaining a copy
+ of this software and associated documentation files (the "Software"), to deal
+ in the Software without restriction, including without limitation the rights
+ to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ copies of the Software, and to permit persons to whom the Software is
+ furnished to do so, subject to the following conditions:
+
+ The above copyright notice and this permission notice shall be included in
+ all copies or substantial portions of the Software.
+
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ THE SOFTWARE.
+ */
+
 
 #import <UIKit/UIKit.h>
 
@@ -23,21 +32,69 @@
 @class NSManagedObject;
 @class NSFetchRequest;
 
+
+
+/**
+ *  无参数的回调Block
+ */
 typedef void(^Completion)(void);
+
+
+/**
+ *  查询结果Block
+ *
+ *  @param results 查询结果，包含NSManagedObject对象的数组
+ *  @param error   NSError对象
+ */
 typedef void(^FetchResults)(NSArray* results, NSError *error);
-typedef void(^ExistingObject)(NSManagedObject* existedObject);
+
+
+/**
+ *  用于CoreData管理。CoreData的结构使用的是三层结构。
+ *
+ *
+ */
+/******************************************************************************
+
+
+             ------------------
+            |                  |
+            |     writeMOC     | background thread ➡︎ NSPersistentStoreCoordinator
+            |                  |
+             ------------------
+
+                     ⬆︎ parent
+
+             ------------------
+            |                  |
+            |     mainMOC      | main thread ➡︎ NSFetchResultsController
+            |                  |
+             ------------------
+
+                     ⬆︎ parent
+
+             ------------------
+            |                  |
+            |   temporaryMOC   | background thread
+            |                  |
+             ------------------
+
+
+******************************************************************************/
 
 
 @interface LWAlchemyManager : NSObject
 
 @property (readonly, strong, nonatomic) NSManagedObjectModel* managedObjectModel;
-@property (readonly, strong, nonatomic) NSPersistentStoreCoordinator* persistentStoreCoordinator;
-@property (readonly, strong, nonatomic) NSManagedObjectContext* managedObjectContext;//主线程Context，用户增，改，删（在内存中操作）。
-@property (readonly, strong, nonatomic) NSManagedObjectContext* parentContext;//用来写入数据到SQLite的Context，在一个后台线程中操作。
+@property (readonly, strong, nonatomic) NSPersistentStoreCoordinator* persistentStoreCoordinator;//PSC
+@property (readonly, strong, nonatomic) NSManagedObjectContext* mainMOC;//主线程Context
+@property (readonly, strong, nonatomic) NSManagedObjectContext* writeMOC;//用来写入数据到本地的Context，mainMOC的parent
 
-
-
-
+/**
+ *  获取LWAlchemyManager单例对象
+ *
+ *  @return LWAlchemyManager单例对象
+ */
 + (LWAlchemyManager *)sharedManager;
 
 
@@ -45,67 +102,55 @@ typedef void(^ExistingObject)(NSManagedObject* existedObject);
  *  批量插入数据，并指定UniqueAttributesName，
  *  若存在则重复插入，改为更新数据（总共新开一个线程）
  *
- *  @param cls                  Entity的类(如：[Student Class])
+ *  @param cls                  Entity的所属的类(如：[Student Class])
  *  @param jsonArray            包含JSON的数组
  *  @param uniqueAttributesName unique约束的属性名
- *  @param isSave               是否保存
  *  @param completeBlock        完成回调
  */
-- (void)insertEntitysWithClass:(Class)cls
-                    JSONsArray:(NSArray *)jsonArray
-           uiqueAttributesName:(NSString *)uniqueAttributesName
-                          save:(BOOL)isSave
-                    completion:(Completion)completeBlock;
-
+- (void)lw_insertEntitysWithClass:(Class)objectClass
+                       JSONsArray:(NSArray *)jsonArray
+              uiqueAttributesName:(NSString *)uniqueAttributesName
+                       completion:(Completion)completeBlock;
 
 /**
- *  增入一条数据。
+ *  查询
  *
+ *  @param objectClass     查询的实例所属的类
+ *  @param predicate       NSPredicate对象，指定过滤方式
+ *  @param sortDescriptors 排序方式
+ *  @param offset          偏移量
+ *  @param limit           最大量
+ *  @param resultsBlock    查询结果
  */
-- (void)insertEntityWithClass:(Class)cls
-                         JSON:(id)json
-                         save:(BOOL)isSave
-                   completion:(Completion)completeBlock;
-
+- (void)lw_fetchEntityWithClass:(Class)objectClass
+                      predicate:(NSPredicate *)predicate
+                 sortDescriptor:(NSArray<NSSortDescriptor*> *)sortDescriptors
+                    fetchOffset:(NSInteger)offset
+                     fetchLimit:(NSInteger)limit
+                    fetchReults:(FetchResults)resultsBlock;
 
 /**
- *  批量插入数据。
+ *  更新
  *
+ *  @param objectID 要更新的实例的NSManagedObjectID
+ *  @param json     需要更新的数据JSON字典
  */
-- (void)insertEntitysWithClass:(Class)cls
-                    JSONsArray:(NSArray *)jsonArray
-                          save:(BOOL)isSave
-                    completion:(Completion)completeBlock;
-
+- (void)lw_updateEntityWithObjectID:(NSManagedObjectID *)objectID
+                               JSON:(id)json;
 
 /**
- *  查
- */
-- (void)fetchNSManagedObjectWithObjectClass:(Class)objectClass
-                                  predicate:(NSPredicate *)predicate
-                             sortDescriptor:(NSArray<NSSortDescriptor *> *)sortDescriptors
-                                fetchOffset:(NSInteger)offset
-                                 fetchLimit:(NSInteger)limit
-                                fetchReults:(FetchResults)resultsBlock;
-/**
- *  删
- */
-- (void)deleteNSManagedObjectWithObjectWithObjectIdsArray:(NSArray<NSManagedObjectID *> *)objectIDs;
-
-
-/**
- *  改
+ *  删除
  *
+ *  @param objectIDs 存放需要删除实例的NSManagedObjectID的数组
+ *  @return 是否删除成功
  */
-- (void)updateNSManagedObjectWithObjectID:(NSManagedObjectID *)objectID JSON:(id)json;
+- (BOOL)lw_deleteNSManagedObjectWithObjectWithObjectIdsArray:(NSArray<NSManagedObjectID *> *)objectIDs;
 
 
 /**
- *  保存
- *
+ *  保存到Sqlite
  */
-- (void)saveContext:(Completion)completionBlock;
-
+- (void)saveToSqlite;
 
 
 @end

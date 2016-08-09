@@ -1,18 +1,26 @@
-//
-//  The MIT License (MIT)
-//  Copyright (c) 2016 Wayne Liu <liuweiself@126.com>
-//
-//  Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
-//　　The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-//  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-//
-//
-//
-//
-//  Copyright © 2016年 Wayne Liu. All rights reserved.
-//  https://github.com/waynezxcv/LWAlchemy
-//  See LICENSE for this sample’s licensing information
-//
+/*
+ https://github.com/waynezxcv/LWAlchemy
+
+ Copyright (c) 2016 waynezxcv <liuweiself@126.com>
+
+ Permission is hereby granted, free of charge, to any person obtaining a copy
+ of this software and associated documentation files (the "Software"), to deal
+ in the Software without restriction, including without limitation the rights
+ to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ copies of the Software, and to permit persons to whom the Software is
+ furnished to do so, subject to the following conditions:
+
+ The above copyright notice and this permission notice shall be included in
+ all copies or substantial portions of the Software.
+
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ THE SOFTWARE.
+ */
 
 
 #import "LWAlchemyManager.h"
@@ -23,100 +31,108 @@
 
 @property (nonatomic,strong) NSManagedObjectModel* managedObjectModel;
 @property (nonatomic,strong) NSPersistentStoreCoordinator* persistentStoreCoordinator;
-@property (nonatomic,strong) NSManagedObjectContext* managedObjectContext;
-@property (nonatomic,strong) NSManagedObjectContext* parentContext;
+@property (strong,nonatomic) NSManagedObjectContext* mainMOC;//主线程Context
+@property (strong,nonatomic) NSManagedObjectContext* writeMOC;//用来写入数据到本地的Context，mainMOC的parent
 @property (nonatomic,copy) NSString* executableFile;
+@property (nonatomic,assign) UIBackgroundTaskIdentifier backgroundTaskId;
 
 @end
 
-
 @implementation LWAlchemyManager
-
 
 #pragma mark - CURD
 
-- (void)insertEntityWithClass:(Class)cls JSON:(id)json save:(BOOL)saved completion:(Completion)completeBlock {
-    [cls entityWithJSON:json context:self.managedObjectContext];
-    if (!saved) {
-        completeBlock();
-        return;
-    }
-    [self saveContext:completeBlock];
-}
-
-- (void)insertEntityWithClass:(Class)cls JSON:(id)json completion:(Completion)completeBlock {
-    [cls entityWithJSON:json context:self.managedObjectContext];
-    completeBlock();
-}
-
-
-- (void)insertEntitysWithClass:(Class)cls JSONsArray:(NSArray *)jsonArray save:(BOOL)isSave completion:(Completion)completeBlock {
-    for (id json in jsonArray) {
-        [cls entityWithJSON:json context:self.managedObjectContext];
-    }
-    if (!isSave) {
-        completeBlock();
-        return;
-    }
-    [self saveContext:completeBlock];
-}
-
-- (void)insertEntitysWithClass:(Class)cls
-                    JSONsArray:(NSArray *)jsonArray
-           uiqueAttributesName:(NSString *)uniqueAttributesName
-                          save:(BOOL)isSave
-                    completion:(Completion)completeBlock {
-    __weak typeof(self) weakSelf = self;
-    NSManagedObjectContext* ctx = [self createPrivateObjectContext];
+- (void)lw_insertEntitysWithClass:(Class)objectClass
+                       JSONsArray:(NSArray *)jsonArray
+              uiqueAttributesName:(NSString *)uniqueAttributesName
+                       completion:(Completion)completeBlock {
+    NSManagedObjectContext* ctx = [self createTemporaryBackgroundMoc];
     [ctx performBlock:^{
-        __strong typeof(weakSelf) strongSelf = weakSelf;
         for (id json in jsonArray) {
+            @autoreleasepool {
+                __weak typeof(self) weakSelf = self;
+                __strong typeof(weakSelf) strongSelf = weakSelf;
+                NSError* error = nil;
+                NSFetchRequest* fetchRequest = [[NSFetchRequest alloc] init];
+                [fetchRequest setEntity:[NSEntityDescription entityForName:NSStringFromClass(objectClass)
+                                                    inManagedObjectContext:ctx]];
+                if (!uniqueAttributesName){
+                    return;
+                }
+                NSPredicate* predicate = [NSPredicate predicateWithFormat:@"%K == %@", uniqueAttributesName,
+                                          [[strongSelf dictionaryWithJSON:json]objectForKey:uniqueAttributesName]];
+
+                if (predicate) {
+                    [fetchRequest setPredicate:predicate];
+                }
+                NSArray* results = [ctx executeFetchRequest:fetchRequest error:&error];
+                NSManagedObject* object = [results lastObject];
+                if (!object) {
+                    object = [NSEntityDescription insertNewObjectForEntityForName:NSStringFromClass(objectClass)
+                                                           inManagedObjectContext:ctx];
+                    if (![json isKindOfClass:[NSDictionary class]]) {
+                        NSDictionary* dict = [self dictionaryWithJSON:json];
+                        object = [object entity:object modelWithDictionary:dict context:ctx];
+                    }
+                    else {
+                        object = [object entity:object modelWithDictionary:json context:ctx];
+                    }
+                    [ctx performBlockAndWait:^{
+                        //save temporary context
+                        NSError* error = nil;
+                        if ([ctx hasChanges] && ![ctx save:&error]) {
+#if DEBUG
+                            NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
+#endif
+                            abort();
+                        }
+                    }];
+                }
+                else {
+                    if (![json isKindOfClass:[NSDictionary class]]) {
+                        NSDictionary* dict = [self dictionaryWithJSON:json];
+                        object = [object entity:object modelWithDictionary:dict context:ctx];
+                    }
+                    else {
+                        object = [object entity:object modelWithDictionary:json context:ctx];
+                    }
+                }
+            }
+        }
+        //save temporary context
+        NSError* error = nil;
+        if ([ctx hasChanges] && ![ctx save:&error]) {
+#if DEBUG
+            NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
+#endif
+            abort();
+        }
+        [self.mainMOC performBlock:^{
+            //save main context
             NSError* error = nil;
-            NSFetchRequest* fetchRequest = [[NSFetchRequest alloc] init];
-            [fetchRequest setEntity:[NSEntityDescription entityForName:NSStringFromClass(cls) inManagedObjectContext:ctx]];
-            if (uniqueAttributesName == nil) {
-                return;
+            if ([self.mainMOC hasChanges] && ![self.mainMOC save:&error]) {
+#if DEBUG
+                NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
+#endif
+                abort();
             }
-            NSPredicate* predicate = [NSPredicate predicateWithFormat:@"%K == %@", uniqueAttributesName,
-                                      [[strongSelf dictionaryWithJSON:json]objectForKey:uniqueAttributesName]];
-            if (predicate) {
-                [fetchRequest setPredicate:predicate];
-            }
-            NSArray* results = [ctx executeFetchRequest:fetchRequest error:&error];
-            NSManagedObject* object = [results lastObject];
-            if (object) {
-                [strongSelf.managedObjectContext performBlockAndWait:^{
-                    //objectID是线程安全的
-                    [strongSelf updateNSManagedObjectWithObjectID:object.objectID JSON:json];
-                }];
-            } else {
-                [strongSelf.managedObjectContext performBlockAndWait:^{
-                    [cls entityWithJSON:json context:strongSelf.managedObjectContext];
-                }];
-            }
-        }
-        if (!isSave) {
-            [strongSelf.managedObjectContext performBlockAndWait:^{
-                completeBlock();
-                return ;
-            }];
-        }
-        [strongSelf.managedObjectContext performBlockAndWait:^{
-            [strongSelf saveContext:completeBlock];
+            completeBlock();
         }];
     }];
 }
 
-- (void)fetchNSManagedObjectWithObjectClass:(Class)objectClass
-                                  predicate:(NSPredicate *)predicate
-                             sortDescriptor:(NSArray<NSSortDescriptor *> *)sortDescriptors
-                                fetchOffset:(NSInteger)offset
-                                 fetchLimit:(NSInteger)limit
-                                fetchReults:(FetchResults)resultsBlock {
+
+- (void)lw_fetchEntityWithClass:(Class)objectClass
+                      predicate:(NSPredicate *)predicate
+                 sortDescriptor:(NSArray<NSSortDescriptor*> *)sortDescriptors
+                    fetchOffset:(NSInteger)offset
+                     fetchLimit:(NSInteger)limit
+                    fetchReults:(FetchResults)resultsBlock {
+
     __weak typeof(self) weakSelf = self;
-    NSManagedObjectContext* ctx = [self createPrivateObjectContext];
+    NSManagedObjectContext* ctx = [self createTemporaryBackgroundMoc];
     [ctx performBlock:^{
-        __strong typeof(weakSelf) strongSelf = weakSelf;
+
         NSError* error = nil;
         NSFetchRequest* fetchRequest = [[NSFetchRequest alloc] init];
         [fetchRequest setEntity:[NSEntityDescription entityForName:NSStringFromClass(objectClass)
@@ -133,25 +149,23 @@
         if (limit > 0) {
             [fetchRequest setFetchLimit:limit];
         }
-        NSArray* results = [ctx executeFetchRequest:fetchRequest error:&error];
+        NSArray* results = [self.mainMOC executeFetchRequest:fetchRequest error:&error];
         if (error) {
-            [strongSelf.managedObjectContext performBlock:^{
-                resultsBlock(@[],error);
-            }];
+            resultsBlock(@[],error);
         }
         if ([results count] < 1) {
-            [strongSelf.managedObjectContext performBlock:^{
-                resultsBlock(@[],nil);
-            }];
+            resultsBlock(@[],nil);
         }
+
         NSMutableArray* result_ids = [[NSMutableArray alloc] init];
         for (NSManagedObject* object  in results) {
             [result_ids addObject:object.objectID];
         }
-        [strongSelf.managedObjectContext performBlockAndWait:^{
+        __strong typeof(weakSelf) sself = weakSelf;
+        [sself.mainMOC performBlock:^{
             NSMutableArray* final_results = [[NSMutableArray alloc] init];
             for (NSManagedObjectID* objectID in result_ids) {
-                [final_results addObject:[strongSelf.managedObjectContext objectWithID:objectID]];
+                [final_results addObject:[sself.mainMOC objectWithID:objectID]];
             }
             resultsBlock(final_results, nil);
         }];
@@ -159,44 +173,131 @@
 }
 
 
-- (void)updateNSManagedObjectWithObjectID:(NSManagedObjectID *)objectID JSON:(id)json {
-    NSManagedObject* object = [self.managedObjectContext objectWithID:objectID];
-    if ([json isKindOfClass:[NSDictionary class]]) {
-        object = [object entity:object modelWithDictionary:json context:self.managedObjectContext];
-    } else {
-        NSDictionary* dict = [self dictionaryWithJSON:json];
-        object = [object entity:object modelWithDictionary:dict context:self.managedObjectContext];
-    }
-}
-
-
-- (void)deleteNSManagedObjectWithObjectWithObjectIdsArray:(NSArray<NSManagedObjectID *> *)objectIDs {
-    for (NSManagedObjectID* objectID in objectIDs) {
-        NSManagedObject* object = [self.managedObjectContext objectWithID:objectID];
-        if (object) {
-            [self.managedObjectContext deleteObject:object];
+- (void)lw_updateEntityWithObjectID:(NSManagedObjectID *)objectID
+                               JSON:(id)json {
+    NSManagedObjectContext* ctx = [self createTemporaryBackgroundMoc];
+    [ctx performBlock:^{
+        NSManagedObject* object = [ctx objectWithID:objectID];
+        if ([json isKindOfClass:[NSDictionary class]]) {
+            object = [object entity:object modelWithDictionary:json context:ctx];
+        } else {
+            NSDictionary* dict = [self dictionaryWithJSON:json];
+            object = [object entity:object modelWithDictionary:dict context:ctx];
         }
-    }
+        //save temporary context
+        NSError* error = nil;
+        if ([ctx hasChanges] && ![ctx save:&error]) {
+#if DEBUG
+            NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
+#endif
+            abort();
+        }
+        [self.mainMOC performBlock:^{
+            //save main context
+            NSError* error = nil;
+            if ([self.mainMOC hasChanges] && ![self.mainMOC save:&error]) {
+#if DEBUG
+                NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
+#endif
+                abort();
+            }
+        }];
+    }];
 }
+
+
+- (BOOL)lw_deleteNSManagedObjectWithObjectWithObjectIdsArray:(NSArray<NSManagedObjectID *> *)objectIDs {
+    NSManagedObjectContext* ctx = [self createTemporaryBackgroundMoc];
+    [ctx performBlock:^{
+        for (NSManagedObjectID* objectID in objectIDs) {
+            @autoreleasepool {
+
+                NSManagedObject* object = [ctx objectWithID:objectID];
+                if (object) {
+                    [ctx deleteObject:object];
+                }
+            }
+        }
+        //save temporary context
+        NSError* error = nil;
+        if ([ctx hasChanges] && ![ctx save:&error]) {
+#if DEBUG
+            NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
+#endif
+            abort();
+        }
+        [self.mainMOC performBlock:^{
+            //save main context
+            NSError* error = nil;
+            if ([self.mainMOC hasChanges] && ![self.mainMOC save:&error]) {
+#if DEBUG
+                NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
+#endif
+                abort();
+            }
+        }];
+    }];
+    return YES;
+}
+
+#pragma mark - Methods
+
+- (NSManagedObjectContext *)createTemporaryBackgroundMoc {
+    NSManagedObjectContext* ctx = [[NSManagedObjectContext alloc]
+                                   initWithConcurrencyType:NSPrivateQueueConcurrencyType];
+    ctx.parentContext = self.mainMOC;
+    return ctx;
+}
+
 
 - (void)backgroundTask {
+
+#if TARGET_OS_IPHONE && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_4_0
     Class UIApplicationClass = NSClassFromString(@"UIApplication");
-    if(!UIApplicationClass || ![UIApplicationClass respondsToSelector:@selector(sharedApplication)]) {
-        return;
+    BOOL hasApplication = UIApplicationClass && [UIApplicationClass respondsToSelector:@selector(sharedApplication)];
+    if (hasApplication) {
+        __weak __typeof__ (self) wself = self;
+        UIApplication * app = [UIApplicationClass performSelector:@selector(sharedApplication)];
+        self.backgroundTaskId = [app beginBackgroundTaskWithExpirationHandler:^{
+            __strong __typeof (wself) sself = wself;
+            if (sself) {
+                [app endBackgroundTask:sself.backgroundTaskId];
+                sself.backgroundTaskId = UIBackgroundTaskInvalid;
+#if DEBUG
+                NSLog(@"end background task");
+#endif
+            }
+        }];
     }
-    UIApplication* application = [UIApplication performSelector:@selector(sharedApplication)];
-    __block UIBackgroundTaskIdentifier bgTask = [application beginBackgroundTaskWithExpirationHandler:^{
-        [application endBackgroundTask:bgTask];
-        bgTask = UIBackgroundTaskInvalid;
-    }];
-    [self saveContext:^{
-        [application endBackgroundTask:bgTask];
-        bgTask = UIBackgroundTaskInvalid;
+#endif
+    [self saveToSqlite];
+}
+
+
+- (void)saveToSqlite {
+    __weak typeof(self) weakSelf = self;
+    [self.mainMOC performBlock:^{
+        __strong typeof(weakSelf) sself = weakSelf;
+        //save main context
+        NSError* error = nil;
+        if ([sself.mainMOC hasChanges] && ![sself.mainMOC save:&error]) {
+#if DEBUG
+            NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
+#endif
+            abort();
+        }
+        [sself.writeMOC performBlock:^{
+            NSError* writeError = nil;
+            [sself.writeMOC save:&writeError];
+#if DEBUG
+            NSLog(@"write entity to sqlite in backgournd ==================\nThread:%@",[NSThread currentThread]);
+#endif
+        }];
     }];
 }
 
 
-#pragma mark - Init
+#pragma mark - LifeCycle
 
 + (LWAlchemyManager *)sharedManager {
     static dispatch_once_t onceToken;
@@ -227,6 +328,7 @@
     [[NSNotificationCenter defaultCenter] removeObserver:self
                                                     name:UIApplicationWillTerminateNotification
                                                   object:nil];
+
     [[NSNotificationCenter defaultCenter] removeObserver:self
                                                     name:UIApplicationDidEnterBackgroundNotification
                                                   object:nil];
@@ -234,35 +336,6 @@
 
 
 #pragma mark - CoreData Stack
-
-- (void)saveContext:(Completion)completionBlock {
-    __weak typeof(self) weakSelf = self;
-    NSError *error = nil;
-    if ([self.managedObjectContext hasChanges] && ![self.managedObjectContext save:&error]) {
-        NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
-        abort();
-    } else {
-        [self.parentContext performBlock:^{
-            //            NSLog(@"写入到数据库的线程:%@",[NSThread currentThread]);
-            __strong typeof(weakSelf) strongSelf = weakSelf;
-            __block NSError* inner_error = nil;
-            [strongSelf.parentContext save:&inner_error];
-            [strongSelf.managedObjectContext performBlock:^{
-                completionBlock();
-            }];
-        }];
-    }
-}
-
-- (NSManagedObjectContext *)createPrivateObjectContext {
-    NSManagedObjectContext *ctx = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
-    __weak typeof(self) weakSelf = self;
-    [ctx performBlockAndWait:^{
-        __strong typeof(weakSelf) strongSelf = weakSelf;
-        [ctx setParentContext:strongSelf.managedObjectContext];
-    }];
-    return ctx;
-}
 
 - (NSString *)executableFile {
     if (!_executableFile) {
@@ -280,10 +353,10 @@
     return _managedObjectModel;
 }
 
-
 - (NSURL *)applicationDocumentsDirectory {
     return [[[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] lastObject];
 }
+
 
 - (NSPersistentStoreCoordinator *)persistentStoreCoordinator {
     if (_persistentStoreCoordinator != nil) {
@@ -292,42 +365,45 @@
     _persistentStoreCoordinator = [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel:[self managedObjectModel]];
     NSString* sql = [NSString stringWithFormat:@"%@.sqlite",self.executableFile];
     NSURL* storeURL = [[self applicationDocumentsDirectory] URLByAppendingPathComponent:sql];
-    NSError *error = nil;
-    NSString *failureReason = @"There was an error creating or loading the application's saved data.";
+    NSError* error = nil;
+    NSString* failureReason = @"There was an error creating or loading the application's saved data.";
     if (![_persistentStoreCoordinator addPersistentStoreWithType:NSSQLiteStoreType configuration:nil URL:storeURL options:nil error:&error]) {
         NSMutableDictionary *dict = [NSMutableDictionary dictionary];
         dict[NSLocalizedDescriptionKey] = @"Failed to initialize the application's saved data";
         dict[NSLocalizedFailureReasonErrorKey] = failureReason;
         dict[NSUnderlyingErrorKey] = error;
         error = [NSError errorWithDomain:@"YOUR_ERROR_DOMAIN" code:9999 userInfo:dict];
+#if DEBUG
         NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
+#endif
         abort();
     }
     return _persistentStoreCoordinator;
 }
 
-- (NSManagedObjectContext *)managedObjectContext {
-    if (!_managedObjectContext) {
-        _managedObjectContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSMainQueueConcurrencyType];
-        [_managedObjectContext setParentContext:self.parentContext];
+
+- (NSManagedObjectContext *)mainMOC {
+    if (_mainMOC) {
+        return _mainMOC;
     }
-    return _managedObjectContext;
+    _mainMOC = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSMainQueueConcurrencyType];
+    _mainMOC.parentContext = self.writeMOC;
+    return _mainMOC;
 }
 
-- (NSManagedObjectContext *)parentContext {
-    if (!_parentContext) {
-        _parentContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
-        __weak typeof(self) weakSelf = self;
-        [_parentContext performBlockAndWait:^{
-            __strong typeof(weakSelf) strongSelf = weakSelf;
-            [_parentContext setPersistentStoreCoordinator:strongSelf.persistentStoreCoordinator];
-            [_parentContext setMergePolicy:NSMergeByPropertyObjectTrumpMergePolicy];
-            [_parentContext setUndoManager:nil];
-        }];
-
+- (NSManagedObjectContext *)writeMOC {
+    if (_writeMOC) {
+        return _writeMOC;
     }
-    return _parentContext;
+    _writeMOC = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
+    __weak typeof(self) weakSelf = self;
+    [_writeMOC performBlockAndWait:^{
+        __strong typeof(weakSelf) swself = weakSelf;
+        [_writeMOC setPersistentStoreCoordinator:swself.persistentStoreCoordinator];
+        [_writeMOC setMergePolicy:NSMergeByPropertyObjectTrumpMergePolicy];
+        [_writeMOC setUndoManager:nil];
+    }];
+    return _writeMOC;
 }
-
 
 @end

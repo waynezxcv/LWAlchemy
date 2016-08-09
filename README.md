@@ -2,7 +2,7 @@
 [![License MIT](https://img.shields.io/badge/license-MIT-green.svg?style=flat)](https://github.com/waynezxcv/LWAlchemy/blob/master/LICENSE)&nbsp;
 
 
-# LWAlchemy V1.0
+# LWAlchemy V1.1
 LWAlchemy 快速、高性能的支持CoreDta的iOS ORM框架。<br>
 
 
@@ -12,6 +12,17 @@ LWAlchemy 快速、高性能的支持CoreDta的iOS ORM框架。<br>
 * 支持CoreData并发，在不阻塞主线程的情况下，进行数据库CURD。
 * 支持CoreData设置Unique约束。
 * 轻量级，代码入侵少。
+
+
+
+***
+
+使用LWAlchemyManager提供的API来进行CURD操作，可以做到不阻塞主线程。
+
+下载Demo，一边滑动列表，一边疯狂地点击右上角的"+"按钮看看效果吧~
+
+***
+
 
 
 ### API Quickstart
