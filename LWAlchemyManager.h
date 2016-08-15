@@ -57,30 +57,30 @@ typedef void(^FetchResults)(NSArray* results, NSError *error);
 /******************************************************************************
 
 
-             ------------------
-            |                  |
-            |     writeMOC     | background thread ➡︎ NSPersistentStoreCoordinator
-            |                  |
-             ------------------
+ ------------------
+ |                  |
+ |     writeMOC     | background thread ➡︎ NSPersistentStoreCoordinator
+ |                  |
+ ------------------
 
-                     ⬆︎ parent
+ ⬆︎ parent
 
-             ------------------
-            |                  |
-            |     mainMOC      | main thread ➡︎ NSFetchResultsController
-            |                  |
-             ------------------
+ ------------------
+ |                  |
+ |     mainMOC      | main thread ➡︎ NSFetchResultsController
+ |                  |
+ ------------------
 
-                     ⬆︎ parent
+ ⬆︎ parent
 
-             ------------------
-            |                  |
-            |   temporaryMOC   | background thread
-            |                  |
-             ------------------
+ ------------------
+ |                  |
+ |   temporaryMOC   | background thread
+ |                  |
+ ------------------
 
 
-******************************************************************************/
+ ******************************************************************************/
 
 
 @interface LWAlchemyManager : NSObject
@@ -112,6 +112,24 @@ typedef void(^FetchResults)(NSArray* results, NSError *error);
               uiqueAttributesName:(NSString *)uniqueAttributesName
                        completion:(Completion)completeBlock;
 
+
+/**
+ *  异步查询,需要iOS8.0及以上
+ *
+ *  @param objectClass     查询的实例所属的类
+ *  @param predicate       NSPredicate对象，指定过滤方式
+ *  @param sortDescriptors 排序方式
+ *  @param offset          偏移量
+ *  @param limit           最大量
+ *  @param resultsBlock    查询结果
+ */
+- (void)lw_asyncFetchEntityWithClass:(Class)objectClass
+                           predicate:(NSPredicate *)predicate
+                      sortDescriptor:(NSArray<NSSortDescriptor*> *)sortDescriptors
+                         fetchOffset:(NSInteger)offset
+                          fetchLimit:(NSInteger)limit
+                         fetchReults:(FetchResults)resultsBlock NS_AVAILABLE(10_10, 8_0);
+
 /**
  *  查询
  *
@@ -129,6 +147,20 @@ typedef void(^FetchResults)(NSArray* results, NSError *error);
                      fetchLimit:(NSInteger)limit
                     fetchReults:(FetchResults)resultsBlock;
 
+
+
+/**
+ *  批量更新，需要iOS8.0以上
+ *
+ *  @param objectClass        查询的实例所属的类
+ *  @param propertiesToUpdate 属性更新字典,格式：@{@"属性名称":更新的值};
+ *
+ *  @return 更新的数据条数
+ */
+- (NSInteger)lw_batchUpdateWithEntityWithClass:(Class)objectClass
+                            propertiesToUpdate:(NSDictionary *)propertiesToUpdate NS_AVAILABLE(10_10, 8_0);
+
+
 /**
  *  更新
  *
@@ -137,6 +169,19 @@ typedef void(^FetchResults)(NSArray* results, NSError *error);
  */
 - (void)lw_updateEntityWithObjectID:(NSManagedObjectID *)objectID
                                JSON:(id)json;
+
+
+
+/**
+ *  批量删除,需要iOS8.0以上
+ *
+ *  @param objectClass 查询的实例所属的类
+ *  @param predicate   NSPredicate对象，指定过滤方式
+ *
+ *  @return 删除的条数
+ */
+- (NSInteger)lw_batchDeleteEntityWithClass:(Class)objectClass
+                                 predicate:(NSPredicate *)predicate NS_AVAILABLE(10_10, 8_0);
 
 /**
  *  删除
@@ -151,6 +196,7 @@ typedef void(^FetchResults)(NSArray* results, NSError *error);
  *  保存到Sqlite
  */
 - (void)saveToSqlite;
+
 
 
 @end

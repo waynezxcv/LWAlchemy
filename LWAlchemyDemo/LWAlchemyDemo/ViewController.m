@@ -89,23 +89,41 @@
                             completion:^{
                                 //查询
                                 NSSortDescriptor* sort = [NSSortDescriptor sortDescriptorWithKey:@"statusId" ascending:YES];
-                                [manager lw_fetchEntityWithClass:[StatusEntity class]
-                                                       predicate:nil
-                                                  sortDescriptor:@[sort]
-                                                     fetchOffset:0
-                                                      fetchLimit:0
-                                                     fetchReults:^(NSArray *results, NSError *error) {
-                                                         __strong typeof(wself) swself = wself;
-                                                         dispatch_async(dispatch_get_global_queue(0, 0), ^{
-                                                             [swself.dataSource removeAllObjects];
-                                                             for (StatusEntity* entity in results) {
-                                                                 [swself.dataSource addObject:entity];
-                                                             }
-                                                             dispatch_sync(dispatch_get_main_queue(), ^{
-                                                                 [swself.tableView reloadData];
-                                                             });
-                                                         });
-                                                     }];
+                                [manager lw_asyncFetchEntityWithClass:[StatusEntity class]
+                                                            predicate:nil
+                                                       sortDescriptor:@[sort]
+                                                          fetchOffset:0
+                                                           fetchLimit:0
+                                                          fetchReults:^(NSArray *results, NSError *error) {
+                                                              __strong typeof(wself) swself = wself;
+                                                              dispatch_async(dispatch_get_global_queue(0, 0), ^{
+                                                                  [swself.dataSource removeAllObjects];
+                                                                  for (StatusEntity* entity in results) {
+                                                                      [swself.dataSource addObject:entity];
+                                                                  }
+                                                                  dispatch_sync(dispatch_get_main_queue(), ^{
+                                                                      [swself.tableView reloadData];
+                                                                  });
+                                                              });
+                                                          }];
+//
+//                                [manager lw_fetchEntityWithClass:[StatusEntity class]
+//                                                       predicate:nil
+//                                                  sortDescriptor:@[sort]
+//                                                     fetchOffset:0
+//                                                      fetchLimit:0
+//                                                     fetchReults:^(NSArray *results, NSError *error) {
+//                                                         __strong typeof(wself) swself = wself;
+//                                                         dispatch_async(dispatch_get_global_queue(0, 0), ^{
+//                                                             [swself.dataSource removeAllObjects];
+//                                                             for (StatusEntity* entity in results) {
+//                                                                 [swself.dataSource addObject:entity];
+//                                                             }
+//                                                             dispatch_sync(dispatch_get_main_queue(), ^{
+//                                                                 [swself.tableView reloadData];
+//                                                             });
+//                                                         });
+//                                                     }];
                             }];
 }
 

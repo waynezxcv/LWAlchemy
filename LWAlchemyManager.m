@@ -33,8 +33,9 @@
 @property (nonatomic,strong) NSPersistentStoreCoordinator* persistentStoreCoordinator;
 @property (strong,nonatomic) NSManagedObjectContext* mainMOC;//主线程Context
 @property (strong,nonatomic) NSManagedObjectContext* writeMOC;//用来写入数据到本地的Context，mainMOC的parent
-@property (nonatomic,copy) NSString* executableFile;
+
 @property (nonatomic,assign) UIBackgroundTaskIdentifier backgroundTaskId;
+@property (nonatomic,copy) NSString* executableFile;
 
 @end
 
@@ -77,6 +78,7 @@
                     else {
                         object = [object entity:object modelWithDictionary:json context:ctx];
                     }
+
                     [ctx performBlockAndWait:^{
                         //save temporary context
                         NSError* error = nil;
@@ -157,21 +159,85 @@
             resultsBlock(@[],nil);
         }
 
-        NSMutableArray* result_ids = [[NSMutableArray alloc] init];
+        NSMutableArray* resultIds = [[NSMutableArray alloc] init];
         for (NSManagedObject* object  in results) {
-            [result_ids addObject:object.objectID];
+            [resultIds addObject:object.objectID];
         }
         __strong typeof(weakSelf) sself = weakSelf;
         [sself.mainMOC performBlock:^{
-            NSMutableArray* final_results = [[NSMutableArray alloc] init];
-            for (NSManagedObjectID* objectID in result_ids) {
-                [final_results addObject:[sself.mainMOC objectWithID:objectID]];
+            NSMutableArray* finalResults = [[NSMutableArray alloc] init];
+            for (NSManagedObjectID* objectID in resultIds) {
+                [finalResults addObject:[sself.mainMOC objectWithID:objectID]];
             }
-            resultsBlock(final_results, nil);
+            resultsBlock(finalResults, nil);
         }];
     }];
 }
 
+
+- (void)lw_asyncFetchEntityWithClass:(Class)objectClass
+                           predicate:(NSPredicate *)predicate
+                      sortDescriptor:(NSArray<NSSortDescriptor*> *)sortDescriptors
+                         fetchOffset:(NSInteger)offset
+                          fetchLimit:(NSInteger)limit
+                         fetchReults:(FetchResults)resultsBlock  NS_AVAILABLE(10_10, 8_0) {
+    NSFetchRequest* fetchRequest = [NSFetchRequest fetchRequestWithEntityName:NSStringFromClass(objectClass)];
+    if (predicate) {
+        [fetchRequest setPredicate:predicate];
+    }
+    if (sortDescriptors != nil && sortDescriptors.count != 0) {
+        [fetchRequest setSortDescriptors:sortDescriptors];
+    }
+    if (offset > 0) {
+        [fetchRequest setFetchOffset:offset];
+    }
+    if (limit > 0) {
+        [fetchRequest setFetchLimit:limit];
+    }
+    NSAsynchronousFetchRequest* asycFetchRequest = [[NSAsynchronousFetchRequest alloc]
+                                                    initWithFetchRequest:fetchRequest
+                                                    completionBlock:^(NSAsynchronousFetchResult * _Nonnull result) {
+                                                        NSMutableArray* finalResults = [[NSMutableArray alloc] init];
+                                                        [result.finalResult enumerateObjectsUsingBlock:^(id  _Nonnull obj,
+                                                                                                         NSUInteger idx,
+                                                                                                         BOOL * _Nonnull stop) {
+                                                            [finalResults addObject:obj];
+                                                        }];
+                                                        resultsBlock(finalResults, nil);
+                                                    }];
+    NSError* error = nil;
+    [self.mainMOC executeRequest:asycFetchRequest error:&error];
+    if (error) {
+        resultsBlock(@[],error);
+#if DEBUG
+        NSLog(@"fetch request result error : %@", error);
+#endif
+    }
+}
+
+
+- (NSInteger)lw_batchUpdateWithEntityWithClass:(Class)objectClass
+                            propertiesToUpdate:(NSDictionary *)propertiesToUpdate  NS_AVAILABLE(10_10, 8_0){
+
+    NSBatchUpdateRequest* updateRequest = [NSBatchUpdateRequest
+                                           batchUpdateRequestWithEntityName:NSStringFromClass(objectClass)];
+    updateRequest.resultType = NSUpdatedObjectsCountResultType;
+
+    updateRequest.propertiesToUpdate = propertiesToUpdate;
+
+    NSError* error = nil;
+    NSBatchUpdateResult* result = [self.mainMOC executeRequest:updateRequest error:&error];
+#if DEBUG
+    NSLog(@"batch update count is %ld", [result.result integerValue]);
+#endif
+    if (error) {
+#if DEBUG
+        NSLog(@"batch update request result error : %@", error);
+#endif
+    }
+    [self.mainMOC refreshAllObjects];
+    return [result.result integerValue];
+}
 
 - (void)lw_updateEntityWithObjectID:(NSManagedObjectID *)objectID
                                JSON:(id)json {
@@ -240,6 +306,33 @@
     return YES;
 }
 
+
+- (NSInteger)lw_batchDeleteEntityWithClass:(Class)objectClass
+                                 predicate:(NSPredicate *)predicate  NS_AVAILABLE(10_10, 8_0) {
+    NSFetchRequest* fetchRequest = [NSFetchRequest fetchRequestWithEntityName:NSStringFromClass(objectClass)];
+    if (predicate) {
+        fetchRequest.predicate = predicate;
+    }
+
+    NSBatchDeleteRequest* deleteRequest = [[NSBatchDeleteRequest alloc] initWithFetchRequest:fetchRequest];
+    deleteRequest.resultType = NSBatchDeleteResultTypeCount;
+
+    NSError* error = nil;
+    NSBatchDeleteResult* result = [self.mainMOC executeRequest:deleteRequest error:&error];
+#if DEBUG
+    NSLog(@"batch delete request result count is %ld",[result.result integerValue]);
+#endif
+    if (error) {
+#if DEBUG
+        NSLog(@"batch delete request error : %@", error);
+#endif
+    }
+
+    [self.mainMOC refreshAllObjects];
+    return [result.result integerValue];
+}
+
+
 #pragma mark - Methods
 
 - (NSManagedObjectContext *)createTemporaryBackgroundMoc {
@@ -249,9 +342,7 @@
     return ctx;
 }
 
-
 - (void)backgroundTask {
-
 #if TARGET_OS_IPHONE && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_4_0
     Class UIApplicationClass = NSClassFromString(@"UIApplication");
     BOOL hasApplication = UIApplicationClass && [UIApplicationClass respondsToSelector:@selector(sharedApplication)];
