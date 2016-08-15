@@ -198,5 +198,4 @@ typedef void(^FetchResults)(NSArray* results, NSError *error);
 - (void)saveToSqlite;
 
 
-
 @end

@@ -181,7 +181,9 @@
                          fetchOffset:(NSInteger)offset
                           fetchLimit:(NSInteger)limit
                          fetchReults:(FetchResults)resultsBlock  NS_AVAILABLE(10_10, 8_0) {
-    NSFetchRequest* fetchRequest = [NSFetchRequest fetchRequestWithEntityName:NSStringFromClass(objectClass)];
+
+    NSFetchRequest* fetchRequest = [NSFetchRequest
+                                    fetchRequestWithEntityName:NSStringFromClass(objectClass)];
     if (predicate) {
         [fetchRequest setPredicate:predicate];
     }
@@ -198,11 +200,13 @@
                                                     initWithFetchRequest:fetchRequest
                                                     completionBlock:^(NSAsynchronousFetchResult * _Nonnull result) {
                                                         NSMutableArray* finalResults = [[NSMutableArray alloc] init];
+
                                                         [result.finalResult enumerateObjectsUsingBlock:^(id  _Nonnull obj,
                                                                                                          NSUInteger idx,
                                                                                                          BOOL * _Nonnull stop) {
                                                             [finalResults addObject:obj];
                                                         }];
+
                                                         resultsBlock(finalResults, nil);
                                                     }];
     NSError* error = nil;

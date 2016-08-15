@@ -232,12 +232,12 @@
 			isa = PBXGroup;
 			children = (
 				0171C7A71C9F29BE000F2D14 /* LWAlchemy.h */,
+				0171C7A81C9F29BE000F2D14 /* LWAlchemyManager.h */,
+				0171C7A91C9F29BE000F2D14 /* LWAlchemyManager.m */,
 				B0A87CF21C9A58B0004FD0D7 /* NSObject+LWAlchemy.h */,
 				B0A87CF31C9A58B0004FD0D7 /* NSObject+LWAlchemy.m */,
 				B0A87CF41C9A58B0004FD0D7 /* LWAlchemyPropertyInfo.h */,
 				B0A87CF51C9A58B0004FD0D7 /* LWAlchemyPropertyInfo.m */,
-				0171C7A81C9F29BE000F2D14 /* LWAlchemyManager.h */,
-				0171C7A91C9F29BE000F2D14 /* LWAlchemyManager.m */,
 				B0C7C38B1C9FFEFA00081F08 /* LWAlchemyValueTransformer.h */,
 				B0C7C38C1C9FFEFA00081F08 /* LWAlchemyValueTransformer.m */,
 			);
