@@ -48,6 +48,13 @@ typedef void(^Completion)(void);
  */
 typedef void(^FetchResults)(NSArray* results, NSError *error);
 
+/**
+ *  更新结果Block
+ *
+ *
+ */
+typedef void(^UpdatedResults)(id updatedEnity,NSError *error);
+
 
 /**
  *  用于CoreData管理。CoreData的结构使用的是三层结构。
@@ -168,7 +175,8 @@ typedef void(^FetchResults)(NSArray* results, NSError *error);
  *  @param json     需要更新的数据JSON字典
  */
 - (void)lw_updateEntityWithObjectID:(NSManagedObjectID *)objectID
-                               JSON:(id)json;
+                               JSON:(id)json
+                         completion:(UpdatedResults)updateResults;
 
 
 

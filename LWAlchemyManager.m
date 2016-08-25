@@ -90,6 +90,7 @@
                         }
                     }];
                 }
+
                 else {
                     if (![json isKindOfClass:[NSDictionary class]]) {
                         NSDictionary* dict = [self dictionaryWithJSON:json];
@@ -158,7 +159,6 @@
         if ([results count] < 1) {
             resultsBlock(@[],nil);
         }
-
         NSMutableArray* resultIds = [[NSMutableArray alloc] init];
         for (NSManagedObject* object  in results) {
             [resultIds addObject:object.objectID];
@@ -174,7 +174,6 @@
     }];
 }
 
-
 - (void)lw_asyncFetchEntityWithClass:(Class)objectClass
                            predicate:(NSPredicate *)predicate
                       sortDescriptor:(NSArray<NSSortDescriptor*> *)sortDescriptors
@@ -182,12 +181,18 @@
                           fetchLimit:(NSInteger)limit
                          fetchReults:(FetchResults)resultsBlock  NS_AVAILABLE(10_10, 8_0) {
 
-    NSFetchRequest* fetchRequest = [NSFetchRequest
-                                    fetchRequestWithEntityName:NSStringFromClass(objectClass)];
+    NSFetchRequest* fetchRequest = [[NSFetchRequest alloc] init];
+    [fetchRequest setEntity:[NSEntityDescription entityForName:NSStringFromClass(objectClass)
+                                        inManagedObjectContext:self.mainMOC]];
+
     if (predicate) {
         [fetchRequest setPredicate:predicate];
+
+#if DEBUG
+        NSLog(@"fetch :%@",predicate);
+#endif
     }
-    if (sortDescriptors != nil && sortDescriptors.count != 0) {
+    if (sortDescriptors && sortDescriptors.count) {
         [fetchRequest setSortDescriptors:sortDescriptors];
     }
     if (offset > 0) {
@@ -196,21 +201,28 @@
     if (limit > 0) {
         [fetchRequest setFetchLimit:limit];
     }
-    NSAsynchronousFetchRequest* asycFetchRequest = [[NSAsynchronousFetchRequest alloc]
-                                                    initWithFetchRequest:fetchRequest
-                                                    completionBlock:^(NSAsynchronousFetchResult * _Nonnull result) {
-                                                        NSMutableArray* finalResults = [[NSMutableArray alloc] init];
+    NSAsynchronousFetchRequest* asycFetchRequest =
+    [[NSAsynchronousFetchRequest alloc]
+     initWithFetchRequest:fetchRequest
+     completionBlock:^(NSAsynchronousFetchResult * _Nonnull result) {
 
-                                                        [result.finalResult enumerateObjectsUsingBlock:^(id  _Nonnull obj,
-                                                                                                         NSUInteger idx,
-                                                                                                         BOOL * _Nonnull stop) {
-                                                            [finalResults addObject:obj];
-                                                        }];
+         NSMutableArray* finalResults = [[NSMutableArray alloc] init];
 
-                                                        resultsBlock(finalResults, nil);
-                                                    }];
+         [result.finalResult enumerateObjectsUsingBlock:^(id  _Nonnull obj,
+                                                          NSUInteger idx,
+                                                          BOOL * _Nonnull stop) {
+             [finalResults addObject:obj];
+         }];
+
+#if DEBUG
+         NSLog(@"fetched object count:%ld",finalResults.count);
+#endif
+         resultsBlock(finalResults, nil);
+     }];
+
     NSError* error = nil;
     [self.mainMOC executeRequest:asycFetchRequest error:&error];
+
     if (error) {
         resultsBlock(@[],error);
 #if DEBUG
@@ -244,7 +256,8 @@
 }
 
 - (void)lw_updateEntityWithObjectID:(NSManagedObjectID *)objectID
-                               JSON:(id)json {
+                               JSON:(id)json
+                         completion:(UpdatedResults)updateResults {
     NSManagedObjectContext* ctx = [self createTemporaryBackgroundMoc];
     [ctx performBlock:^{
         NSManagedObject* object = [ctx objectWithID:objectID];
@@ -260,6 +273,7 @@
 #if DEBUG
             NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
 #endif
+            updateResults(nil,error);
             abort();
         }
         [self.mainMOC performBlock:^{
@@ -269,8 +283,11 @@
 #if DEBUG
                 NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
 #endif
+                updateResults(nil,error);
                 abort();
             }
+            NSLog(@"update completion");
+            updateResults([self.mainMOC objectWithID:objectID],error);
         }];
     }];
 }
@@ -331,7 +348,6 @@
         NSLog(@"batch delete request error : %@", error);
 #endif
     }
-
     [self.mainMOC refreshAllObjects];
     return [result.result integerValue];
 }
