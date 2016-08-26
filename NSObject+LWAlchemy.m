@@ -1,27 +1,18 @@
-/*
- https://github.com/waynezxcv/LWAlchemy
-
- Copyright (c) 2016 waynezxcv <liuweiself@126.com>
-
- Permission is hereby granted, free of charge, to any person obtaining a copy
- of this software and associated documentation files (the "Software"), to deal
- in the Software without restriction, including without limitation the rights
- to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- copies of the Software, and to permit persons to whom the Software is
- furnished to do so, subject to the following conditions:
-
- The above copyright notice and this permission notice shall be included in
- all copies or substantial portions of the Software.
-
- THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- THE SOFTWARE.
- */
-
+//
+//  The MIT License (MIT)
+//  Copyright (c) 2016 Wayne Liu <liuweiself@126.com>
+//
+//  Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+//　　The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+//  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+//
+//
+//
+//
+//  Copyright © 2016年 Wayne Liu. All rights reserved.
+//  https://github.com/waynezxcv/LWAlchemy
+//  See LICENSE for this sample’s licensing information
+//
 
 #import "NSObject+LWAlchemy.h"
 #import "LWAlchemyPropertyInfo.h"
@@ -71,20 +62,17 @@ static void* LWAlechmyMapDictionaryKey = &LWAlechmyMapDictionaryKey;
 
 + (id)entityWithJSON:(id)json context:(NSManagedObjectContext *)context {
     if ([self isSubclassOfClass:[NSManagedObject class]] && context) {
-        __block NSManagedObject* model;
-        [context performBlockAndWait:^{
-            model = [NSEntityDescription insertNewObjectForEntityForName:NSStringFromClass(self)
-                                                  inManagedObjectContext:context];
-            if (model) {
-                if (![json isKindOfClass:[NSDictionary class]]) {
-                    NSDictionary* dic = [model dictionaryWithJSON:json];
-                    model = [model entity:model modelWithDictionary:dic context:context];
-                }
-                else {
-                    model = [model entity:model modelWithDictionary:json context:context];
-                }
+        NSManagedObject* model = [NSEntityDescription insertNewObjectForEntityForName:NSStringFromClass(self)
+                                                               inManagedObjectContext:context];
+        if (model) {
+            if (![json isKindOfClass:[NSDictionary class]]) {
+                NSDictionary* dic = [model dictionaryWithJSON:json];
+                model = [model entity:model modelWithDictionary:dic context:context];
             }
-        }];
+            else {
+                model = [model entity:model modelWithDictionary:json context:context];
+            }
+        }
         return model;
     }
     return [self modelWithJSON:json];
@@ -138,7 +126,6 @@ static void* LWAlechmyMapDictionaryKey = &LWAlechmyMapDictionaryKey;
     return self;
 }
 
-
 - (NSDictionary *)dictionaryWithJSON:(id)json {
     if (!json || json == (id)kCFNull) return nil;
     NSDictionary* dic = nil;
@@ -155,6 +142,25 @@ static void* LWAlechmyMapDictionaryKey = &LWAlechmyMapDictionaryKey;
         if (![dic isKindOfClass:[NSDictionary class]]) dic = nil;
     }
     return dic;
+}
+
+- (NSDictionary *)dictionaryFromModel {
+    NSMutableDictionary* dict = [[NSMutableDictionary alloc] init];
+    NSSet* propertysSet = self.class.propertysSet;
+    for (LWAlchemyPropertyInfo* propertyInfo in propertysSet) {
+        NSString* key = propertyInfo.propertyName;
+        id value;
+        if (propertyInfo.isNumberType) {
+            value = _GetNumberPropertyValue(self, propertyInfo);
+        }
+        else {
+            value = _GetObjectTypePropertyValue(self,propertyInfo);
+        }
+        if (value) {
+            [dict setObject:value forKey:key];
+        }
+    }
+    return dict.copy;
 }
 
 #pragma mark - Private Methods
@@ -177,12 +183,14 @@ static void* LWAlechmyMapDictionaryKey = &LWAlechmyMapDictionaryKey;
     }
 }
 
+
 static void _SetPropertyValue(__unsafe_unretained id model,
                               __unsafe_unretained LWAlchemyPropertyInfo* propertyInfo,
                               __unsafe_unretained id value) {
     if (propertyInfo.isReadonly || propertyInfo.isDynamic) {
         return;
     }
+
     if (propertyInfo.isNumberType) {
         _SetNumberPropertyValue(model, propertyInfo, value);
     }
@@ -193,6 +201,7 @@ static void _SetPropertyValue(__unsafe_unretained id model,
         _SetOtherTypePropertyValue(model,propertyInfo,value);
     }
 }
+
 
 
 static void _SetNumberPropertyValue(__unsafe_unretained id model,
@@ -282,6 +291,75 @@ static void _SetNumberPropertyValue(__unsafe_unretained id model,
             objc_msgSendToSetter((id)model, setterSelector, d);
         }break;
         default:break;
+    }
+}
+
+
+static NSNumber *_GetNumberPropertyValue(__unsafe_unretained id model,
+                                         __unsafe_unretained LWAlchemyPropertyInfo* propertyInfo) {
+    if (!propertyInfo.getter) {
+        return nil;
+    }
+    SEL getterSeclector = NSSelectorFromString(propertyInfo.getter);
+    switch (propertyInfo.type) {
+        case LWPropertyTypeBool: {
+            bool (*objc_msgSendToGetter)(id, SEL) = (void*)objc_msgSend;
+            return @(objc_msgSendToGetter(model,getterSeclector));
+        }
+        case LWPropertyTypeInt8:{
+            int8_t (*objc_msgSendToGetter)(id, SEL) = (void*)objc_msgSend;
+            return @(objc_msgSendToGetter(model,getterSeclector));
+        }
+        case LWPropertyTypeUInt8: {
+            uint8_t (*objc_msgSendToGetter)(id, SEL) = (void*)objc_msgSend;
+            return @(objc_msgSendToGetter(model,getterSeclector));
+        }
+        case LWPropertyTypeInt16: {
+            int16_t (*objc_msgSendToGetter)(id, SEL) = (void*)objc_msgSend;
+            return @(objc_msgSendToGetter(model,getterSeclector));
+        }
+        case LWPropertyTypeUInt16: {
+            uint16_t (*objc_msgSendToGetter)(id, SEL) = (void*)objc_msgSend;
+            return @(objc_msgSendToGetter(model,getterSeclector));
+        }
+        case LWPropertyTypeInt32: {
+            int32_t (*objc_msgSendToGetter)(id, SEL) = (void*)objc_msgSend;
+            return @(objc_msgSendToGetter(model,getterSeclector));
+        }
+        case LWPropertyTypeUInt32: {
+            uint32_t (*objc_msgSendToGetter)(id, SEL) = (void*)objc_msgSend;
+            return @(objc_msgSendToGetter(model,getterSeclector));
+        }
+        case LWPropertyTypeInt64: {
+            int64_t (*objc_msgSendToGetter)(id, SEL) = (void*)objc_msgSend;
+            return @(objc_msgSendToGetter(model,getterSeclector));
+        }
+        case LWPropertyTypeFloat: {
+            float (*objc_msgSendToGetter)(id, SEL) = (void*)objc_msgSend;
+            float number = objc_msgSendToGetter(model,getterSeclector);
+            if (isnan(number)) {
+                return nil;
+            }
+            return @(number);
+        }
+        case LWPropertyTypeDouble:{
+            double (*objc_msgSendToGetter)(id, SEL) = (void*)objc_msgSend;
+            double number = objc_msgSendToGetter(model,getterSeclector);
+            if (isnan(number)) {
+                return nil;
+            }
+            return @(number);
+        }
+        case LWPropertyTypeLongDouble: {
+            double (*objc_msgSendToGetter)(id, SEL) = (void*)objc_msgSend;
+            double number = objc_msgSendToGetter(model,getterSeclector);
+            if (isnan(number)) {
+                return nil;
+            }
+            return @(number);
+        }
+        default:
+            return nil;
     }
 }
 
@@ -420,8 +498,7 @@ static void _SetObjectTypePropertyValue(__unsafe_unretained id model,
                     void (*objc_msgSendToSetter)(id, SEL,id) = (void*)objc_msgSend;
                     objc_msgSendToSetter((id)model,setterSelector,child);
                 }
-            }
-            else {
+            } else {
                 //id type
                 void (*objc_msgSendToSetter)(id, SEL,id) = (void*)objc_msgSend;
                 objc_msgSendToSetter((id)model, setterSelector,(id)value);
@@ -430,6 +507,18 @@ static void _SetObjectTypePropertyValue(__unsafe_unretained id model,
             break;
     }
 }
+
+
+static id _GetObjectTypePropertyValue(__unsafe_unretained id model,
+                                      __unsafe_unretained LWAlchemyPropertyInfo* propertyInfo) {
+    if (!propertyInfo.getter) {
+        return nil;
+    }
+    SEL getterSelector = NSSelectorFromString(propertyInfo.getter);
+    id (*objc_msgSendToGetter)(id, SEL) = (void*)objc_msgSend;
+    return objc_msgSendToGetter(model,getterSelector);
+}
+
 
 static void _SetOtherTypePropertyValue(__unsafe_unretained id model,
                                        __unsafe_unretained LWAlchemyPropertyInfo* propertyInfo,
