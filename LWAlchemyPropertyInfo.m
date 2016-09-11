@@ -69,9 +69,12 @@
                         if (self.type == LWPropertyTypeObject) {
                             self.cls = _GetPropertyInfoClass(attributes[i].value);
                             self.nsType = _GetObjectNSType(self.cls);
+                            
+                            
+                            
                             if (self.nsType != LWPropertyNSObjectTypeNSUnknown) {
                                 self.foundationType = YES;
-                            }
+                            }                            
                         }
                     }
                 } break;

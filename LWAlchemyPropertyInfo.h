@@ -72,7 +72,6 @@ typedef NS_ENUM (NSUInteger, LWPropertyNSObjectType) {
     LWPropertyNSObjectTypeNSMutableSet          = 15
 };
 
-
 @interface LWAlchemyPropertyInfo : NSObject
 
 @property (nonatomic,assign,readonly) objc_property_t property;
