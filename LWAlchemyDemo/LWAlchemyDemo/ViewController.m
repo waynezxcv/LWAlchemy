@@ -67,6 +67,8 @@
                                                           });
                                                       });
                                                   }];
+
+    [self parse];
 }
 
 #pragma mark - LWAlchemy
