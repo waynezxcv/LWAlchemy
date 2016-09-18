@@ -311,6 +311,7 @@
 				TargetAttributes = {
 					B0A87CA51C9A5669004FD0D7 = {
 						CreatedOnToolsVersion = 7.2;
+						DevelopmentTeam = 48NPNTSQK4;
 					};
 					B0A87CC11C9A5669004FD0D7 = {
 						CreatedOnToolsVersion = 7.2;
@@ -522,7 +523,9 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
+				DEVELOPMENT_TEAM = 48NPNTSQK4;
 				INFOPLIST_FILE = LWAlchemyDemo/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.Waynezxcv.LWAlchemyDemo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -534,7 +537,9 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
+				DEVELOPMENT_TEAM = 48NPNTSQK4;
 				INFOPLIST_FILE = LWAlchemyDemo/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.Waynezxcv.LWAlchemyDemo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
