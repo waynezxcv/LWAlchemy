@@ -341,14 +341,7 @@
 #endif
                 abort();
             }
-            [sself.writeMOC performBlock:^{
-                NSError* writeError = nil;
-                [sself.writeMOC save:&writeError];
-#if DEBUG
-                NSLog(@"delete entity from sqlite in backgournd ==================\nThread:%@",[NSThread currentThread]);
-#endif
-                completion();
-            }];
+            completion();
         }];
     }];
 }
