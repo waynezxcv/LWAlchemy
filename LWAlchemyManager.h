@@ -84,6 +84,7 @@ typedef void(^UpdatedResults)(id updatedEnity,NSError *error);
  |                  |
  |   temporaryMOC   | background thread
  |                  |
+ 
  ------------------
 
 

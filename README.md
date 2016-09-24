@@ -9,16 +9,13 @@ LWAlchemy iOS开发中快速、高性能、支持CoreDta的模型映射框架。
 ## 特性
 * 支持JSON直接生成NSObject、NSManagedObject模型，且速度极快。
 * 支持自动和自定义的映射路径。
-* 支持CoreData并发，在不阻塞主线程的情况下，进行数据库CURD。
-* 支持CoreData设置Unique约束。
+* 提供了一些操作CoreData的API，可以再确保线程安全的情况下，进行数据库的增删改查。
 * 轻量级，代码入侵少。
-
 
 
 ***
 
 使用LWAlchemyManager提供的API来进行CURD操作，可以做到不阻塞主线程。
-
 下载Demo，一边滑动列表，一边疯狂地点击右上角的"+"按钮看看效果吧~
 
 ***
@@ -31,9 +28,8 @@ LWAlchemy iOS开发中快速、高性能、支持CoreDta的模型映射框架。
 |Class | Function|
 |--------|---------|
 |LWAlchemyManager|提供CoreData增查改删API，自动处理CoreData并发|
-|LWAlchemyPropertyInfo|对NSObject属性的抽象类|
+|LWAlchemyPropertyInfo|对NSObject属性的封装|
 |NSObject+LWAlchemy|提供模型映射API|
-|LWAlchemyValueTransformer|继承NSValueTransformer提供更方便使用的API|
 
 
 ## 使用方法
