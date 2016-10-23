@@ -25,6 +25,7 @@
 #import "UserEntity.h"
 #import "TestEntity.h"
 #import "SecondViewController.h"
+#import <objc/runtime.h>
 
 
 @interface ViewController ()<UITableViewDataSource,UITableViewDelegate>
@@ -37,16 +38,14 @@
 @implementation ViewController
 
 - (void)viewDidLoad {
-
     [super viewDidLoad];
-
     [self.view addSubview:self.tableView];
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]
                                               initWithBarButtonSystemItem:UIBarButtonSystemItemAdd
                                               target:self
                                               action:@selector(coredataUniqBatchInsert)];
     self.refreshCount = 0;
-
+    
     //查询
     __weak typeof(self) wself = self;
     NSSortDescriptor* sort = [NSSortDescriptor sortDescriptorWithKey:@"statusId" ascending:YES];
@@ -67,7 +66,7 @@
                                                           });
                                                       });
                                                   }];
-
+    
     [self parse];
 }
 
@@ -112,24 +111,24 @@
                                                                   });
                                                               });
                                                           }];
-//
-//                                [manager lw_fetchEntityWithClass:[StatusEntity class]
-//                                                       predicate:nil
-//                                                  sortDescriptor:@[sort]
-//                                                     fetchOffset:0
-//                                                      fetchLimit:0
-//                                                     fetchReults:^(NSArray *results, NSError *error) {
-//                                                         __strong typeof(wself) swself = wself;
-//                                                         dispatch_async(dispatch_get_global_queue(0, 0), ^{
-//                                                             [swself.dataSource removeAllObjects];
-//                                                             for (StatusEntity* entity in results) {
-//                                                                 [swself.dataSource addObject:entity];
-//                                                             }
-//                                                             dispatch_sync(dispatch_get_main_queue(), ^{
-//                                                                 [swself.tableView reloadData];
-//                                                             });
-//                                                         });
-//                                                     }];
+                                //
+                                //                                [manager lw_fetchEntityWithClass:[StatusEntity class]
+                                //                                                       predicate:nil
+                                //                                                  sortDescriptor:@[sort]
+                                //                                                     fetchOffset:0
+                                //                                                      fetchLimit:0
+                                //                                                     fetchReults:^(NSArray *results, NSError *error) {
+                                //                                                         __strong typeof(wself) swself = wself;
+                                //                                                         dispatch_async(dispatch_get_global_queue(0, 0), ^{
+                                //                                                             [swself.dataSource removeAllObjects];
+                                //                                                             for (StatusEntity* entity in results) {
+                                //                                                                 [swself.dataSource addObject:entity];
+                                //                                                             }
+                                //                                                             dispatch_sync(dispatch_get_main_queue(), ^{
+                                //                                                                 [swself.tableView reloadData];
+                                //                                                             });
+                                //                                                         });
+                                //                                                     }];
                             }];
 }
 

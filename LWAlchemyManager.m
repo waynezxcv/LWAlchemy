@@ -1,18 +1,18 @@
 /*
  https://github.com/waynezxcv/LWAlchemy
-
+ 
  Copyright (c) 2016 waynezxcv <liuweiself@126.com>
-
+ 
  Permission is hereby granted, free of charge, to any person obtaining a copy
  of this software and associated documentation files (the "Software"), to deal
  in the Software without restriction, including without limitation the rights
  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  copies of the Software, and to permit persons to whom the Software is
  furnished to do so, subject to the following conditions:
-
+ 
  The above copyright notice and this permission notice shall be included in
  all copies or substantial portions of the Software.
-
+ 
  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -67,7 +67,7 @@
                 }
                 NSPredicate* predicate = [NSPredicate predicateWithFormat:@"%K == %@", uniqueAttributesName,
                                           [[strongSelf dictionaryWithJSON:json]objectForKey:uniqueAttributesName]];
-
+                
                 if (predicate) {
                     [fetchRequest setPredicate:predicate];
                 }
@@ -83,17 +83,7 @@
                     else {
                         object = [object entity:object modelWithDictionary:json context:ctx];
                     }
-
-                    [ctx performBlockAndWait:^{
-                        //save temporary context
-                        NSError* error = nil;
-                        if ([ctx hasChanges] && ![ctx save:&error]) {
-#if DEBUG
-                            NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
-#endif
-                            abort();
-                        }
-                    }];
+                    
                 } else {
                     if (![json isKindOfClass:[NSDictionary class]]) {
                         NSDictionary* dict = [self dictionaryWithJSON:json];
@@ -134,14 +124,14 @@
                     fetchOffset:(NSInteger)offset
                      fetchLimit:(NSInteger)limit
                     fetchReults:(FetchResults)resultsBlock {
-
+    
     if(!objectClass ) {
         return;
     }
     __weak typeof(self) weakSelf = self;
     NSManagedObjectContext* ctx = [self createTemporaryBackgroundMoc];
     [ctx performBlock:^{
-
+        
         NSError* error = nil;
         NSFetchRequest* fetchRequest = [[NSFetchRequest alloc] init];
         [fetchRequest setEntity:[NSEntityDescription entityForName:NSStringFromClass(objectClass)
@@ -189,14 +179,14 @@
     if(!objectClass ) {
         return;
     }
-
+    
     NSFetchRequest* fetchRequest = [[NSFetchRequest alloc] init];
     [fetchRequest setEntity:[NSEntityDescription entityForName:NSStringFromClass(objectClass)
                                         inManagedObjectContext:self.mainMOC]];
-
+    
     if (predicate) {
         [fetchRequest setPredicate:predicate];
-
+        
 #if DEBUG
         NSLog(@"fetch :%@",predicate);
 #endif
@@ -214,24 +204,24 @@
     [[NSAsynchronousFetchRequest alloc]
      initWithFetchRequest:fetchRequest
      completionBlock:^(NSAsynchronousFetchResult * _Nonnull result) {
-
+         
          NSMutableArray* finalResults = [[NSMutableArray alloc] init];
-
+         
          [result.finalResult enumerateObjectsUsingBlock:^(id  _Nonnull obj,
                                                           NSUInteger idx,
                                                           BOOL * _Nonnull stop) {
              [finalResults addObject:obj];
          }];
-
+         
 #if DEBUG
          NSLog(@"fetched object count:%ld",finalResults.count);
 #endif
          resultsBlock(finalResults, nil);
      }];
-
+    
     NSError* error = nil;
     [self.mainMOC executeRequest:asycFetchRequest error:&error];
-
+    
     if (error) {
         resultsBlock(@[],error);
 #if DEBUG
@@ -243,13 +233,13 @@
 
 - (NSInteger)lw_batchUpdateWithEntityWithClass:(Class)objectClass
                             propertiesToUpdate:(NSDictionary *)propertiesToUpdate  NS_AVAILABLE(10_10, 8_3){
-
+    
     NSBatchUpdateRequest* updateRequest = [NSBatchUpdateRequest
                                            batchUpdateRequestWithEntityName:NSStringFromClass(objectClass)];
     updateRequest.resultType = NSUpdatedObjectsCountResultType;
-
+    
     updateRequest.propertiesToUpdate = propertiesToUpdate;
-
+    
     NSError* error = nil;
     NSBatchUpdateResult* result = [self.mainMOC executeRequest:updateRequest error:&error];
 #if DEBUG
@@ -270,14 +260,14 @@
     if (!objectID || !json) {
         return;
     }
-
+    
     NSManagedObjectContext* ctx = [self createTemporaryBackgroundMoc];
     [ctx performBlock:^{
         NSManagedObject* object = [ctx objectWithID:objectID];
         if (!object) {
             return ;
         }
-
+        
         if ([json isKindOfClass:[NSDictionary class]]) {
             object = [object entity:object modelWithDictionary:json context:ctx];
         } else {
@@ -317,7 +307,6 @@
         __strong typeof(weakSelf) sself = weakSelf;
         for (NSManagedObjectID* objectID in objectIDs) {
             @autoreleasepool {
-
                 NSManagedObject* object = [ctx objectWithID:objectID];
                 if (object) {
                     [ctx deleteObject:object];
@@ -353,10 +342,10 @@
     if (predicate) {
         fetchRequest.predicate = predicate;
     }
-
+    
     NSBatchDeleteRequest* deleteRequest = [[NSBatchDeleteRequest alloc] initWithFetchRequest:fetchRequest];
     deleteRequest.resultType = NSBatchDeleteResultTypeCount;
-
+    
     NSError* error = nil;
     NSBatchDeleteResult* result = [self.mainMOC executeRequest:deleteRequest error:&error];
 #if DEBUG
@@ -445,7 +434,7 @@
                                                  selector:@selector(backgroundTask)
                                                      name:UIApplicationWillTerminateNotification
                                                    object:nil];
-
+        
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(backgroundTask)
                                                      name:UIApplicationDidEnterBackgroundNotification
@@ -458,7 +447,7 @@
     [[NSNotificationCenter defaultCenter] removeObserver:self
                                                     name:UIApplicationWillTerminateNotification
                                                   object:nil];
-
+    
     [[NSNotificationCenter defaultCenter] removeObserver:self
                                                     name:UIApplicationDidEnterBackgroundNotification
                                                   object:nil];
