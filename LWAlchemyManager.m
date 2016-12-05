@@ -1,18 +1,14 @@
 /*
  https://github.com/waynezxcv/LWAlchemy
- 
  Copyright (c) 2016 waynezxcv <liuweiself@126.com>
- 
  Permission is hereby granted, free of charge, to any person obtaining a copy
  of this software and associated documentation files (the "Software"), to deal
  in the Software without restriction, including without limitation the rights
  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  copies of the Software, and to permit persons to whom the Software is
  furnished to do so, subject to the following conditions:
- 
  The above copyright notice and this permission notice shall be included in
  all copies or substantial portions of the Software.
- 
  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -24,27 +20,31 @@
 
 
 
+
 #import "LWAlchemyManager.h"
 #import <CoreData/CoreData.h>
 #import "NSObject+LWAlchemy.h"
 
 
-@interface LWAlchemyManager ()
 
+
+
+@interface LWAlchemyManager ()
 @property (nonatomic,strong) NSManagedObjectModel* managedObjectModel;
 @property (nonatomic,strong) NSPersistentStoreCoordinator* persistentStoreCoordinator;
 @property (strong,nonatomic) NSManagedObjectContext* mainMOC;//主线程Context
 @property (strong,nonatomic) NSManagedObjectContext* writeMOC;//用来写入数据到本地的Context，mainMOC的parent
 @property (nonatomic,assign) UIBackgroundTaskIdentifier backgroundTaskId;
 @property (nonatomic,copy) NSString* executableFile;
-
-
 @end
 
+
+
+
+
+
 @implementation LWAlchemyManager
-
 #pragma mark - CURD
-
 - (void)lw_insertEntitysWithClass:(Class)objectClass
                        JSONsArray:(NSArray *)jsonArray
               uiqueAttributesName:(NSString *)uniqueAttributesName
@@ -53,11 +53,11 @@
         return;
     }
     NSManagedObjectContext* ctx = [self createTemporaryBackgroundMoc];
+    __weak typeof(self) weakSelf = self;
     [ctx performBlock:^{
+        __strong typeof(weakSelf) sself = weakSelf;
         for (id json in jsonArray) {
             @autoreleasepool {
-                __weak typeof(self) weakSelf = self;
-                __strong typeof(weakSelf) strongSelf = weakSelf;
                 NSError* error = nil;
                 NSFetchRequest* fetchRequest = [[NSFetchRequest alloc] init];
                 [fetchRequest setEntity:[NSEntityDescription entityForName:NSStringFromClass(objectClass)
@@ -66,8 +66,7 @@
                     return;
                 }
                 NSPredicate* predicate = [NSPredicate predicateWithFormat:@"%K == %@", uniqueAttributesName,
-                                          [[strongSelf dictionaryWithJSON:json]objectForKey:uniqueAttributesName]];
-                
+                                          [[sself dictionaryWithJSON:json]objectForKey:uniqueAttributesName]];
                 if (predicate) {
                     [fetchRequest setPredicate:predicate];
                 }
@@ -77,16 +76,15 @@
                     object = [NSEntityDescription insertNewObjectForEntityForName:NSStringFromClass(objectClass)
                                                            inManagedObjectContext:ctx];
                     if (![json isKindOfClass:[NSDictionary class]]) {
-                        NSDictionary* dict = [self dictionaryWithJSON:json];
+                        NSDictionary* dict = [sself dictionaryWithJSON:json];
                         object = [object entity:object modelWithDictionary:dict context:ctx];
                     }
                     else {
                         object = [object entity:object modelWithDictionary:json context:ctx];
                     }
-                    
                 } else {
                     if (![json isKindOfClass:[NSDictionary class]]) {
-                        NSDictionary* dict = [self dictionaryWithJSON:json];
+                        NSDictionary* dict = [sself dictionaryWithJSON:json];
                         object = [object entity:object modelWithDictionary:dict context:ctx];
                     }
                     else {
@@ -103,10 +101,10 @@
 #endif
             abort();
         }
-        [self.mainMOC performBlock:^{
+        [sself.mainMOC performBlockAndWait:^{
             //save main context
             NSError* error = nil;
-            if ([self.mainMOC hasChanges] && ![self.mainMOC save:&error]) {
+            if ([sself.mainMOC hasChanges] && ![sself.mainMOC save:&error]) {
 #if DEBUG
                 NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
 #endif
@@ -116,22 +114,19 @@
         }];
     }];
 }
-
-
 - (void)lw_fetchEntityWithClass:(Class)objectClass
                       predicate:(NSPredicate *)predicate
                  sortDescriptor:(NSArray<NSSortDescriptor*> *)sortDescriptors
                     fetchOffset:(NSInteger)offset
                      fetchLimit:(NSInteger)limit
                     fetchReults:(FetchResults)resultsBlock {
-    
     if(!objectClass ) {
         return;
     }
     __weak typeof(self) weakSelf = self;
     NSManagedObjectContext* ctx = [self createTemporaryBackgroundMoc];
     [ctx performBlock:^{
-        
+        __strong typeof(weakSelf) sself = weakSelf;
         NSError* error = nil;
         NSFetchRequest* fetchRequest = [[NSFetchRequest alloc] init];
         [fetchRequest setEntity:[NSEntityDescription entityForName:NSStringFromClass(objectClass)
@@ -148,7 +143,7 @@
         if (limit > 0) {
             [fetchRequest setFetchLimit:limit];
         }
-        NSArray* results = [self.mainMOC executeFetchRequest:fetchRequest error:&error];
+        NSArray* results = [sself.mainMOC executeFetchRequest:fetchRequest error:&error];
         if (error) {
             resultsBlock(@[],error);
         }
@@ -159,8 +154,7 @@
         for (NSManagedObject* object  in results) {
             [resultIds addObject:object.objectID];
         }
-        __strong typeof(weakSelf) sself = weakSelf;
-        [sself.mainMOC performBlock:^{
+        [sself.mainMOC performBlockAndWait:^{
             NSMutableArray* finalResults = [[NSMutableArray alloc] init];
             for (NSManagedObjectID* objectID in resultIds) {
                 [finalResults addObject:[sself.mainMOC objectWithID:objectID]];
@@ -169,7 +163,6 @@
         }];
     }];
 }
-
 - (void)lw_asyncFetchEntityWithClass:(Class)objectClass
                            predicate:(NSPredicate *)predicate
                       sortDescriptor:(NSArray<NSSortDescriptor*> *)sortDescriptors
@@ -179,14 +172,11 @@
     if(!objectClass ) {
         return;
     }
-    
     NSFetchRequest* fetchRequest = [[NSFetchRequest alloc] init];
     [fetchRequest setEntity:[NSEntityDescription entityForName:NSStringFromClass(objectClass)
                                         inManagedObjectContext:self.mainMOC]];
-    
     if (predicate) {
         [fetchRequest setPredicate:predicate];
-        
 #if DEBUG
         NSLog(@"fetch :%@",predicate);
 #endif
@@ -204,24 +194,19 @@
     [[NSAsynchronousFetchRequest alloc]
      initWithFetchRequest:fetchRequest
      completionBlock:^(NSAsynchronousFetchResult * _Nonnull result) {
-         
          NSMutableArray* finalResults = [[NSMutableArray alloc] init];
-         
          [result.finalResult enumerateObjectsUsingBlock:^(id  _Nonnull obj,
                                                           NSUInteger idx,
                                                           BOOL * _Nonnull stop) {
              [finalResults addObject:obj];
          }];
-         
 #if DEBUG
          NSLog(@"fetched object count:%ld",finalResults.count);
 #endif
          resultsBlock(finalResults, nil);
      }];
-    
     NSError* error = nil;
     [self.mainMOC executeRequest:asycFetchRequest error:&error];
-    
     if (error) {
         resultsBlock(@[],error);
 #if DEBUG
@@ -229,17 +214,12 @@
 #endif
     }
 }
-
-
 - (NSInteger)lw_batchUpdateWithEntityWithClass:(Class)objectClass
-                            propertiesToUpdate:(NSDictionary *)propertiesToUpdate  NS_AVAILABLE(10_10, 8_3){
-    
+                            propertiesToUpdate:(NSDictionary *)propertiesToUpdate  NS_AVAILABLE(10_10, 8_3) {
     NSBatchUpdateRequest* updateRequest = [NSBatchUpdateRequest
                                            batchUpdateRequestWithEntityName:NSStringFromClass(objectClass)];
     updateRequest.resultType = NSUpdatedObjectsCountResultType;
-    
     updateRequest.propertiesToUpdate = propertiesToUpdate;
-    
     NSError* error = nil;
     NSBatchUpdateResult* result = [self.mainMOC executeRequest:updateRequest error:&error];
 #if DEBUG
@@ -253,25 +233,24 @@
     [self.mainMOC refreshAllObjects];
     return [result.result integerValue];
 }
-
 - (void)lw_updateEntityWithObjectID:(NSManagedObjectID *)objectID
                                JSON:(id)json
                          completion:(UpdatedResults)updateResults {
     if (!objectID || !json) {
         return;
     }
-    
+    __weak typeof(self) weakSelf = self;
     NSManagedObjectContext* ctx = [self createTemporaryBackgroundMoc];
     [ctx performBlock:^{
+        __strong typeof(weakSelf) sself = weakSelf;
         NSManagedObject* object = [ctx objectWithID:objectID];
         if (!object) {
             return ;
         }
-        
         if ([json isKindOfClass:[NSDictionary class]]) {
             object = [object entity:object modelWithDictionary:json context:ctx];
         } else {
-            NSDictionary* dict = [self dictionaryWithJSON:json];
+            NSDictionary* dict = [sself dictionaryWithJSON:json];
             object = [object entity:object modelWithDictionary:dict context:ctx];
         }
         //save temporary context
@@ -283,22 +262,20 @@
             updateResults(nil,error);
             abort();
         }
-        [self.mainMOC performBlock:^{
+        [sself.mainMOC performBlockAndWait:^{
             //save main context
             NSError* error = nil;
-            if ([self.mainMOC hasChanges] && ![self.mainMOC save:&error]) {
+            if ([sself.mainMOC hasChanges] && ![sself.mainMOC save:&error]) {
 #if DEBUG
                 NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
 #endif
                 updateResults(nil,error);
                 abort();
             }
-            updateResults([self.mainMOC objectWithID:objectID],error);
+            updateResults([sself.mainMOC objectWithID:objectID],error);
         }];
     }];
 }
-
-
 - (void)lw_deleteNSManagedObjectWithObjectWithObjectIdsArray:(NSArray<NSManagedObjectID *> *)objectIDs
                                                   completion:(Completion)completion {
     NSManagedObjectContext* ctx = [self createTemporaryBackgroundMoc];
@@ -321,10 +298,10 @@
 #endif
             abort();
         }
-        [sself.mainMOC performBlock:^{
+        [sself.mainMOC performBlockAndWait:^{
             //save main context
             NSError* error = nil;
-            if ([self.mainMOC hasChanges] && ![self.mainMOC save:&error]) {
+            if ([sself.mainMOC hasChanges] && ![sself.mainMOC save:&error]) {
 #if DEBUG
                 NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
 #endif
@@ -334,18 +311,14 @@
         }];
     }];
 }
-
-
 - (NSInteger)lw_batchDeleteEntityWithClass:(Class)objectClass
                                  predicate:(NSPredicate *)predicate NS_AVAILABLE(10_10, 8_3) {
     NSFetchRequest* fetchRequest = [NSFetchRequest fetchRequestWithEntityName:NSStringFromClass(objectClass)];
     if (predicate) {
         fetchRequest.predicate = predicate;
     }
-    
     NSBatchDeleteRequest* deleteRequest = [[NSBatchDeleteRequest alloc] initWithFetchRequest:fetchRequest];
     deleteRequest.resultType = NSBatchDeleteResultTypeCount;
-    
     NSError* error = nil;
     NSBatchDeleteResult* result = [self.mainMOC executeRequest:deleteRequest error:&error];
 #if DEBUG
@@ -359,17 +332,13 @@
     [self.mainMOC refreshAllObjects];
     return [result.result integerValue];
 }
-
-
 #pragma mark - Methods
-
 - (NSManagedObjectContext *)createTemporaryBackgroundMoc {
     NSManagedObjectContext* ctx = [[NSManagedObjectContext alloc]
                                    initWithConcurrencyType:NSPrivateQueueConcurrencyType];
     ctx.parentContext = self.mainMOC;
     return ctx;
 }
-
 - (void)backgroundTask {
 #if TARGET_OS_IPHONE && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_4_0
     Class UIApplicationClass = NSClassFromString(@"UIApplication");
@@ -391,8 +360,6 @@
 #endif
     [self saveToSqlite];
 }
-
-
 - (void)saveToSqlite {
     __weak typeof(self) weakSelf = self;
     [self.mainMOC performBlock:^{
@@ -414,19 +381,16 @@
         }];
     }];
 }
-
-
 #pragma mark - LifeCycle
-
 + (LWAlchemyManager *)sharedManager {
     static dispatch_once_t onceToken;
     static LWAlchemyManager* sharedManager;
     dispatch_once(&onceToken, ^{
-        sharedManager = [[LWAlchemyManager alloc] init];
+        sharedManager =
+        [[LWAlchemyManager alloc] init];
     });
     return sharedManager;
 }
-
 - (id)init {
     self = [super init];
     if (self) {
@@ -434,7 +398,6 @@
                                                  selector:@selector(backgroundTask)
                                                      name:UIApplicationWillTerminateNotification
                                                    object:nil];
-        
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(backgroundTask)
                                                      name:UIApplicationDidEnterBackgroundNotification
@@ -442,28 +405,21 @@
     }
     return self;
 }
-
 - (void)dealloc {
     [[NSNotificationCenter defaultCenter] removeObserver:self
                                                     name:UIApplicationWillTerminateNotification
                                                   object:nil];
-    
     [[NSNotificationCenter defaultCenter] removeObserver:self
                                                     name:UIApplicationDidEnterBackgroundNotification
                                                   object:nil];
 }
-
-
 #pragma mark - CoreData Stack
-
 - (NSString *)executableFile {
     if (!_executableFile) {
         _executableFile = [[[NSBundle mainBundle] infoDictionary] objectForKey:(NSString *)kCFBundleExecutableKey];
     }
     return _executableFile;
 }
-
-
 - (NSManagedObjectModel *)managedObjectModel {
     if (_managedObjectModel != nil) {
         return _managedObjectModel;
@@ -471,18 +427,15 @@
     _managedObjectModel = [NSManagedObjectModel mergedModelFromBundles:nil];;
     return _managedObjectModel;
 }
-
 - (NSURL *)applicationDocumentsDirectory {
     return [[[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] lastObject];
 }
-
-
 - (NSPersistentStoreCoordinator *)persistentStoreCoordinator {
     if (_persistentStoreCoordinator != nil) {
         return _persistentStoreCoordinator;
     }
     _persistentStoreCoordinator = [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel:[self managedObjectModel]];
-    NSString* sql = [NSString stringWithFormat:@"%@.sqlite",self.executableFile];
+    NSString* sql = [NSString stringWithFormat:@"%@_v_1_1_1.sqlite",self.executableFile];
     NSURL* storeURL = [[self applicationDocumentsDirectory] URLByAppendingPathComponent:sql];
     NSError* error = nil;
     NSString* failureReason = @"There was an error creating or loading the application's saved data.";
@@ -499,7 +452,6 @@
     }
     return _persistentStoreCoordinator;
 }
-
 - (NSManagedObjectContext *)mainMOC {
     if (_mainMOC) {
         return _mainMOC;
@@ -508,7 +460,6 @@
     _mainMOC.parentContext = self.writeMOC;
     return _mainMOC;
 }
-
 - (NSManagedObjectContext *)writeMOC {
     if (_writeMOC) {
         return _writeMOC;
@@ -523,5 +474,4 @@
     }];
     return _writeMOC;
 }
-
 @end
