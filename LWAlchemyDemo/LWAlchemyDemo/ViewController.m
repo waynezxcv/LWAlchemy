@@ -77,7 +77,7 @@
     self.refreshCount ++;//刷新的次数
     NSMutableArray* fakeData = [[NSMutableArray alloc] init];
     NSInteger index = 0;
-    for (NSInteger i = 0; i < 200; i ++) {
+    for (NSInteger i = 0; i < 500; i ++) {
         NSString* text =  [NSString stringWithFormat:@"这是ID为%ld的数据第%ld次更新",index + i,self.refreshCount];//更新的内容。
         NSDictionary* dict = @{@"statusId":@(index + i),
                                @"text":text,

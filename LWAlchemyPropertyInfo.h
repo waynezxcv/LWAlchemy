@@ -36,13 +36,13 @@ typedef NS_ENUM(NSUInteger, LWTypeKind) {
 };
 
 typedef NS_OPTIONS(NSUInteger, LWTypeProperty) {
-    LWTypePropertyPlaceholder    = 1 << 1,
-    LWTypePropertyReadonly       = 1 << 2,
-    LWTypePropertyDynamic        = 1 << 3,
-    LWTypePropertyCopy           = 1 << 4,
-    LWTypePropertyRetain         = 1 << 5,
-    LWTypePropertyWeak           = 1 << 6,
-    LWTypePropertyNonatomic      = 1 << 7,
+    LWTypePropertyPlaceholder    = 0,
+    LWTypePropertyReadonly       = 1 << 1,
+    LWTypePropertyDynamic        = 1 << 2,
+    LWTypePropertyCopy           = 1 << 3,
+    LWTypePropertyRetain         = 1 << 4,
+    LWTypePropertyWeak           = 1 << 5,
+    LWTypePropertyNonatomic      = 1 << 6,
 };
 
 typedef NS_ENUM(NSUInteger, LWType) {
