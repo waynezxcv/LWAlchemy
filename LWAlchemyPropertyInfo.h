@@ -37,12 +37,12 @@ typedef NS_ENUM(NSUInteger, LWTypeKind) {
 
 typedef NS_OPTIONS(NSUInteger, LWTypeProperty) {
     LWTypePropertyPlaceholder    = 0,
-    LWTypePropertyReadonly       = 1 << 1,
-    LWTypePropertyDynamic        = 1 << 2,
-    LWTypePropertyCopy           = 1 << 3,
-    LWTypePropertyRetain         = 1 << 4,
-    LWTypePropertyWeak           = 1 << 5,
-    LWTypePropertyNonatomic      = 1 << 6,
+    LWTypePropertyReadonly       = 1 << 0,
+    LWTypePropertyDynamic        = 1 << 1,
+    LWTypePropertyCopy           = 1 << 2,
+    LWTypePropertyRetain         = 1 << 3,
+    LWTypePropertyWeak           = 1 << 4,
+    LWTypePropertyNonatomic      = 1 << 5,
 };
 
 typedef NS_ENUM(NSUInteger, LWType) {
@@ -109,8 +109,6 @@ typedef NS_ENUM(NSUInteger, LWNSType) {
 
 
 @property (nonatomic,copy) void(^completionBlock)();
-
-
 
 
 - (id)initWithProperty:(objc_property_t)property customMapper:(NSDictionary *)mapper;

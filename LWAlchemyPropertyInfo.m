@@ -102,12 +102,15 @@
                 default:break;
             }
         }
+        
         if (attributes) {
             free(attributes);
             attributes = NULL;
         }
+        
         self.propertyName =  @(property_getName(property));
         self.mapperName = @[@(property_getName(property))];
+        
         if (mapper[self.propertyName]) {
             NSMutableArray* mappedToKeyArray = [[NSMutableArray alloc] init];
             NSArray* keyPath = [mapper[self.propertyName] componentsSeparatedByString:@"."];
@@ -136,7 +139,7 @@
 
 #pragma mark - Type
 
-static inline void _setTypeAndTypeKind(LWAlchemyPropertyInfo* propertyInfo,const char *value) {
+static inline void _setTypeAndTypeKind(LWAlchemyPropertyInfo* propertyInfo,const char* value) {
     size_t len = strlen(value);
     if (len == 0) {
         propertyInfo.typeKind = LWTypeKindUnknow;
