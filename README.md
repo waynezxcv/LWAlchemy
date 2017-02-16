@@ -10,7 +10,7 @@
 LWAlchemy is a fast, lightweight, model mapping framework that supports CoreData concurrent operations.
 
 
-## Fetures
+## Features
 
 * Support JSON directly generate NSObject object, NSManagedObject object.
 * Supports automatic and custom mapping paths.
