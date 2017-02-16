@@ -2,31 +2,189 @@
 [![License MIT](https://img.shields.io/badge/license-MIT-green.svg?style=flat)](https://github.com/waynezxcv/LWAlchemy/blob/master/LICENSE)&nbsp;
 
 
-# LWAlchemy V1.1
-LWAlchemy快速、高性能、支持CoreDta的模型映射框架。<br>
 
+# LWAlchemy V1.1
+
+## About 
+
+LWAlchemy is a fast, lightweight, model mapping framework that supports CoreData concurrent operations.
+
+
+## Fetures
+
+* Support JSON directly generate NSObject object, NSManagedObject object.
+* Supports automatic and custom mapping paths.
+* Provides a concurrent operation of the CoreData API, you can not block the main thread of the case, the database delete and delete operations, and to ensure thread safety.
+
+
+
+## Usage
+
+* model mapping
+
+```objc
+
+NSDictionary* dict = @{@"statusId":@"0755",
+                       @"text":@"LWAlchemy,a fast and lightweight ORM framework for Cocoa and Cocoa Touch",
+                        @"website":@"www.apple.com",
+@"imgs":@[@"img1",@"img2",@"img3"],
+@"timeStamp":@"1459242514",
+@"user":@{
+@"name":@"Waynezxcv",
+@"sign":@"this is wayne's sign",
+@"age":@18,
+@"avatar":@"https://avatars0.githubusercontent.com/u/8408918?v=3&s=460",
+@"detail":@{
+@"detailDescription":@"this is Wayne's detail description."
+}
+}
+
+StatusModel* status = [StatusModel modelWithJSON:dict];
+}
+
+
+/**
+*  custom mapping path
+*
+*/
+//Json
+NSDictionary* dict = @{@"statusId":@"0755",
+@"text":@"LWAlchemy,a fast and lightweight ORM framework for Cocoa and Cocoa Touch",
+@"website":@"www.apple.com",
+@"imgs":@[@"img1",@"img2",@"img3"],
+@"timeStamp":@"1459242514",
+@"user":@{
+@"name":@"Waynezxcv",
+@"sign":@"this is wayne's sign",
+@"age":@18,
+@"avatar":@"https://avatars0.githubusercontent.com/u/8408918?v=3&s=460",
+@"detail":@{
+@"detailDescription":@"this is Wayne's detail description."
+}
+}
+};
+
+StatusModel* status = [StatusModel modelWithJSON:dict];
+
+@implementation StatusModel
+
++ (NSDictionary *)mapper {
+return @{@"statusId":@"c_statusId",
+@"text":@"c_text",
+@"website":@"c_website",
+@"imgs":@"c_imgs",
+@"timeStamp":@"c_timeStamp",
+@"user":@"c_user"
+};
+}
+
+
+
+NSDictionary* dict = @{@"statusId":@"0755",
+@"text":@"LWAlchemy,a fast and lightweight ORM framework for Cocoa and Cocoa Touch",
+@"website":@"www.apple.com",
+@"imgs":@[@"img1",@"img2",@"img3"],
+@"timeStamp":@"1459242514",
+@"user":@{
+@"name":@"Waynezxcv",
+@"sign":@"this is wayne's sign",
+@"age":@18,
+@"avatar":@"https://avatars0.githubusercontent.com/u/8408918?v=3&s=460",
+@"detail":@{
+@"detailDescription":@"this is Wayne's detail description."
+}
+}
+};
+
+
++ (NSDictionary *)mapper {
+return @{@"name":@"user.name"
+};
+}
+
+```
+
+* CURD
+
+```objc
+
+- (void)coredataUniqBatchInsert {
+self.refreshCount ++;//刷新的次数
+NSMutableArray* fakeData = [[NSMutableArray alloc] init];
+NSInteger index = 0;
+for (NSInteger i = 0; i < 500; i ++) {
+NSString* text =  [NSString stringWithFormat:@"这是ID为%ld的数据第%ld次更新",index + i,self.refreshCount];//更新的内容。
+NSDictionary* dict = @{@"statusId":@(index + i),
+@"text":text,
+@"c_user" : @{@"c_name" :[NSString stringWithFormat:@"这是ID为%ld 的第二级Model",index + i],
+@"test":@{@"content":@"第三级映射。。。"}}
+};
+[fakeData addObject:dict];
+}
+__weak typeof(self) wself = self;
+LWAlchemyManager* manager = [LWAlchemyManager sharedManager];
+[manager insertEntitysWithClass:[StatusEntity class]
+JSONsArray:fakeData
+uiqueAttributesName:@"statusId"
+save:YES
+completion:^{
+NSSortDescriptor* sort = [NSSortDescriptor sortDescriptorWithKey:@"statusId" ascending:YES];
+[manager fetchNSManagedObjectWithObjectClass:[StatusEntity class]
+predicate:nil
+sortDescriptor:@[sort]
+fetchOffset:0
+fetchLimit:0
+fetchReults:^(NSArray *results, NSError *error) {
+__strong typeof(wself) swself = wself;
+dispatch_async(dispatch_get_global_queue(0, 0), ^{
+[swself.dataSource removeAllObjects];
+for (StatusEntity* entity in results) {
+[swself.dataSource addObject:entity];
+}
+dispatch_async(dispatch_get_main_queue(), ^{
+[swself.tableView reloadData];
+});
+});
+}];
+}];
+}
+
+
+```
+
+
+## License
+
+LWAlchemy is available under the MIT license. See the LICENSE file for more info.
+
+
+
+
+
+*** 
+
+
+
+
+# LWAlchemy V1.1
+
+
+## 关于LWAlchemy
+
+LWAlchemy快速、轻量级，支持CoreData并发操作的模型映射框架。<br>
 
 
 ## 特性
 
-* 支持JSON直接生成NSObject、NSManagedObject模型，且速度极快。
+* 支持JSON直接生成NSObject、NSManagedObject模型。
 * 支持自动和自定义的映射路径。
-* 提供了一些操作CoreData的API，可以再确保线程安全的情况下，在子线程进行数据库的增删改查。
+* 提供了并发操作CoreData的API，可以在不阻塞主线程的情况下，进行数据库增删改查操作，并确保线程安全。
 
-
-### API Quickstart
-* **Class**
-
-|Class | Function|
-|--------|---------|
-|LWAlchemyManager|提供CoreData增查改删API，自动处理CoreData并发|
-|LWAlchemyPropertyInfo|对NSObject属性的封装|
-|NSObject+LWAlchemy|提供模型映射API|
 
 
 ## 使用方法
 
-* **模型映射**
+* 模型映射
 
 ```objc
 
@@ -123,7 +281,7 @@ LWAlchemy快速、高性能、支持CoreDta的模型映射框架。<br>
 
 ```
 
-* **CoreData的CURD**
+* CoreData的CURD
 
 ```objc
 
@@ -174,3 +332,9 @@ LWAlchemy快速、高性能、支持CoreDta的模型映射框架。<br>
 ```
 
 更多用法请看Demo.
+
+
+## License
+
+LWAlchemy is available under the MIT license. See the LICENSE file for more info.
+
