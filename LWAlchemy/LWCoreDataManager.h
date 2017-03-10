@@ -1,18 +1,18 @@
 /*
  https://github.com/waynezxcv/LWAlchemy
-
+ 
  Copyright (c) 2016 waynezxcv <liuweiself@126.com>
-
+ 
  Permission is hereby granted, free of charge, to any person obtaining a copy
  of this software and associated documentation files (the "Software"), to deal
  in the Software without restriction, including without limitation the rights
  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  copies of the Software, and to permit persons to whom the Software is
  furnished to do so, subject to the following conditions:
-
+ 
  The above copyright notice and this permission notice shall be included in
  all copies or substantial portions of the Software.
-
+ 
  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -34,64 +34,45 @@
 
 
 
-/**
- *  无参数的回调Block
- */
-typedef void(^Completion)(void);
-
-
-/**
- *  查询结果Block
- *
- *  @param results 查询结果，包含NSManagedObject对象的数组
- *  @param error   NSError对象
- */
-typedef void(^FetchResults)(NSArray* results, NSError *error);
-
-/**
- *  更新结果Block
- *
- *
- */
-typedef void(^UpdatedResults)(id updatedEnity,NSError *error);
-
-
-/**
- *  用于CoreData管理。CoreData的结构使用的是三层结构。
- *
- *
- */
-/******************************************************************************
-
+/*****************  NSManagedObjectContext结构  *******************************************
 
  ------------------
  |                  |
  |     writeMOC     | background thread ➡︎ NSPersistentStoreCoordinator
  |                  |
  ------------------
-
+ 
  ⬆︎ parent
-
+ 
  ------------------
  |                  |
  |     mainMOC      | main thread ➡︎ NSFetchResultsController
  |                  |
  ------------------
-
+ 
  ⬆︎ parent
-
+ 
  ------------------
  |                  |
  |   temporaryMOC   | background thread
  |                  |
  
  ------------------
-
-
+ 
+ 
  ******************************************************************************/
 
 
-@interface LWAlchemyManager : NSObject
+
+
+
+typedef void(^Completion)(void);
+typedef void(^FetchResults)(NSArray* results, NSError *error);
+typedef void(^UpdatedResults)(id updatedEnity,NSError *error);
+
+
+
+@interface LWCoreDataManager : NSObject
 
 @property (readonly, strong, nonatomic) NSManagedObjectModel* managedObjectModel;
 @property (readonly, strong, nonatomic) NSPersistentStoreCoordinator* persistentStoreCoordinator;//PSC
@@ -103,14 +84,14 @@ typedef void(^UpdatedResults)(id updatedEnity,NSError *error);
  *
  *  @return LWAlchemyManager单例对象
  */
-+ (LWAlchemyManager *)sharedManager;
++ (LWCoreDataManager *)sharedManager;
 
 
 /**
  *  批量插入数据，并指定UniqueAttributesName，
  *  若存在则重复插入，改为更新数据（总共新开一个线程）
  *
- *  @param cls                  Entity的所属的类(如：[Student Class])
+ *  @param objectClass                  Entity的所属的类(如：[Student Class])
  *  @param jsonArray            包含JSON的数组
  *  @param uniqueAttributesName unique约束的属性名
  *  @param completeBlock        完成回调

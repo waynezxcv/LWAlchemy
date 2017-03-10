@@ -20,12 +20,17 @@
 
 #import "ViewController.h"
 #import "StatusModel.h"
-#import "LWAlchemy.h"
 #import "StatusEntity.h"
 #import "UserEntity.h"
 #import "TestEntity.h"
 #import "SecondViewController.h"
 #import <objc/runtime.h>
+
+#import "LWCoreDataManager.h"
+#import "NSObject+Maping.h"
+
+
+
 
 
 @interface ViewController ()<UITableViewDataSource,UITableViewDelegate>
@@ -49,7 +54,7 @@
     //查询
     __weak typeof(self) wself = self;
     NSSortDescriptor* sort = [NSSortDescriptor sortDescriptorWithKey:@"statusId" ascending:YES];
-    [[LWAlchemyManager sharedManager] lw_fetchEntityWithClass:[StatusEntity class]
+    [[LWCoreDataManager sharedManager] lw_fetchEntityWithClass:[StatusEntity class]
                                                     predicate:nil
                                                sortDescriptor:@[sort]
                                                   fetchOffset:0
@@ -87,7 +92,7 @@
         [fakeData addObject:dict];
     }
     __weak typeof(self) wself = self;
-    LWAlchemyManager* manager = [LWAlchemyManager sharedManager];
+    LWCoreDataManager* manager = [LWCoreDataManager sharedManager];
     [manager lw_insertEntitysWithClass:[StatusEntity class]
                             JSONsArray:fakeData
                    uiqueAttributesName:@"statusId"

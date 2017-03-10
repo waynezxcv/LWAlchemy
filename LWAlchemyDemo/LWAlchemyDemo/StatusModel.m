@@ -16,7 +16,9 @@
 
 
 #import "StatusModel.h"
-#import "LWAlchemy.h"
+#import "NSObject+Maping.h"
+
+
 
 @implementation StatusModel
 
