@@ -30,26 +30,31 @@
 
 @interface LWRuntimeHelper : NSObject
 
+
 /**
  *  动态生成一个类
  *
  */
-+ (BOOL)lw_createClassWithClassName:(NSString *)className superClassName:(NSString *)superClassName;
++ (Class)lw_createClassWithClassName:(NSString *)className superClassName:(NSString *)superClassName;
 
+
+
+#pragma mark - ivar list
 
 /**
  *  遍历一个类的成员变量列表
  *
  */
-
++ (void)lw_enumerateClassIvars:(Class)cls usingBlock:(void (^)(Ivar ivar, BOOL *stop))block;
 
 
 /**
  *  获取一个类的成员变列表
  *
  */
++ (void)lw_getIvarsListOfClass:(Class)cls ivars:(Ivar *)ivars count:(unsigned)count;
 
-
+#pragma mark - property list
 
 
 /**
@@ -66,64 +71,64 @@
 + (NSArray<LWProperty *> *)lw_getPropertyListOfClass:(Class)cls;
 
 
+#pragma mark - method list
 
 /**
  *  遍历一个类的方法列表
  *
  */
-
++ (void)lw_enumerateClassMethods:(Class)cls usingBlock:(void (^)(Method method, BOOL *stop))block;
 
 
 /**
  *  获取一个类的方法列表
  *
  */
++ (void)lw_getClassMethodList:(Class)cls methods:(Method *)method count:(unsigned)count;
 
 
-/**
- *  遍历一个类的协议列表
- *
- */
-
-
-
-/**
- *  获取一个类的协议列表
- *
- */
-
-
-
-
+#pragma mark - Dynamic add
 
 /**
  *  为一个类动态添加一个属性
  *
  */
-+ (void)lw_addPropertyForClass:(Class)cls propertyName:(NSString *)ivarName propertyType:(LWType)type;
++ (void)lw_addPropertyForClass:(Class)cls
+                  propertyName:(NSString *)propertyName
+                  propertyType:(LWType)type
+               memoryAttribute:(LWPropertyMemoryAttribute)memeoryAttribute
+           threadSafeAttribute:(LWPropertyThreadSafeAttribute)threadSafeAttribute
+            authorityAttribute:(LWPropertyAuthorityAttribute)authorityAttribute
+              dynamicAttribute:(LWPropertyIvarAttribute)dynamicAttribute;
 
 /**
  *  为一个类动态添加一个实例方法
  *
  */
-+ (void)lw_addClassInstanceMethodForClass:(Class)cls;
-
++ (BOOL)lw_classAddInstanceMethodForClass:(Class)cls sel:(SEL)selector
+                                      IMP:(IMP)imp
+                          returnValueType:(LWType)returnValueType;
 /**
  *  为一个类动态添加一个类方法
  *
  */
-+ (void)lw_addClassMethodForClass:(Class)cls;
++ (BOOL)lw_classAddClassMethodForClass:(Class)cls sel:(SEL)selector IMP:(IMP)imp;
+
+
+
+#pragma mark - Method swizzling
+
+/**
+ *  用一个新方法替换类的实例方法
+ *
+ */
++ (void)lw_exchangeInstanceMethodWithClass:(Class)cls originSelector:(SEL)originSel insteadSelector:(SEL)insteadSel;
 
 
 /**
- *  为一个类动态添加一个类方法
+ *  用一个新方法替换类的类方法
  *
  */
-
-
-/**
- *  交换类的两个方法
- *
- */
++ (void)lw_exchangeClassMethodWithClass:(Class)cls originSelector:(SEL)originSel insteadSelector:(SEL)insteadSel;
 
 @end

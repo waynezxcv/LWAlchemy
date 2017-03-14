@@ -24,10 +24,12 @@
 
 
 
+
 #import "LWProperty.h"
 
 @implementation LWProperty
 
+#pragma mark - Public
 
 + (LWProperty *)lw_propertyWithObjcProperty:(objc_property_t)property {
     return [[LWProperty alloc] initWithProperty:property];
@@ -62,9 +64,15 @@
     return self;
 }
 
++ (LWType)lw_typeFromNSObjCValueType:(const char*)type {
+    return _lwtypeFromAttirbuteValue(type);
+}
 
+
+#pragma mark - Private
 
 - (void)setupWithProperty:(objc_property_t)objcProperty {
+    
     _objcProperty = objcProperty;
     _name = [[NSString alloc] initWithUTF8String:property_getName(_objcProperty)];
     _type = LWTypeUnkown;
@@ -205,7 +213,12 @@ static inline LWType _lwtypeFromAttirbuteValue(const char* attributeValue) {
     }
 }
 
+
+
+//根据Class获取LWType
+
 static inline LWType _lwtypeFromClass(Class cls) {
+    
     if (!cls) return LWTypeUnkown;
     if ([cls isSubclassOfClass:[NSMutableString class]])
         return LWTypeNSMutableString;
@@ -240,12 +253,16 @@ static inline LWType _lwtypeFromClass(Class cls) {
     return LWTypeCustomObject;
 }
 
+
+
 static inline Class _classFromAttributeValue(const char* attributeValue) {
+    //从atrributeValue中获取类名称，然后获取Class对象
     size_t len = strlen(attributeValue);
     if (len > 3) {
         char name[len - 2];
         name[len - 3] = '\0';
         memcpy(name, attributeValue + 2, len - 3);
+        
         Class cls = objc_getClass(name);
         return cls;
     }

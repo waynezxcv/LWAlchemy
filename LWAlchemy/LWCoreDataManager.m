@@ -28,23 +28,16 @@
 
 
 @interface LWCoreDataManager ()
-
-
 @property (nonatomic,strong) NSManagedObjectModel* managedObjectModel;
 @property (nonatomic,strong) NSPersistentStoreCoordinator* persistentStoreCoordinator;
 @property (nonatomic,strong) NSManagedObjectContext* mainMOC;//主线程Context
 @property (nonatomic,strong) NSManagedObjectContext* writeMOC;//用来写入数据到本地的Context，mainMOC的parent
 @property (nonatomic,assign) UIBackgroundTaskIdentifier backgroundTaskId;
 @property (nonatomic,copy) NSString* executableFile;
-
-
 @end
 
 
-
-
 @implementation LWCoreDataManager
-
 
 #pragma mark - CURD
 
@@ -264,7 +257,6 @@
 }
 
 
-
 - (void)lw_deleteNSManagedObjectWithObjectWithObjectIdsArray:(NSArray<NSManagedObjectID *> *)objectIDs
                                                   completion:(Completion)completion {
     NSManagedObjectContext* ctx = [self createTemporaryBackgroundMoc];
@@ -341,7 +333,6 @@
 }
 
 
-
 - (void)saveToSqlite {
     __weak typeof(self) weakSelf = self;
     [self.mainMOC performBlock:^{
@@ -355,8 +346,8 @@
             [sself.writeMOC save:&writeError];
         }];
     }];
+    
 }
-
 
 
 #pragma mark - LifeCycle
@@ -463,4 +454,8 @@
     }];
     return _writeMOC;
 }
+
+
+
+
 @end

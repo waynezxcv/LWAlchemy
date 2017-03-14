@@ -22,9 +22,13 @@
  THE SOFTWARE.
  */
 
+#import <Foundation/Foundation.h>
 
-#import "NSObject+QuickCopying.h"
+@interface NSObject (Archive)
 
-@implementation NSObject (QuickCopying)
+- (void)lw_encodeWithCoder:(NSCoder *)aCoder;
+- (void)lw_decodeWithCoder:(NSCoder *)aDecoder;
+
+@property (nonatomic,copy) NSArray<NSString *>* ignores;
 
 @end

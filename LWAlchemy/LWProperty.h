@@ -167,8 +167,6 @@ typedef NS_ENUM(NSUInteger, LWPropertyIvarAttribute) {
 
 
 
-
-
 //封装自objc_property_t
 
 @interface LWProperty : NSObject
@@ -185,14 +183,11 @@ typedef NS_ENUM(NSUInteger, LWPropertyIvarAttribute) {
 @property (nonatomic,copy,readonly) NSString* getterName;//getter方法名
 @property (nonatomic,strong,readonly) Class cls;//类名称，如果是OBJC对象类型
 
+
+
 + (LWProperty *)lw_propertyWithObjcProperty:(objc_property_t)objcProperty;
 
-
-
-
-
-
-
++ (LWType)lw_typeFromNSObjCValueType:(const char*)type;
 
 
 

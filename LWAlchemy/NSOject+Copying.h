@@ -23,10 +23,14 @@
  */
 
 
+#import <Foundation/Foundation.h>
 
+@interface  NSObject(Copying)
 
-#import "NSNull+Safe.h"
+- (id)lw_copy;
+- (id)lw_mutableCopy;
 
-@implementation NSNull (Safe)
+@property (nonatomic,copy) NSArray<NSString *>* ignores;
+
 
 @end

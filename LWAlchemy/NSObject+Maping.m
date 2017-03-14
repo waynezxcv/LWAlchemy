@@ -31,8 +31,6 @@
 #import "LWRuntimeHelper.h"
 
 
-
-
 static void* LWAlechmyCachedPropertyKeysKey = &LWAlechmyCachedPropertyKeysKey;
 static void* LWAlechmyMapDictionaryKey = &LWAlechmyMapDictionaryKey;
 
@@ -65,6 +63,7 @@ static void* LWAlechmyMapDictionaryKey = &LWAlechmyMapDictionaryKey;
 #pragma mark - Public
 
 + (id)modelWithJSON:(id)json {
+    
     NSObject* model = [[self alloc] init];
     if (model) {
         if (![json isKindOfClass:[NSDictionary class]]) {

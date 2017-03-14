@@ -34,7 +34,7 @@
 
 
 
-/*****************  NSManagedObjectContext结构  *******************************************
+/*****************  NSManagedObjectContext结构  *****************************************
 
  ------------------
  |                  |
@@ -59,17 +59,13 @@
  
  ------------------
  
- 
- ******************************************************************************/
-
-
+******************************************************************************/
 
 
 
 typedef void(^Completion)(void);
 typedef void(^FetchResults)(NSArray* results, NSError *error);
 typedef void(^UpdatedResults)(id updatedEnity,NSError *error);
-
 
 
 @interface LWCoreDataManager : NSObject
