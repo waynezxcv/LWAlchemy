@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		0169D0E21E78896B00406028 /* TestModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 0169D0E11E78896B00406028 /* TestModel.m */; };
 		01F308041E7893E200CF4C18 /* NSObject+Archive.m in Sources */ = {isa = PBXBuildFile; fileRef = 01F308031E7893E200CF4C18 /* NSObject+Archive.m */; };
 		01F308071E7893F800CF4C18 /* NSOject+Copying.m in Sources */ = {isa = PBXBuildFile; fileRef = 01F308061E7893F800CF4C18 /* NSOject+Copying.m */; };
 		01F888261E7326E0005FD992 /* LWCoreDataManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 01F888191E7326E0005FD992 /* LWCoreDataManager.m */; };
@@ -21,6 +20,8 @@
 		B0A87CBC1C9A5669004FD0D7 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B0A87CBA1C9A5669004FD0D7 /* LaunchScreen.storyboard */; };
 		B0A87CC71C9A5669004FD0D7 /* LWAlchemyDemoTests.m in Sources */ = {isa = PBXBuildFile; fileRef = B0A87CC61C9A5669004FD0D7 /* LWAlchemyDemoTests.m */; };
 		B0A87CD21C9A5669004FD0D7 /* LWAlchemyDemoUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = B0A87CD11C9A5669004FD0D7 /* LWAlchemyDemoUITests.m */; };
+		B0D308201E7A3818006E6831 /* LWMethod.m in Sources */ = {isa = PBXBuildFile; fileRef = B0D3081F1E7A3818006E6831 /* LWMethod.m */; };
+		B0D308231E7A3EC5006E6831 /* LWTypeHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = B0D308221E7A3EC5006E6831 /* LWTypeHelper.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -41,8 +42,6 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		0169D0E01E78896B00406028 /* TestModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TestModel.h; sourceTree = "<group>"; };
-		0169D0E11E78896B00406028 /* TestModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TestModel.m; sourceTree = "<group>"; };
 		01F308021E7893E200CF4C18 /* NSObject+Archive.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSObject+Archive.h"; path = "../LWAlchemy/NSObject+Archive.h"; sourceTree = "<group>"; };
 		01F308031E7893E200CF4C18 /* NSObject+Archive.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NSObject+Archive.m"; path = "../LWAlchemy/NSObject+Archive.m"; sourceTree = "<group>"; };
 		01F308051E7893F800CF4C18 /* NSOject+Copying.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSOject+Copying.h"; path = "../LWAlchemy/NSOject+Copying.h"; sourceTree = "<group>"; };
@@ -70,6 +69,10 @@
 		B0A87CCD1C9A5669004FD0D7 /* LWAlchemyDemoUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = LWAlchemyDemoUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		B0A87CD11C9A5669004FD0D7 /* LWAlchemyDemoUITests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = LWAlchemyDemoUITests.m; sourceTree = "<group>"; };
 		B0A87CD31C9A5669004FD0D7 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		B0D3081E1E7A3818006E6831 /* LWMethod.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LWMethod.h; sourceTree = "<group>"; };
+		B0D3081F1E7A3818006E6831 /* LWMethod.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LWMethod.m; sourceTree = "<group>"; };
+		B0D308211E7A3EC5006E6831 /* LWTypeHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LWTypeHelper.h; sourceTree = "<group>"; };
+		B0D308221E7A3EC5006E6831 /* LWTypeHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LWTypeHelper.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -126,8 +129,6 @@
 				B0A87CAD1C9A5669004FD0D7 /* AppDelegate.m */,
 				B0A87CAF1C9A5669004FD0D7 /* ViewController.h */,
 				B0A87CB01C9A5669004FD0D7 /* ViewController.m */,
-				0169D0E01E78896B00406028 /* TestModel.h */,
-				0169D0E11E78896B00406028 /* TestModel.m */,
 			);
 			path = LWAlchemyDemo;
 			sourceTree = "<group>";
@@ -165,12 +166,16 @@
 		B0A87CDF1C9A5679004FD0D7 /* LWAlchemy */ = {
 			isa = PBXGroup;
 			children = (
-				01F8881C1E7326E0005FD992 /* LWRuntimeHelper.h */,
-				01F8881D1E7326E0005FD992 /* LWRuntimeHelper.m */,
-				01F8881A1E7326E0005FD992 /* LWProperty.h */,
-				01F8881B1E7326E0005FD992 /* LWProperty.m */,
 				01F888181E7326E0005FD992 /* LWCoreDataManager.h */,
 				01F888191E7326E0005FD992 /* LWCoreDataManager.m */,
+				01F8881C1E7326E0005FD992 /* LWRuntimeHelper.h */,
+				01F8881D1E7326E0005FD992 /* LWRuntimeHelper.m */,
+				B0D308211E7A3EC5006E6831 /* LWTypeHelper.h */,
+				B0D308221E7A3EC5006E6831 /* LWTypeHelper.m */,
+				01F8881A1E7326E0005FD992 /* LWProperty.h */,
+				01F8881B1E7326E0005FD992 /* LWProperty.m */,
+				B0D3081E1E7A3818006E6831 /* LWMethod.h */,
+				B0D3081F1E7A3818006E6831 /* LWMethod.m */,
 				01F888201E7326E0005FD992 /* NSObject+Maping.h */,
 				01F888211E7326E0005FD992 /* NSObject+Maping.m */,
 				01F308021E7893E200CF4C18 /* NSObject+Archive.h */,
@@ -243,7 +248,7 @@
 		B0A87C9E1C9A5669004FD0D7 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0720;
+				LastUpgradeCheck = 0820;
 				ORGANIZATIONNAME = "Warm+";
 				TargetAttributes = {
 					B0A87CA51C9A5669004FD0D7 = {
@@ -312,8 +317,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				B0A87CB11C9A5669004FD0D7 /* ViewController.m in Sources */,
-				0169D0E21E78896B00406028 /* TestModel.m in Sources */,
+				B0D308201E7A3818006E6831 /* LWMethod.m in Sources */,
 				B0A87CAE1C9A5669004FD0D7 /* AppDelegate.m in Sources */,
+				B0D308231E7A3EC5006E6831 /* LWTypeHelper.m in Sources */,
 				01F8882A1E7326E0005FD992 /* NSObject+Maping.m in Sources */,
 				B0A87CAB1C9A5669004FD0D7 /* main.m in Sources */,
 				01F888261E7326E0005FD992 /* LWCoreDataManager.m in Sources */,
@@ -380,8 +386,10 @@
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
@@ -423,8 +431,10 @@
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";

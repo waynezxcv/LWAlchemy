@@ -145,7 +145,7 @@ static void* LWAlechmyMapDictionaryKey = &LWAlechmyMapDictionaryKey;
         if (value != nil && ![value isEqual:[NSNull null]]) {
             
             //非动态合成setter和getter方法使用objc_msgSend方法调用setter，否则使用KVC
-            if (property.ivarAttribute != LWPropertyIvarAttributeDynamic) {
+            if (property.dynamicAttribute != LWPropertyIvarAttributeDynamic) {
                 [self _setPropertyValueWithMsgSend:property value:value];
             } else {
                 [self setValue:value forKey:property.name];
